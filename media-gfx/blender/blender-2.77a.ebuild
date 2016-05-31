@@ -16,9 +16,9 @@ SRC_URI="http://download.blender.org/source/${P}.tar.gz"
 SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
-IUSE="+boost +bullet colorio cycles +dds debug doc +elbeem ffmpeg fftw +game-engine jack \
+IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +game-engine \
             jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr player sdl \
-            sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test tiff c++0x valgrind"
+            sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test tiff c++0x valgrind jack"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine )
 	cycles? ( boost openexr tiff openimageio )
@@ -44,6 +44,7 @@ RDEPEND="${PYTHON_DEPS}
 	x11-libs/libXi
 	x11-libs/libXxf86vm
 	boost? ( >=dev-libs/boost-1.60[nls?,threads(+)] )
+	collada? ( >=media-libs/opencollada-1.6.18 )
 	colorio? ( >=media-libs/opencolorio-1.0.9-r2 )
 	ffmpeg? ( >=media-video/ffmpeg-2.8.6:0=[x264,mp3,encode,theora,jpeg2k?] )
 	libav? ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
@@ -140,6 +141,7 @@ src_configure() {
 		$(cmake-utils_use_with fftw MOD_OCEANSIM)
 		$(cmake-utils_use_with openal OPENAL)
 		$(cmake-utils_use_with colorio OPENCOLORIO)
+		$(cmake-utils_use_with collada OPENCOLLADA)
 		$(cmake-utils_use_with openimageio OPENIMAGEIO)
 		$(cmake-utils_use_with openmp OPENMP)
 		$(cmake-utils_use_with player PLAYER)
