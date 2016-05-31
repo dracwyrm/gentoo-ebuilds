@@ -1,0 +1,12 @@
+--- a/intern/cycles/render/svm.cpp       2016-05-28 13:53:38.459907548 +0930
++++ b/intern/cycles/render/svm.cpp   2016-05-28 12:30:42.331979674 +0930
+@@ -28,6 +28,8 @@
+ #include "util_foreach.h"
+ #include "util_progress.h"
+ 
++#include <algorithm>
++
+ CCL_NAMESPACE_BEGIN
+ 
+ /* Shader Manager */
+
