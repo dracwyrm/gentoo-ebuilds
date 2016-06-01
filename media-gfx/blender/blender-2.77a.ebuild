@@ -17,8 +17,8 @@ SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
 IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +game-engine \
-            jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr player sdl \
-            sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test tiff c++0x valgrind jack"
+            jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv player \
+            sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test tiff c++0x valgrind jack sdl"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine )
 	cycles? ( boost openexr tiff openimageio )
@@ -60,6 +60,7 @@ RDEPEND="${PYTHON_DEPS}
 	openal? ( >=media-libs/openal-1.6.372 )
 	openimageio? ( >=media-libs/openimageio-1.6.9 )
 	openexr? ( media-libs/ilmbase >=media-libs/openexr-2.2.0 )
+	opensubdiv? ( >=media-libs/opensubdiv-3.0.5 )
 	sdl? ( media-libs/libsdl2[sound,joystick] )
 	sndfile? ( media-libs/libsndfile )
 	tiff? ( media-libs/tiff:0 )
@@ -144,6 +145,7 @@ src_configure() {
 		$(cmake-utils_use_with collada OPENCOLLADA)
 		$(cmake-utils_use_with openimageio OPENIMAGEIO)
 		$(cmake-utils_use_with openmp OPENMP)
+		$(cmake-utils_use_with opensubdiv OPENSUBDIV)
 		$(cmake-utils_use_with player PLAYER)
 		$(cmake-utils_use_with sdl SDL)
 		$(cmake-utils_use_with cpu_flags_x86_sse RAYOPTIMIZATION)
