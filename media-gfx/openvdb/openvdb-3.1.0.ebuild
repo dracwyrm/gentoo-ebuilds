@@ -50,7 +50,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-python3-compat.patch
 	epatch "${FILESDIR}"/use_svg.patch
 
+	use doc || sed 's|^DOXYGEN :=|#|;s|^EPYDOC :=|#|' -i Makefile  || die "sed 0 failed"
 	sed \
+	-e	"s|:= epydoc|:= pdoc|" \
 	-e	"s|--html -o|--html --html-dir|" \
 	-e	"s|vdb_render vdb_test|vdb_render vdb_view vdb_test|" \
 	-i Makefile || die "sed failed"
@@ -59,13 +61,6 @@ src_prepare() {
 src_compile() {
 	local myprefix="${EPREFIX}/usr"
 	local myemakargs=""
-	
-	if use doc; then
-		myemakargs+="EPYDOC=\"pdoc\" "
-        else
-		myemakargs+="EPYDOC=\"\" "
-		myemakargs+="DOXYGEN=\"\" "
-	fi
 
 	if use X; then
 		myemakargs+="GLFW_INCL_DIR=\"${myprefix}/$(get_libdir)\" "
