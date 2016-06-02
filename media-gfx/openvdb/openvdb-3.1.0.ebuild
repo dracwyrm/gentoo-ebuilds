@@ -50,48 +50,55 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-python3-compat.patch
 	epatch "${FILESDIR}"/use_svg.patch
 
-	use doc || sed 's|^DOXYGEN :=|#|;s|^EPYDOC :=|#|' -i Makefile  || die "sed 0 failed"
 	sed \
-	-e	"s|^INSTALL_DIR :=.*|INSTALL_DIR := ${D}/usr|" \
-	-e	"s|^TBB_LIB_DIR :=.*|TBB_LIB_DIR := /usr/$(get_libdir)|" \
-	-e	"s|^PYTHON_VERSION := 2.6|PYTHON_VERSION := ${my_python_ver}|" \
-	-e	"s|^GLFW_INCL_DIR.*|GLFW_INCL_DIR := /usr/$(get_libdir)|" \
-	-e	"s|^GLFW_LIB_DIR :=.*|GLFW_LIB_DIR := /usr/$(get_libdir)|" \
-	-e	"s|:= epydoc|:= pdoc|" \
 	-e	"s|--html -o|--html --html-dir|" \
 	-e	"s|vdb_render vdb_test|vdb_render vdb_view vdb_test|" \
-	-i Makefile || die "sed 1 failed"
-
-	if ! use X; then
-		sed 's/^\(GLFW_INCL_DIR :=\).*$/\1/' -i Makefile || die "sed 2 failed"
-		sed 's/^\(GLFW_LIB_DIR :=\).*$/\1/' -i Makefile || die "sed 3 failed"
-		sed 's/^\(GLFW_LIB :=\).*$/\1/' -i Makefile || die "sed 4 failed"
-		sed 's/^\(GLFW_MAJOR_VERSION :=\).*$/\1/' -i Makefile || die "sed 5 failed"
-	fi
-
-	if use openvdb-compression; then
-		sed "s|^BLOSC_INCL_DIR.*|BLOSC_INCL_DIR := /usr/include|" -i Makefile || die "sed 6 failed"
-		sed "s|^BLOSC_LIB_DIR :=.*|BLOSC_LIB_DIR := /usr/$(get_libdir)|" -i Makefile || die "sed 7 failed"
-	fi
-
-	sed "s|^CPPUNIT_INCL_DIR.*|CPPUNIT_INCL_DIR := /usr/include/cppunit|" -i Makefile || die "sed 8 failed"
-	sed "s|^CPPUNIT_LIB_DIR :=.*|CPPUNIT_LIB_DIR := /usr/$(get_libdir)|" -i Makefile || die "sed 9 failed"
-
+	-i Makefile || die "sed failed"
 }
 
 src_compile() {
 	local myprefix="${EPREFIX}/usr"
+	local myemakargs=""
+	
+	if use doc; then
+		myemakargs+="EPYDOC=\"pdoc\" "
+        else
+		myemakargs+="EPYDOC=\"\" "
+		myemakargs+="DOXYGEN=\"\" "
+	fi
 
-	emake \
+	if use X; then
+		myemakargs+="GLFW_INCL_DIR=\"${myprefix}/$(get_libdir)\" "
+		myemakargs+="GLFW_LIB_DIR=\"${myprefix}/$(get_libdir)\" "
+	else
+		myemakargs+="GLFW_INCL_DIR=\"\" "
+		myemakargs+="GLFW_LIB_DIR=\"\" "
+		myemakargs+="GLFW_LIB=\"\" "
+		myemakargs+="GLFW_MAJOR_VERSION=\"\" "
+	fi
+
+	if use openvdb-compression; then
+		myemakargs+="BLOSC_INCL_DIR=\"${myprefix}/include\" "
+		myemakargs+="BLOSC_LIB_DIR=\"${myprefix}/$(get_libdir)\" "
+	fi
+
+	emake rpath=no shared=yes \
+	DESTDIR="${D}/${myprefix}" \
 	HFS="${myprefix}" \
 	HT="${myprefix}" \
 	HDSO="${myprefix}/$(get_libdir)" \
-	LIBOPENVDB_RPATH= \
+	${myemakargs} \
+	LIBOPENVDB_RPATH="" \
+	CPPUNIT_INCL_DIR="${myprefix}/include/cppunit" \
+	CPPUNIT_LIB_DIR="${myprefix}/$(get_libdir)" \
+	LOG4CPLUS_INCL_DIR="${myprefix}/include/log4cplus" \
+	LOG4CPLUS_LIB_DIR="${myprefix}/$(get_libdir)" \
+	PYTHON_VERSION="${EPYTHON/python/}" \
 	PYTHON_INCL_DIR="$(python_get_includedir)" \
-	PYTHON_LIB_DIR="$(python_get_library_path)" \
 	PYCONFIG_INCL_DIR="$(python_get_includedir)" \
+	PYTHON_LIB_DIR="$(python_get_library_path)" \
+	PYTHON_LIB="$(python_get_LIBS)" \
 	NUMPY_INCL_DIR="$(python_get_sitedir)/numpy/core/include/numpy" \
 	BOOST_PYTHON_LIB_DIR="${myprefix}/$(get_libdir)" \
-	BOOST_PYTHON_LIB="-lboost_python-${EPYTHON/python/}" \
-	rpath=no shared=yes
+	BOOST_PYTHON_LIB="-lboost_python-${EPYTHON/python/}"
 }
