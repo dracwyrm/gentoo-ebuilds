@@ -1,0 +1,52 @@
+diff --git a/openvdb/python/pyGrid.h b/openvdb/python/pyGrid.h
+index 7110a55..ce87329 100644
+--- a/openvdb/python/pyGrid.h
++++ b/openvdb/python/pyGrid.h
+@@ -41,6 +41,7 @@
+ #ifdef PY_OPENVDB_USE_NUMPY
+ #define PY_ARRAY_UNIQUE_SYMBOL PY_OPENVDB_ARRAY_API
+ #define NO_IMPORT_ARRAY // NumPy gets initialized during module initialization
++#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+ #include <arrayobject.h> // for PyArrayObject
+ #include "openvdb/tools/MeshToVolume.h"
+ #include "openvdb/tools/VolumeToMesh.h" // for tools::volumeToMesh()
+diff --git a/openvdb/python/pyOpenVDBModule.cc b/openvdb/python/pyOpenVDBModule.cc
+index 829205a..3447b01 100644
+--- a/openvdb/python/pyOpenVDBModule.cc
++++ b/openvdb/python/pyOpenVDBModule.cc
+@@ -35,6 +35,7 @@
+ #include <boost/python/exception_translator.hpp>
+ #ifdef PY_OPENVDB_USE_NUMPY
+ #define PY_ARRAY_UNIQUE_SYMBOL PY_OPENVDB_ARRAY_API
++#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+ #include <arrayobject.h> // for import_array()
+ #endif
+ #include "openvdb/openvdb.h"
+@@ -42,6 +43,14 @@
+ #include "pyGrid.h"
+ #include "pyutil.h"
+ 
++// define PyInt_* macros for Python 3.x
++#if PY_MAJOR_VERSION >= 3
++    #define PyInt_Check PyLong_Check
++    #define PyInt_FromLong PyLong_FromLong
++    #define PyInt_AsLong PyLong_AsLong
++    #define PyInt_Type PyLong_Type
++#endif
++
+ namespace py = boost::python;
+ 
+ 
+@@ -589,8 +598,12 @@ BOOST_PYTHON_MODULE(PY_OPENVDB_MODULE_NAME)
+ 
+ #ifdef PY_OPENVDB_USE_NUMPY
+     // Initialize NumPy.
++#if PY_MAJOR_VERSION >= 3
++    if (_import_array()) { };
++#else
+     import_array();
+ #endif
++#endif
+ 
+     using namespace openvdb::OPENVDB_VERSION_NAME;
+ 

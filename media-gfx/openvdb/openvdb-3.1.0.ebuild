@@ -47,9 +47,7 @@ src_prepare() {
 	local my_python_path=$(python_get_includedir)
 	local my_python_ver=${my_python_path##*/python}
 	
-	epatch "${FILESDIR}"/numpy_api.patch
-	epatch "${FILESDIR}"/pyOpenVDBModule.cc.patch
-	epatch "${FILESDIR}"/openvdb.patch
+	epatch "${FILESDIR}"/${P}-python3-compat.patch
 	epatch "${FILESDIR}"/use_svg.patch
 
 	use doc || sed 's|^DOXYGEN :=|#|;s|^EPYDOC :=|#|' -i Makefile  || die "sed 0 failed"
