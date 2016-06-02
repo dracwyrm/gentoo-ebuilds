@@ -1,0 +1,9 @@
+diff -Naur a/src/ptex/CMakeLists.txt b/src/ptex/CMakeLists.txt
+--- a/src/ptex/CMakeLists.txt	2016-06-02 03:58:46.593812119 +0930
++++ b/src/ptex/CMakeLists.txt	2016-06-02 03:59:11.932810482 +0930
+@@ -29,4 +29,5 @@
+         PtexInt.h
+         Ptexture.h
+         PtexUtils.h
++	PtexVersion.h
+         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

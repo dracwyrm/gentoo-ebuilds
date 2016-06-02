@@ -18,13 +18,4 @@ DEPEND=">=dev-util/cmake-2.8
 
 KEYWORDS="~amd64 ~x86"
 
-src_install() {
-	insinto /usr/include
-	doins "${WORKDIR}/${P}/src/ptex/PtexHalf.h"
-	doins "${WORKDIR}/${P}/src/ptex/PtexInt.h"
-	doins "${WORKDIR}/${P}/src/ptex/Ptexture.h"
-	doins "${WORKDIR}/${P}/src/ptex/PtexUtils.h"
-	doins "${WORKDIR}/${P}/src/ptex/PtexVersion.h"
-	
-	cmake-utils_src_install
-}
+PATCHES=( "${FILESDIR}/${P}-install-version-header.patch" )
