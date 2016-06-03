@@ -1,11 +1,11 @@
-# Copyright 2015 Julian Ospald <hasufell@posteo.de>
+# Copyright 2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
 EAPI=5
 PYTHON_COMPAT=( python3_5 )
 
-inherit multilib fdo-mime gnome2-utils cmake-utils eutils python-single-r1 versionator \
+inherit multilib fdo-mime gnome2-utils cmake-utils eutils python-single-r1 \
 	   flag-o-matic toolchain-funcs pax-utils check-reqs
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
@@ -17,12 +17,16 @@ SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
 IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +game-engine \
-            jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv player \
-            sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test tiff c++0x valgrind jack sdl"
+            jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv \
+            openvdb openvdb-compression player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
+            tiff c++0x valgrind jack sdl"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine )
 	cycles? ( boost openexr tiff openimageio )
+	colorio? ( boost )
+	openvdb? ( boost )
 	nls? ( boost )
+	openal? ( boost )
 	game-engine? ( boost )
 	^^ ( ffmpeg libav )"
 
@@ -61,6 +65,11 @@ RDEPEND="${PYTHON_DEPS}
 	openimageio? ( >=media-libs/openimageio-1.6.9 )
 	openexr? ( media-libs/ilmbase >=media-libs/openexr-2.2.0 )
 	opensubdiv? ( >=media-libs/opensubdiv-3.0.5 )
+	openvdb? ( 
+		>=media-gfx/openvdb-2.1.0[openvdb-compression=] 
+		>=dev-cpp/tbb-3.0
+	)
+	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
 	sdl? ( media-libs/libsdl2[sound,joystick] )
 	sndfile? ( media-libs/libsndfile )
 	tiff? ( media-libs/tiff:0 )
@@ -146,6 +155,8 @@ src_configure() {
 		$(cmake-utils_use_with openimageio OPENIMAGEIO)
 		$(cmake-utils_use_with openmp OPENMP)
 		$(cmake-utils_use_with opensubdiv OPENSUBDIV)
+		$(cmake-utils_use_with openvdb OPENVDB)
+		$(cmake-utils_use_with openvdb-compression OPENSUBDIV_BLOSC)
 		$(cmake-utils_use_with player PLAYER)
 		$(cmake-utils_use_with sdl SDL)
 		$(cmake-utils_use_with cpu_flags_x86_sse RAYOPTIMIZATION)
