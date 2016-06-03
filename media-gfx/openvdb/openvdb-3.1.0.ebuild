@@ -27,9 +27,12 @@ DEPEND="${RDEPEND}
 	media-libs/openexr
 	>=dev-cpp/tbb-3.0
 	>=dev-util/cppunit-1.10
-	doc? ( >=app-doc/doxygen-1.4.7
-	       >=dev-python/pdoc-0.2.4[${PYTHON_USEDEP}]
-	       >=app-text/ghostscript-gpl-8.70 )
+	doc? (
+		>=app-doc/doxygen-1.4.7
+		>=dev-python/pdoc-0.2.4[${PYTHON_USEDEP}]
+		>=dev-texlive/texlive-latex-2015
+		>=app-text/ghostscript-gpl-8.70 
+	)
 	X? ( media-libs/glfw )
 	dev-libs/jemalloc
 	dev-python/numpy[${PYTHON_USEDEP}]
@@ -51,9 +54,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/use_svg.patch
 
 	sed \
-	-e	"s|--html -o|--html --html-dir|" \
-	-e	"s|vdb_render vdb_test|vdb_render vdb_view vdb_test|" \
-	-i Makefile || die "sed failed"
+		-e	"s|--html -o|--html --html-dir|" \
+		-e	"s|vdb_render vdb_test|vdb_render vdb_view vdb_test|" \
+		-i Makefile || die "sed failed"
 }
 
 src_compile() {
@@ -90,24 +93,24 @@ src_compile() {
         fi
 
         emake install -s rpath=no shared=yes \
-	DESTDIR=${myinstalldir} \
-	HFS=${myprefix} \
-	HT=${myprefix} \
-	HDSO=${myprefix}/$(get_libdir) \
-	${myemakargs} \
-	LIBOPENVDB_RPATH= \
-	CPPUNIT_INCL_DIR=${myprefix}/include/cppunit \
-	CPPUNIT_LIB_DIR=${myprefix}/$(get_libdir) \
-	LOG4CPLUS_INCL_DIR=${myprefix}/include/log4cplus \
-	LOG4CPLUS_LIB_DIR=${myprefix}/$(get_libdir) \
-	PYTHON_VERSION=${EPYTHON/python/} \
-	PYTHON_INCL_DIR=$(python_get_includedir) \
-	PYCONFIG_INCL_DIR=$(python_get_includedir) \
-	PYTHON_LIB_DIR=$(python_get_library_path) \
-	PYTHON_LIB=$(python_get_LIBS) \
-	NUMPY_INCL_DIR=$(python_get_sitedir)/numpy/core/include/numpy \
-	BOOST_PYTHON_LIB_DIR=${myprefix}/$(get_libdir) \
-	BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/}
+		DESTDIR=${myinstalldir} \
+		HFS=${myprefix} \
+		HT=${myprefix} \
+		HDSO=${myprefix}/$(get_libdir) \
+		${myemakargs} \
+		LIBOPENVDB_RPATH= \
+		CPPUNIT_INCL_DIR=${myprefix}/include/cppunit \
+		CPPUNIT_LIB_DIR=${myprefix}/$(get_libdir) \
+		LOG4CPLUS_INCL_DIR=${myprefix}/include/log4cplus \
+		LOG4CPLUS_LIB_DIR=${myprefix}/$(get_libdir) \
+		PYTHON_VERSION=${EPYTHON/python/} \
+		PYTHON_INCL_DIR=$(python_get_includedir) \
+		PYCONFIG_INCL_DIR=$(python_get_includedir) \
+		PYTHON_LIB_DIR=$(python_get_library_path) \
+		PYTHON_LIB=$(python_get_LIBS) \
+		NUMPY_INCL_DIR=$(python_get_sitedir)/numpy/core/include/numpy \
+		BOOST_PYTHON_LIB_DIR=${myprefix}/$(get_libdir) \
+		BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/}
 }
 
 src_install() {
