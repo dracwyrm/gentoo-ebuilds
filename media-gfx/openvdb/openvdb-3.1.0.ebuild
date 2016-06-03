@@ -46,10 +46,6 @@ pkg_setup() {
 }
 
 src_prepare() {
-	#hack to get 3.5m, incase this changes in the future.
-	local my_python_path=$(python_get_includedir)
-	local my_python_ver=${my_python_path##*/python}
-	
 	epatch "${FILESDIR}"/${P}-python3-compat.patch
 	epatch "${FILESDIR}"/use_svg.patch
 
