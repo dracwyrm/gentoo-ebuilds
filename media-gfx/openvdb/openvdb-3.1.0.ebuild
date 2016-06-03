@@ -50,9 +50,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-python3-compat.patch
 	epatch "${FILESDIR}"/use_svg.patch
 
-	use doc || sed 's|^DOXYGEN :=|#|;s|^EPYDOC :=|#|' -i Makefile  || die "sed 0 failed"
 	sed \
-	-e	"s|:= epydoc|:= pdoc|" \
 	-e	"s|--html -o|--html --html-dir|" \
 	-e	"s|vdb_render vdb_test|vdb_render vdb_view vdb_test|" \
 	-i Makefile || die "sed failed"
@@ -60,40 +58,72 @@ src_prepare() {
 
 src_compile() {
 	local myprefix="${EPREFIX}/usr"
+	local myinstalldir=${WORKDIR}/install${myprefix}
 	local myemakargs=""
+	
+	#Hack because of shitty Makefile
+	mkdir -p ${myinstalldir}
 
 	if use X; then
-		myemakargs+="GLFW_INCL_DIR=\"${myprefix}/$(get_libdir)\" "
-		myemakargs+="GLFW_LIB_DIR=\"${myprefix}/$(get_libdir)\" "
+		myemakargs+="GLFW_INCL_DIR=${myprefix}/$(get_libdir) "
+		myemakargs+="GLFW_LIB_DIR=${myprefix}/$(get_libdir) "
 	else
-		myemakargs+="GLFW_INCL_DIR=\"\" "
-		myemakargs+="GLFW_LIB_DIR=\"\" "
-		myemakargs+="GLFW_LIB=\"\" "
-		myemakargs+="GLFW_MAJOR_VERSION=\"\" "
+		myemakargs+="GLFW_INCL_DIR= "
+		myemakargs+="GLFW_LIB_DIR= "
+		myemakargs+="GLFW_LIB= "
+		myemakargs+="GLFW_MAJOR_VERSION= "
 	fi
 
 	if use openvdb-compression; then
-		myemakargs+="BLOSC_INCL_DIR=\"${myprefix}/include\" "
-		myemakargs+="BLOSC_LIB_DIR=\"${myprefix}/$(get_libdir)\" "
-	fi
+		myemakargs+="BLOSC_INCL_DIR=${myprefix}/include "
+		myemakargs+="BLOSC_LIB_DIR=${myprefix}/$(get_libdir) "
+	else
+		myemakargs+="BLOSC_INCL_DIR= "
+		myemakargs+="BLOSC_LIB_DIR= "
+        fi
+	
+	if use doc; then
+		myemakargs+="EPYDOC=pdoc "
+	else
+		myemakargs+="EPYDOC= "
+		myemakargs+="DOXYGEN= "
+        fi
 
-	emake rpath=no shared=yes \
-	DESTDIR="${D}/${myprefix}" \
-	HFS="${myprefix}" \
-	HT="${myprefix}" \
-	HDSO="${myprefix}/$(get_libdir)" \
+        emake install -s rpath=no shared=yes \
+	DESTDIR=${myinstalldir} \
+	HFS=${myprefix} \
+	HT=${myprefix} \
+	HDSO=${myprefix}/$(get_libdir) \
 	${myemakargs} \
-	LIBOPENVDB_RPATH="" \
-	CPPUNIT_INCL_DIR="${myprefix}/include/cppunit" \
-	CPPUNIT_LIB_DIR="${myprefix}/$(get_libdir)" \
-	LOG4CPLUS_INCL_DIR="${myprefix}/include/log4cplus" \
-	LOG4CPLUS_LIB_DIR="${myprefix}/$(get_libdir)" \
-	PYTHON_VERSION="${EPYTHON/python/}" \
-	PYTHON_INCL_DIR="$(python_get_includedir)" \
-	PYCONFIG_INCL_DIR="$(python_get_includedir)" \
-	PYTHON_LIB_DIR="$(python_get_library_path)" \
-	PYTHON_LIB="$(python_get_LIBS)" \
-	NUMPY_INCL_DIR="$(python_get_sitedir)/numpy/core/include/numpy" \
-	BOOST_PYTHON_LIB_DIR="${myprefix}/$(get_libdir)" \
-	BOOST_PYTHON_LIB="-lboost_python-${EPYTHON/python/}"
+	LIBOPENVDB_RPATH= \
+	CPPUNIT_INCL_DIR=${myprefix}/include/cppunit \
+	CPPUNIT_LIB_DIR=${myprefix}/$(get_libdir) \
+	LOG4CPLUS_INCL_DIR=${myprefix}/include/log4cplus \
+	LOG4CPLUS_LIB_DIR=${myprefix}/$(get_libdir) \
+	PYTHON_VERSION=${EPYTHON/python/} \
+	PYTHON_INCL_DIR=$(python_get_includedir) \
+	PYCONFIG_INCL_DIR=$(python_get_includedir) \
+	PYTHON_LIB_DIR=$(python_get_library_path) \
+	PYTHON_LIB=$(python_get_LIBS) \
+	NUMPY_INCL_DIR=$(python_get_sitedir)/numpy/core/include/numpy \
+	BOOST_PYTHON_LIB_DIR=${myprefix}/$(get_libdir) \
+	BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/}
+}
+
+src_install() {
+	local myprefix="${EPREFIX}/usr"
+	local myinstalldir=${WORKDIR}/install${myprefix}
+
+	cd ${D}
+	
+	dodir usr
+	cp -r ${myinstalldir}/{bin,include,lib}/ usr/ || die "Move usr/* failed"
+	
+	dodir $(python_get_includedir)
+	cp ${myinstalldir}/python/include/python3.5/* ${D}$(python_get_includedir) || die "Copy includes failed"
+	
+	dodir $(python_get_sitedir)
+	cp ${myinstalldir}/python/lib/python3.5/* ${D}$(python_get_sitedir) || "Copy libraries failed"
+	
+	rm -r ${WORKDIR}/install || die "Remove temp install failed"
 }
