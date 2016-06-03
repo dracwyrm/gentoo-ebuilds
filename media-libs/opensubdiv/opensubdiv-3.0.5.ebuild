@@ -17,7 +17,7 @@ DEPEND=">=dev-util/cmake-2.8.6
 	>=media-libs/glew-1.9.0
 	>=media-libs/glfw-3.0.0
 	cuda? ( >=dev-util/nvidia-cuda-toolkit-4.0 )
-	tbb? ( >=dev-cpp/tbb-4.0 )
+	tbb? ( >=dev-util/tbb-4.0 )
 	ptex? ( >=media-libs/ptex-2.0 )
 	doc? ( dev-python/docutils app-doc/doxygen )
 	opencl? ( virtual/opencl )
@@ -29,6 +29,7 @@ S=${WORKDIR}/OpenSubdiv-${PV//./_}
 
 src_prepare() {
   epatch "${FILESDIR}"/${P}-fix-gpu-architecture.patch
+  epatch "${FILESDIR}"/${P}-skip-osd-regression.patch
   epatch "${FILESDIR}"/${P}-Improved-Ptex-configuration-and-DX-compatibility.patch
   cmake-utils_src_prepare
 }
