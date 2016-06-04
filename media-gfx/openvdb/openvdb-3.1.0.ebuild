@@ -48,6 +48,7 @@ pkg_setup() {
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-python3-compat.patch
 	epatch "${FILESDIR}"/use_svg.patch
+	epatch "${FILESDIR}"/${P}-change-python-module-install-locations-to-variables.patch
 
 	sed \
 		-e	"s|--html -o|--html --html-dir|" \
@@ -57,10 +58,11 @@ src_prepare() {
 
 src_compile() {
 	local myprefix="${EPREFIX}/usr"
-	local myinstalldir=${WORKDIR}/install${myprefix}
+	local myinstallbase="${WORKDIR}/install"
+	local myinstalldir="${myinstallbase}${myprefix}"
 	local myemakargs=""
 	
-	#Hack because of shitty Makefile
+	# Installing to a temp dir, because all targets install.
 	mkdir -p ${myinstalldir}
 
 	if use X; then
@@ -88,41 +90,29 @@ src_compile() {
 		myemakargs+="DOXYGEN= "
         fi
 
-        emake install -s rpath=no shared=yes \
-		DESTDIR=${myinstalldir} \
-		HFS=${myprefix} \
-		HT=${myprefix} \
-		HDSO=${myprefix}/$(get_libdir) \
+        emake install rpath=no shared=yes \
 		${myemakargs} \
-		LIBOPENVDB_RPATH= \
-		CPPUNIT_INCL_DIR=${myprefix}/include/cppunit \
-		CPPUNIT_LIB_DIR=${myprefix}/$(get_libdir) \
-		LOG4CPLUS_INCL_DIR=${myprefix}/include/log4cplus \
-		LOG4CPLUS_LIB_DIR=${myprefix}/$(get_libdir) \
-		PYTHON_VERSION=${EPYTHON/python/} \
-		PYTHON_INCL_DIR=$(python_get_includedir) \
-		PYCONFIG_INCL_DIR=$(python_get_includedir) \
-		PYTHON_LIB_DIR=$(python_get_library_path) \
-		PYTHON_LIB=$(python_get_LIBS) \
-		NUMPY_INCL_DIR=$(python_get_sitedir)/numpy/core/include/numpy \
-		BOOST_PYTHON_LIB_DIR=${myprefix}/$(get_libdir) \
-		BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/}
+                LIBOPENVDB_RPATH= \
+		DESTDIR="${myinstalldir}" \
+		HFS="${myprefix}" \
+		HT="${myprefix}" \
+		HDSO="${myprefix}/$(get_libdir)" \
+		CPPUNIT_INCL_DIR="${myprefix}/include/cppunit" \
+		CPPUNIT_LIB_DIR="${myprefix}/$(get_libdir)" \
+		LOG4CPLUS_INCL_DIR="${myprefix}/include/log4cplus" \
+		LOG4CPLUS_LIB_DIR"${myprefix}/$(get_libdir)" \
+		PYTHON_VERSION="${EPYTHON/python/}" \
+		PYTHON_INCL_DIR="$(python_get_includedir)" \
+		PYCONFIG_INCL_DIR="$(python_get_includedir)" \
+		PYTHON_LIB_DIR="$(python_get_library_path)" \
+		PYTHON_LIB="$(python_get_LIBS)" \
+		PYTHON_INSTALL_INCL_DIR="${myinstallbase}$(python_get_includedir)" \
+		PYTHON_INSTALL_LIB_DIR="${myinstallbase}$(python_get_sitedir)" \
+		NUMPY_INCL_DIR="$(python_get_sitedir)/numpy/core/include/numpy" \
+		BOOST_PYTHON_LIB_DIR="${myprefix}/$(get_libdir)" \
+		BOOST_PYTHON_LIB="-lboost_python-${EPYTHON/python/}"
 }
 
 src_install() {
-	local myprefix="${EPREFIX}/usr"
-	local myinstalldir=${WORKDIR}/install${myprefix}
-
-	cd ${D}
-	
-	dodir usr
-	cp -r ${myinstalldir}/{bin,include,lib}/ usr/ || die "Move usr/* failed"
-	
-	dodir $(python_get_includedir)
-	cp ${myinstalldir}/python/include/python3.5/* ${D}$(python_get_includedir) || die "Copy includes failed"
-	
-	dodir $(python_get_sitedir)
-	cp ${myinstalldir}/python/lib/python3.5/* ${D}$(python_get_sitedir) || "Copy libraries failed"
-	
-	rm -r ${WORKDIR}/install || die "Remove temp install failed"
+	doins -r "${WORKDIR}/install/*"
 }
