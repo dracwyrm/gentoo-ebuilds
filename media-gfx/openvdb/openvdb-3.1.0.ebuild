@@ -60,59 +60,61 @@ src_compile() {
 	local myprefix="${EPREFIX}/usr"
 	local myinstallbase="${WORKDIR}/install"
 	local myinstalldir="${myinstallbase}${myprefix}"
-	local myemakargs=""
+	local myemakeargs=""
 	
-	# Installing to a temp dir, because all targets install.
-	mkdir -p ${myinstalldir}
+	# So individule targets can be called without duplication
+	myemakeargs="
+		rpath=no shared=yes
+		LIBOPENVDB_RPATH= \
+		DESTDIR=\"${myinstalldir}\"
+		HFS=\"${myprefix}\"
+		HT=\"${myprefix}\"
+		HDSO=\"${myprefix}/$(get_libdir)\"
+		CPPUNIT_INCL_DIR=\"${myprefix}/include/cppunit\"
+		CPPUNIT_LIB_DIR=\"${myprefix}/$(get_libdir)\"
+		LOG4CPLUS_INCL_DIR=\"${myprefix}/include/log4cplus\"
+		LOG4CPLUS_LIB_DIR=\"${myprefix}/$(get_libdir)\"
+		PYTHON_VERSION=\"${EPYTHON/python/}\"
+		PYTHON_INCL_DIR=\"$(python_get_includedir)\"
+		PYCONFIG_INCL_DIR=\"$(python_get_includedir)\"
+		PYTHON_LIB_DIR=\"$(python_get_library_path)\"
+		PYTHON_LIB=\"$(python_get_LIBS)\"
+		PYTHON_INSTALL_INCL_DIR=\"${myinstallbase}$(python_get_includedir)\"
+		PYTHON_INSTALL_LIB_DIR=\"${myinstallbase}$(python_get_sitedir)\"
+		NUMPY_INCL_DIR=\"$(python_get_sitedir)/numpy/core/include/numpy\"
+		BOOST_PYTHON_LIB_DIR=\"${myprefix}/$(get_libdir)\"
+		BOOST_PYTHON_LIB=\"-lboost_python-${EPYTHON/python/}\" "
 
 	if use X; then
-		myemakargs+="GLFW_INCL_DIR=${myprefix}/$(get_libdir) "
-		myemakargs+="GLFW_LIB_DIR=${myprefix}/$(get_libdir) "
+		myemakeargs+="GLFW_INCL_DIR=\"${myprefix}/$(get_libdir)\" "
+		myemakeargs+="GLFW_LIB_DIR=\"${myprefix}/$(get_libdir)\" "
 	else
-		myemakargs+="GLFW_INCL_DIR= "
-		myemakargs+="GLFW_LIB_DIR= "
-		myemakargs+="GLFW_LIB= "
-		myemakargs+="GLFW_MAJOR_VERSION= "
+		myemakeargs+="GLFW_INCL_DIR= "
+		myemakeargs+="GLFW_LIB_DIR= "
+		myemakeargs+="GLFW_LIB= "
+		myemakeargs+="GLFW_MAJOR_VERSION= "
 	fi
 
 	if use openvdb-compression; then
-		myemakargs+="BLOSC_INCL_DIR=${myprefix}/include "
-		myemakargs+="BLOSC_LIB_DIR=${myprefix}/$(get_libdir) "
+		myemakeargs+="BLOSC_INCL_DIR=\"${myprefix}/include\" "
+		myemakeargs+="BLOSC_LIB_DIR=\"${myprefix}/$(get_libdir)\" "
 	else
-		myemakargs+="BLOSC_INCL_DIR= "
-		myemakargs+="BLOSC_LIB_DIR= "
-        fi
+		myemakeargs+="BLOSC_INCL_DIR= "
+		myemakeargs+="BLOSC_LIB_DIR= "
+	fi
 	
 	if use doc; then
-		myemakargs+="EPYDOC=pdoc "
+		myemakeargs+="EPYDOC=pdoc "
 	else
-		myemakargs+="EPYDOC= "
-		myemakargs+="DOXYGEN= "
-        fi
+		myemakeargs+="EPYDOC= "
+		myemakeargs+="DOXYGEN= "
+	fi
 
-        emake install rpath=no shared=yes \
-		${myemakargs} \
-                LIBOPENVDB_RPATH= \
-		DESTDIR="${myinstalldir}" \
-		HFS="${myprefix}" \
-		HT="${myprefix}" \
-		HDSO="${myprefix}/$(get_libdir)" \
-		CPPUNIT_INCL_DIR="${myprefix}/include/cppunit" \
-		CPPUNIT_LIB_DIR="${myprefix}/$(get_libdir)" \
-		LOG4CPLUS_INCL_DIR="${myprefix}/include/log4cplus" \
-		LOG4CPLUS_LIB_DIR"${myprefix}/$(get_libdir)" \
-		PYTHON_VERSION="${EPYTHON/python/}" \
-		PYTHON_INCL_DIR="$(python_get_includedir)" \
-		PYCONFIG_INCL_DIR="$(python_get_includedir)" \
-		PYTHON_LIB_DIR="$(python_get_library_path)" \
-		PYTHON_LIB="$(python_get_LIBS)" \
-		PYTHON_INSTALL_INCL_DIR="${myinstallbase}$(python_get_includedir)" \
-		PYTHON_INSTALL_LIB_DIR="${myinstallbase}$(python_get_sitedir)" \
-		NUMPY_INCL_DIR="$(python_get_sitedir)/numpy/core/include/numpy" \
-		BOOST_PYTHON_LIB_DIR="${myprefix}/$(get_libdir)" \
-		BOOST_PYTHON_LIB="-lboost_python-${EPYTHON/python/}"
+	# Installing to a temp dir, because all targets install.
+	mkdir -p ${myinstalldir}
+	emake install ${myemakeargs}
 }
 
 src_install() {
-	doins -r "${WORKDIR}/install/*"
+	doins -r ${WORKDIR}/install/*
 }
