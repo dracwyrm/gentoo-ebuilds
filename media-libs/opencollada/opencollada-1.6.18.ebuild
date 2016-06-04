@@ -4,7 +4,7 @@
 
 EAPI=6
 
-inherit versionator eutils multilib cmake-utils
+inherit eutils multilib cmake-utils
 
 DESCRIPTION="Stream based read/write library for COLLADA files"
 HOMEPAGE="http://www.opencollada.org/"
