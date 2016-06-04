@@ -1,11 +1,11 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $id$
 
-EAPI="5"
+EAPI="6"
 PYTHON_COMPAT=( python3_5 )
 
-inherit eutils python-single-r1
+inherit eutils multilib python-single-r1
 
 DESCRIPTION="Libs for the efficient manipulation of volumetric data"
 HOMEPAGE="http://www.openvdb.org"
@@ -49,6 +49,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-python3-compat.patch
 	epatch "${FILESDIR}"/use_svg.patch
 	epatch "${FILESDIR}"/${P}-change-python-module-install-locations-to-variables.patch
+	
+	eapply_user
 
 	sed \
 		-e	"s|--html -o|--html --html-dir|" \
@@ -111,10 +113,10 @@ src_compile() {
 	fi
 
 	# Installing to a temp dir, because all targets install.
-	mkdir -p ${myinstalldir} || die "mkdir failed"
+	mkdir -p "${myinstalldir}" || die "mkdir failed"
 	emake install ${myemakeargs}
 }
 
 src_install() {
-	doins -r ${WORKDIR}/install/*
+	doins -r "${WORKDIR}"/install/*
 }

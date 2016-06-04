@@ -1,8 +1,8 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 inherit versionator eutils multilib cmake-utils
 
@@ -43,6 +43,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-1.2.2-soversion.patch
 	epatch "${FILESDIR}"/${PN}-1.2.2-no-undefined.patch
 	epatch "${FILESDIR}"/${PN}-1.2.2-libdir.patch
+	
+	# For EAPI v6
+	eapply_user
 
 	rm -R Externals/{expat,lib3ds,LibXML,pcre,zlib,zziplib} || die
 	ewarn "$(echo "Remaining bundled dependencies:";
@@ -54,16 +57,16 @@ src_prepare() {
 }
 
 src_configure() {
-	local mycmakeargs=" -DUSE_SHARED=ON -DUSE_STATIC=OFF"
+	local mycmakeargs=(-DUSE_SHARED=ON -DUSE_STATIC=OFF)
 
 	# Master CMakeLists.txt says "EXPAT support not implemented"
 	# Something like "set(LIBEXPAT_LIBRARIES expat)" is missing to make it build
 	use expat \
-		&& mycmakeargs+=' -DUSE_EXPAT=ON -DUSE_LIBXML=OFF' \
-		|| mycmakeargs+=' -DUSE_EXPAT=OFF -DUSE_LIBXML=ON'
+		&& mycmakeargs+=(-DUSE_EXPAT=ON -DUSE_LIBXML=OFF) \
+		|| mycmakeargs+=(-DUSE_EXPAT=OFF -DUSE_LIBXML=ON)
 
         # Seems like the Khronos Group hasnt invented the SOVERSION yet.
-	mycmakeargs+=" -Dsoversion=${MY_SOVERSION}"
+	mycmakeargs+=(-Dsoversion=${MY_SOVERSION})
 	
 	cmake-utils_src_configure
 }

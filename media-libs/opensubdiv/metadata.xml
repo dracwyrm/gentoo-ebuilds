@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer restrict="&gt;=media-libs/opensubdiv-3.0.5" type="person">
+		<email>j.scruggs@gmail.com</email>
+		<name>Jonathan Scruggs</name>
+		<description>Proxy maintainer</description>
+        </maintainer>
+	<maintainer restrict="&gt;=media-libs/opensubdiv-3.0.5" type="person">
+		<email>agrigo2001@yahoo.com.au</email>
+		<name>Adrian</name>
+		<description>Proxy maintainer</description>
+	</maintainer>
+	<longdescription>
+		An Open-Source subdivision surface library.
+	</longdescription>
+	<use>
+		<flag name="ptex">
+			Adds support for faster per-face texture mapping through
+			<pkg>media-libs/ptex</pkg>.
+		</flag>
+	</use>
+</pkgmetadata>

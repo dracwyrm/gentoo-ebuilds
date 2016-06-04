@@ -1,8 +1,8 @@
-# Copyright 2016 Adrian Grigo <agrigo2001@yahoo.com.au>
+# Copyright 2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 inherit eutils cmake-utils
 
@@ -11,9 +11,9 @@ HOMEPAGE="http://ptex.us/"
 SRC_URI="http://github.com/wdas/ptex/archive/v${PV}.zip -> ${P}.zip"
 LICENSE="PTEX"
 SLOT="0"
-DEPEND=">=dev-util/cmake-2.8
-	app-arch/unzip
-	sys-libs/zlib
+RDEPEND="app-arch/unzip
+	sys-libs/zlib"
+DEPEND="${RDEPEND}
 	app-doc/doxygen"
 
 KEYWORDS="~amd64 ~x86"

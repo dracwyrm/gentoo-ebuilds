@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 PYTHON_COMPAT=( python3_5 )
 
 inherit multilib fdo-mime gnome2-utils cmake-utils eutils python-single-r1 \
@@ -17,9 +17,9 @@ SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
 IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +game-engine \
-            jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv \
-            openvdb openvdb-compression player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
-            tiff c++0x valgrind jack sdl"
+      jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv \
+      openvdb openvdb-compression player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
+      tiff c++0x valgrind jack sdl"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine )
 	cycles? ( boost openexr tiff openimageio )
@@ -66,7 +66,7 @@ RDEPEND="${PYTHON_DEPS}
 	openexr? ( media-libs/ilmbase >=media-libs/openexr-2.2.0 )
 	opensubdiv? ( >=media-libs/opensubdiv-3.0.5 )
 	openvdb? ( 
-		>=media-gfx/openvdb-2.1.0[openvdb-compression=] 
+		>=media-gfx/openvdb-2.1.0[${PYTHON_USEDEP},openvdb-compression=] 
 		>=dev-cpp/tbb-3.0
 	)
 	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
@@ -104,6 +104,8 @@ src_prepare() {
 	       "${FILESDIR}"/${PN}-2.68-fix-install-rules.patch \
 	       "${FILESDIR}"/${PN}-2.77-sse2.patch \
 	       "${FILESDIR}"/${PN}-2.77-C++0x-build-fix.patch
+	       
+        eapply_user
 
 	# we don't want static glew, but it's scattered across
 	# thousand files
@@ -132,41 +134,41 @@ src_configure() {
 		-DWITH_SYSTEM_OPENJPEG=ON
 		-DWITH_SYSTEM_EIGEN3=ON
 		-DWITH_SYSTEM_LZO=ON
-		$(cmake-utils_use_with boost BOOST)
-		$(cmake-utils_use_with bullet BULLET)
-		$(cmake-utils_use_with ffmpeg CODEC_FFMPEG)
-		$(cmake-utils_use_with sndfile CODEC_SNDFILE)
-		$(cmake-utils_use_with c++0x CPP11)
-		$(cmake-utils_use_with cycles CYCLES)
-		$(cmake-utils_use_with fftw FFTW3)
-		$(cmake-utils_use_with game-engine GAMEENGINE)
-		$(cmake-utils_use_with dds IMAGE_DDS)
-		$(cmake-utils_use_with openexr IMAGE_OPENEXR)
-		$(cmake-utils_use_with jpeg2k IMAGE_OPENJPEG)
-		$(cmake-utils_use_with tiff IMAGE_TIFF)
-		$(cmake-utils_use_with ndof INPUT_NDOF)
-		$(cmake-utils_use_with nls INTERNATIONAL)
-		$(cmake-utils_use_with jack JACK)
-		$(cmake-utils_use_with elbeem MOD_FLUID)
-		$(cmake-utils_use_with fftw MOD_OCEANSIM)
-		$(cmake-utils_use_with openal OPENAL)
-		$(cmake-utils_use_with colorio OPENCOLORIO)
-		$(cmake-utils_use_with collada OPENCOLLADA)
-		$(cmake-utils_use_with openimageio OPENIMAGEIO)
-		$(cmake-utils_use_with openmp OPENMP)
-		$(cmake-utils_use_with opensubdiv OPENSUBDIV)
-		$(cmake-utils_use_with openvdb OPENVDB)
-		$(cmake-utils_use_with openvdb-compression OPENSUBDIV_BLOSC)
-		$(cmake-utils_use_with player PLAYER)
-		$(cmake-utils_use_with sdl SDL)
-		$(cmake-utils_use_with cpu_flags_x86_sse RAYOPTIMIZATION)
-		$(cmake-utils_use_with cpu_flags_x86_sse2 SSE2)
-		$(cmake-utils_use_with debug CXX_GUARDEDALLOC)
-		$(cmake-utils_use_with debug ASSERT_ABORT)
-		$(cmake-utils_use_with test GTESTS)
-		$(cmake-utils_use_with man DOC_MANPAGE)
-		$(camke-utils_use_with jemalloc MEM_JEMALLOC)
-		$(cmake-utils_use_with valgrind MEM_VALGRIND)
+		-DWITH_BOOST=$(usex boost ON OFF )
+		-DWITH_BULLET=$(usex bullet ON OFF )
+		-DWITH_CODEC_FFMPEG=$(usex ffmpeg ON OFF )
+		-DWITH_CODEC_SNDFILE=$(usex sndfile ON OFF )
+		-DWITH_CPP11=$(usex c++0x ON OFF )
+		-DWITH_CYCLES=$(usex cycles ON OFF )
+		-DWITH_FFTW3=$(usex fftw ON OFF )
+		-DWITH_GAMEENGINE=$(usex game-engine ON OFF )
+		-DWITH_IMAGE_DDS=$(usex dds ON OFF )
+		-DWITH_IMAGE_OPENEXR=$(usex openexr ON OFF )
+		-DWITH_IMAGE_OPENJPEG=$(usex jpeg2k ON OFF )
+		-DWITH_IMAGE_TIFF=$(usex tiff ON OFF )
+		-DWITH_INPUT_NDOF=$(usex ndof ON OFF )
+		-DWITH_INTERNATIONAL=$(usex nls ON OFF )
+		-DWITH_JACK=$(usex jack ON OFF )
+		-DWITH_MOD_FLUID=$(usex elbeem ON OFF )
+		-DWITH_MOD_OCEANSIM=$(usex fftw ON OFF )
+		-DWITH_OPENAL=$(usex openal ON OFF )
+		-DWITH_OPENCOLORIO=$(usex colorio ON OFF )
+		-DWITH_OPENCOLLADA=$(usex collada ON OFF )
+		-DWITH_OPENIMAGEIO=$(usex openimageio ON OFF )
+		-DWITH_OPENMP=$(usex openmp ON OFF )
+		-DWITH_OPENSUBDIV=$(usex opensubdiv ON OFF )
+		-DWITH_OPENVDB=$(usex openvdb ON OFF )
+		-DWITH_OPENSUBDIV_BLOSC=$(usex openvdb-compression ON OFF )
+		-DWITH_PLAYER=$(usex player ON OFF )
+		-DWITH_SDL=$(usex sdl ON OFF )
+		-DWITH_RAYOPTIMIZATION=$(usex cpu_flags_x86_sse ON OFF )
+		-DWITH_SSE2=$(usex cpu_flags_x86_sse2 ON OFF )
+		-DWITH_CXX_GUARDEDALLOC=$(usex debug ON OFF )
+		-DWITH_ASSERT_ABORT=$(usex debug ON OFF )
+		-DWITH_GTESTS=$(usex test ON OFF )
+		-DWITH_DOC_MANPAGE=$(usex man ON OFF)
+		-DWITH_MEM_JEMALLOC=$(usex jemalloc ON OFF )
+		-DWITH_MEM_VALGRIND=$(usex valgrind ON OFF )
 	)
 	cmake-utils_src_configure
 }
