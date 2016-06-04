@@ -111,7 +111,7 @@ src_compile() {
 	fi
 
 	# Installing to a temp dir, because all targets install.
-	mkdir -p ${myinstalldir}
+	mkdir -p ${myinstalldir} || die "mkdir failed"
 	emake install ${myemakeargs}
 }
 
