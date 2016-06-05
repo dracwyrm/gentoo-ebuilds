@@ -3,9 +3,9 @@
 # $id$
 
 EAPI="6"
-PYTHON_COMPAT=( python3_5 )
+PYTHON_COMPAT=( python{2_7,3_4,3_5} )
 
-inherit eutils multilib python-single-r1
+inherit eutils multilib python-r1
 
 DESCRIPTION="Libs for the efficient manipulation of volumetric data"
 HOMEPAGE="http://www.openvdb.org"
@@ -41,14 +41,11 @@ DEPEND="${RDEPEND}
 
 S="${WORKDIR}"/openvdb
 
-pkg_setup() {
-	python-single-r1_pkg_setup
-}
-
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-python3-compat.patch
 	epatch "${FILESDIR}"/use_svg.patch
 	epatch "${FILESDIR}"/${P}-change-python-module-install-locations-to-variables.patch
+	epatch "${FILESDIR}"/${P}-install-python-mod.patch
 	
 	eapply_user
 
@@ -58,9 +55,39 @@ src_prepare() {
 		-i Makefile || die "sed failed"
 }
 
+python_module_compile() {
+echo "Inside python_module_compile"
+echo "EPYTHON=${EPYTHON}"
+echo "python_get_includedir=$(python_get_includedir)"
+echo ""
+echo ""
+	local mypythonargs=""
+
+	if use doc; then
+		mypythonargs+="pydoc EPYDOC=pdoc "
+	else
+		mypythonargs+="EPYDOC= "
+	fi
+	mypythonargs="
+		PYTHON_VERSION=${EPYTHON/python/}
+		PYTHON_INCL_DIR=\"$(python_get_includedir)\"
+		PYCONFIG_INCL_DIR=\"$(python_get_includedir)\"
+		PYTHON_LIB_DIR=\"$(python_get_library_path)\"
+		PYTHON_LIB=\"$(python_get_LIBS)\"
+		PYTHON_INSTALL_INCL_DIR=\"${myinstallbase}$(python_get_includedir)\"
+		PYTHON_INSTALL_LIB_DIR=\"${myinstallbase}$(python_get_sitedir)\"
+		NUMPY_INCL_DIR=\"$(python_get_sitedir)\"/numpy/core/include/numpy
+		BOOST_PYTHON_LIB_DIR=\"${myprefix}/$(get_libdir)\"
+		BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/} "
+
+        einfo "Compiling module for ${EPYTHON}."
+	emake clean
+	emake python ${mypythonargs} ${myemakeargs}
+}
+
 src_compile() {
-	local myprefix="${EPREFIX}/usr"
-	local myinstallbase="${WORKDIR}/install"
+	local myprefix="${EPREFIX}"/usr
+	local myinstallbase="${WORKDIR}"/install
 	local myinstalldir="${myinstallbase}${myprefix}"
 	local myemakeargs=""
 	
@@ -72,20 +99,11 @@ src_compile() {
 		HFS=\"${myprefix}\"
 		HT=\"${myprefix}\"
 		HDSO=\"${myprefix}/$(get_libdir)\"
-		CPPUNIT_INCL_DIR=\"${myprefix}/include/cppunit\"
+		CPPUNIT_INCL_DIR=\"${myprefix}\"/include/cppunit
 		CPPUNIT_LIB_DIR=\"${myprefix}/$(get_libdir)\"
-		LOG4CPLUS_INCL_DIR=\"${myprefix}/include/log4cplus\"
-		LOG4CPLUS_LIB_DIR=\"${myprefix}/$(get_libdir)\"
-		PYTHON_VERSION=\"${EPYTHON/python/}\"
-		PYTHON_INCL_DIR=\"$(python_get_includedir)\"
-		PYCONFIG_INCL_DIR=\"$(python_get_includedir)\"
-		PYTHON_LIB_DIR=\"$(python_get_library_path)\"
-		PYTHON_LIB=\"$(python_get_LIBS)\"
-		PYTHON_INSTALL_INCL_DIR=\"${myinstallbase}$(python_get_includedir)\"
-		PYTHON_INSTALL_LIB_DIR=\"${myinstallbase}$(python_get_sitedir)\"
-		NUMPY_INCL_DIR=\"$(python_get_sitedir)/numpy/core/include/numpy\"
-		BOOST_PYTHON_LIB_DIR=\"${myprefix}/$(get_libdir)\"
-		BOOST_PYTHON_LIB=\"-lboost_python-${EPYTHON/python/}\" "
+		LOG4CPLUS_INCL_DIR=\"${myprefix}\"/include/log4cplus
+		LOG4CPLUS_LIB_DIR=\"${myprefix}/$(get_libdir)\" "
+
 
 	if use X; then
 		myemakeargs+="GLFW_INCL_DIR=\"${myprefix}/$(get_libdir)\" "
@@ -98,25 +116,39 @@ src_compile() {
 	fi
 
 	if use openvdb-compression; then
-		myemakeargs+="BLOSC_INCL_DIR=\"${myprefix}/include\" "
+		myemakeargs+="BLOSC_INCL_DIR=\"${myprefix}\"/include "
 		myemakeargs+="BLOSC_LIB_DIR=\"${myprefix}/$(get_libdir)\" "
 	else
 		myemakeargs+="BLOSC_INCL_DIR= "
 		myemakeargs+="BLOSC_LIB_DIR= "
 	fi
 	
-	if use doc; then
-		myemakeargs+="EPYDOC=pdoc "
-	else
-		myemakeargs+="EPYDOC= "
+	if use !doc; then
 		myemakeargs+="DOXYGEN= "
 	fi
+	
+	# Create python modules for each version selected
+	python_foreach_impl python_module_compile
 
 	# Installing to a temp dir, because all targets install.
+	einfo "Compiling the main library."
 	mkdir -p "${myinstalldir}" || die "mkdir failed"
-	emake install ${myemakeargs}
+	emake install ${myemakeargs} \
+		PYTHON_VERSION=${EPYTHON/python/} \
+		PYTHON_INCL_DIR="$(python_get_includedir)" \
+		PYCONFIG_INCL_DIR="$(python_get_includedir)" \
+		PYTHON_LIB_DIR="$(python_get_library_path)" \
+		PYTHON_LIB="$(python_get_LIBS)" \
+		PYTHON_INSTALL_INCL_DIR="${myinstallbase}$(python_get_includedir)" \
+		PYTHON_INSTALL_LIB_DIR="${myinstallbase}$(python_get_sitedir)" \
+		NUMPY_INCL_DIR="$(python_get_sitedir)"/numpy/core/include/numpy \
+		BOOST_PYTHON_LIB_DIR="${myprefix}/$(get_libdir)" \
+		BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/}
+die "REMOVE THIS AS ITS FOR TESTING"
 }
 
 src_install() {
+	einfo "Copying files to the image directory."
 	doins -r "${WORKDIR}"/install/*
+	einfo "Installing files to the system."
 }
