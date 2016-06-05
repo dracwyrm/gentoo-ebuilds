@@ -1,10 +1,10 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
 EAPI=6
 
-inherit multilib cmake-utils
+inherit multilib cmake-utils git-r3
 
 DESCRIPTION="Stream based read/write library for COLLADA files"
 HOMEPAGE="http://www.opencollada.org/"
@@ -16,8 +16,7 @@ MY_SOVERSION="1.6"
 
 SLOT="0"
 
-SRC_URI="https://github.com/KhronosGroup/OpenCOLLADA/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-KEYWORDS="~amd64 ~ppc64 ~x86"
+EGIT_REPO_URI="https://github.com/KhronosGroup/OpenCOLLADA.git"
 
 RDEPEND="dev-libs/libpcre
 	dev-libs/zziplib
@@ -27,7 +26,6 @@ RDEPEND="dev-libs/libpcre
 	!expat? ( dev-libs/libxml2 )"
 DEPEND="${RDEPEND}"
 
-S=${WORKDIR}/OpenCOLLADA-${PV}
 BUILD_DIR="${S}"/build
 
 PATCHES=(
