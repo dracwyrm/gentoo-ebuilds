@@ -66,7 +66,6 @@ src_configure() {
 src_install() {
 	cmake-utils_src_install
 
-	dodir /etc/env.d
 	echo "LDPATH=/usr/$(get_libdir)/opencollada" > "${T}"/99${PN}; \
             doenvd ${T}/99${PN}
 
