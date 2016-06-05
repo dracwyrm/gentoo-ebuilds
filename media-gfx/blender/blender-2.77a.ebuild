@@ -1,11 +1,11 @@
-# Copyright 2016 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
 EAPI=6
 PYTHON_COMPAT=( python3_5 )
 
-inherit multilib fdo-mime gnome2-utils cmake-utils eutils python-single-r1 \
+inherit fdo-mime gnome2-utils cmake-utils python-single-r1 \
 	   flag-o-matic toolchain-funcs pax-utils check-reqs
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
@@ -20,15 +20,48 @@ IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +
       jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv \
       openvdb openvdb-compression player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
       tiff c++0x valgrind jack sdl"
+
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
-	player? ( game-engine )
-	cycles? ( boost openexr tiff openimageio )
-	colorio? ( boost )
-	openvdb? ( boost )
-	nls? ( boost )
-	openal? ( boost )
+	player?      ( game-engine )
+	cycles?      ( boost openexr tiff openimageio )
+	colorio?     ( boost )
+	openvdb?     ( boost )
+	nls?         ( boost )
+	openal?      ( boost )
 	game-engine? ( boost )
 	^^ ( ffmpeg libav )"
+
+OPTIONAL_DEPENDS="
+	boost?               ( >=dev-libs/boost-1.60[nls?,threads(+)] )
+	collada?             ( >=media-libs/opencollada-1.6.18 )
+	colorio?             ( >=media-libs/opencolorio-1.0.9-r2 )
+	ffmpeg?              ( >=media-video/ffmpeg-2.8.6:0=[x264,mp3,encode,theora,jpeg2k?] )
+	libav?               ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
+	fftw?                ( sci-libs/fftw:3.0 )
+	jack?                ( media-sound/jack-audio-connection-kit )
+	jemalloc?            ( dev-libs/jemalloc )
+	jpeg2k? 	     ( media-libs/openjpeg:0 )
+	ndof?                (
+				app-misc/spacenavd
+				dev-libs/libspnav
+	  )
+	nls?                 ( virtual/libiconv )
+	openal?              ( >=media-libs/openal-1.6.372 )
+	openimageio?         ( >=media-libs/openimageio-1.6.9 )
+	openexr?             ( 
+				media-libs/ilmbase
+				>=media-libs/openexr-2.2.0
+	  )
+	opensubdiv?	     ( >=media-libs/opensubdiv-3.0.5 )
+	openvdb?	     ( 
+				>=media-gfx/openvdb-2.1.0[${PYTHON_USEDEP},openvdb-compression=] 
+				>=dev-cpp/tbb-3.0
+	  )
+	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
+	sdl?                 ( media-libs/libsdl2[sound,joystick] )
+	sndfile?             ( media-libs/libsndfile )
+	tiff?                ( media-libs/tiff:0 )
+	valgrind?            ( dev-util/valgrind )"
 
 RDEPEND="${PYTHON_DEPS}
 	dev-libs/lzo:2
@@ -47,34 +80,8 @@ RDEPEND="${PYTHON_DEPS}
 	x11-libs/libX11
 	x11-libs/libXi
 	x11-libs/libXxf86vm
-	boost? ( >=dev-libs/boost-1.60[nls?,threads(+)] )
-	collada? ( >=media-libs/opencollada-1.6.18 )
-	colorio? ( >=media-libs/opencolorio-1.0.9-r2 )
-	ffmpeg? ( >=media-video/ffmpeg-2.8.6:0=[x264,mp3,encode,theora,jpeg2k?] )
-	libav? ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
-	fftw? ( sci-libs/fftw:3.0 )
-	jack? ( media-sound/jack-audio-connection-kit )
-	jemalloc? ( dev-libs/jemalloc )
-	jpeg2k? ( media-libs/openjpeg:0 )
-	ndof? (
-		app-misc/spacenavd
-		dev-libs/libspnav
-	)
-	nls? ( virtual/libiconv )
-	openal? ( >=media-libs/openal-1.6.372 )
-	openimageio? ( >=media-libs/openimageio-1.6.9 )
-	openexr? ( media-libs/ilmbase >=media-libs/openexr-2.2.0 )
-	opensubdiv? ( >=media-libs/opensubdiv-3.0.5 )
-	openvdb? ( 
-		>=media-gfx/openvdb-2.1.0[${PYTHON_USEDEP},openvdb-compression=] 
-		>=dev-cpp/tbb-3.0
-	)
-	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
-	sdl? ( media-libs/libsdl2[sound,joystick] )
-	sndfile? ( media-libs/libsndfile )
-	tiff? ( media-libs/tiff:0 )
-	valgrind? ( dev-util/valgrind )
-"
+	${OPTIONAL_DEPENDS}"
+
 DEPEND="${RDEPEND}
 	>=dev-cpp/eigen-3.2.8:3
 	doc? (
@@ -82,6 +89,13 @@ DEPEND="${RDEPEND}
 		dev-python/sphinx[latex]
 	)
 	nls? ( sys-devel/gettext )"
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-2.68-doxyfile.patch
+	"${FILESDIR}"/${PN}-2.68-fix-install-rules.patch
+	"${FILESDIR}"/${PN}-2.77-sse2.patch
+	"${FILESDIR}"/${PN}-2.77-C++0x-build-fix.patch
+)
 
 pkg_pretend() {
 	if use openmp && ! tc-has-openmp; then
@@ -100,12 +114,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}"/${PN}-2.68-doxyfile.patch \
-	       "${FILESDIR}"/${PN}-2.68-fix-install-rules.patch \
-	       "${FILESDIR}"/${PN}-2.77-sse2.patch \
-	       "${FILESDIR}"/${PN}-2.77-C++0x-build-fix.patch
-	       
-        eapply_user
+	default
 
 	# we don't want static glew, but it's scattered across
 	# thousand files
@@ -216,7 +225,7 @@ src_install() {
 		dohtml -r "${CMAKE_USE_DIR}"/doc/doxygen/html/*
 	fi
 
-	# fucked up cmake will relink binary for no reason
+	# CMake will relink binary for no reason
 	emake -C "${CMAKE_BUILD_DIR}" DESTDIR="${D}" install/fast
 
 	# fix doc installdir

@@ -1,6 +1,7 @@
---- a/regression/CMakeLists.txt 2016-06-02 02:05:51.378249805 +0930
-+++ b/regression/CMakeLists.txt 2016-06-02 02:06:20.605247916 +0930
-@@ -32,30 +32,4 @@
+diff -purN a/regression/CMakeLists.txt b/regression/CMakeLists.txt
+--- a/regression/CMakeLists.txt	2016-03-25 22:15:29.000000000 +0000
++++ b/regression/CMakeLists.txt	2016-06-05 14:09:19.202849569 +0100
+@@ -32,30 +32,4 @@ if (NOT NO_REGRESSION)
  
      add_subdirectory(far_perf)
  
@@ -31,4 +32,3 @@
 -    endif()
 -
  endif()
-

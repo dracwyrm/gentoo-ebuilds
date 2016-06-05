@@ -1,7 +1,7 @@
-diff -Naur a/opensubdiv/CMakeLists.txt b/opensubdiv/CMakeLists.txt
---- a/opensubdiv/CMakeLists.txt	2016-05-30 23:30:07.196057673 +0930
-+++ b/opensubdiv/CMakeLists.txt	2016-05-30 23:32:01.721049102 +0930
-@@ -106,7 +106,7 @@
+diff -purN a/opensubdiv/CMakeLists.txt b/opensubdiv/CMakeLists.txt
+--- a/opensubdiv/CMakeLists.txt	2016-03-25 22:15:29.000000000 +0000
++++ b/opensubdiv/CMakeLists.txt	2016-06-05 14:18:18.644769355 +0100
+@@ -106,7 +106,7 @@ if (NOT NO_LIB)
      if( CUDA_FOUND )
          include_directories( "${CUDA_INCLUDE_DIRS}" )
          if (UNIX)
@@ -10,10 +10,10 @@ diff -Naur a/opensubdiv/CMakeLists.txt b/opensubdiv/CMakeLists.txt
          endif()
      endif()
  
-diff -Naur a/opensubdiv/osd/CMakeLists.txt b/opensubdiv/osd/CMakeLists.txt
---- a/opensubdiv/osd/CMakeLists.txt	2016-05-30 23:31:01.981053573 +0930
-+++ b/opensubdiv/osd/CMakeLists.txt	2016-05-30 23:30:09.242057520 +0930
-@@ -292,7 +292,7 @@
+diff -purN a/opensubdiv/osd/CMakeLists.txt b/opensubdiv/osd/CMakeLists.txt
+--- a/opensubdiv/osd/CMakeLists.txt	2016-03-25 22:15:29.000000000 +0000
++++ b/opensubdiv/osd/CMakeLists.txt	2016-06-05 14:18:43.686526026 +0100
+@@ -292,7 +292,7 @@ if( CUDA_FOUND )
      endif()
  
      if (UNIX)
