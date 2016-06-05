@@ -4,7 +4,7 @@
 
 EAPI=6
 
-inherit eutils multilib cmake-utils
+inherit multilib cmake-utils
 
 DESCRIPTION="Stream based read/write library for COLLADA files"
 HOMEPAGE="http://www.opencollada.org/"
@@ -33,19 +33,19 @@ DEPEND="${RDEPEND}
 S=${WORKDIR}/OpenCOLLADA-${PV}
 BUILD_DIR="${S}"/build
 
+PATCHES=(
+	"${FILESDIR}"/${PN}-0_p864-expat.patch
+	"${FILESDIR}"/${PN}-1.2.2-soversion.patch
+	"${FILESDIR}"/${PN}-1.2.2-no-undefined.patch
+	"${FILESDIR}"/${PN}-1.2.2-libdir.patch
+)
+
 src_prepare() {
 
 	# Remove some bundled dependencies
 	edos2unix CMakeLists.txt || die
 
-	epatch "${FILESDIR}"/${PN}-0_p864-expat.patch
-
-	epatch "${FILESDIR}"/${PN}-1.2.2-soversion.patch
-	epatch "${FILESDIR}"/${PN}-1.2.2-no-undefined.patch
-	epatch "${FILESDIR}"/${PN}-1.2.2-libdir.patch
-	
-	# For EAPI v6
-	eapply_user
+	default
 
 	rm -R Externals/{expat,lib3ds,LibXML,pcre,zlib,zziplib} || die
 	ewarn "$(echo "Remaining bundled dependencies:";
