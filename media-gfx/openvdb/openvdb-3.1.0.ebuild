@@ -128,6 +128,7 @@ src_compile() {
 
 	# Installing to a temp dir, because all targets install.
 	einfo "Compiling the main library."
+	emake clean
 	mkdir -p "${myinstalldir}" || die "mkdir failed"
 	emake install ${myemakeargs} \
 		PYTHON_VERSION= \

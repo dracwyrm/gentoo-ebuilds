@@ -1,7 +1,7 @@
-diff --git a/openvdb/Makefile b/openvdb/Makefile
+diff --git a/Makefile b/Makefile
 index 6cc9620..f745115 100644
---- a/openvdb/Makefile
-+++ b/openvdb/Makefile
+--- a/Makefile
++++ b/Makefile
 @@ -158,6 +158,9 @@ PYCONFIG_INCL_DIR := $(PYTHON_INCL_DIR)
  # The directory containing libpython
  PYTHON_LIB_DIR := $(HFS)/python/lib
