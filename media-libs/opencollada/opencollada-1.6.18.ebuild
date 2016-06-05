@@ -34,7 +34,6 @@ RDEPEND="dev-libs/libpcre
 	!expat? ( dev-libs/libxml2 )"
 DEPEND="${RDEPEND}"
 
-
 BUILD_DIR="${S}"/build
 
 PATCHES=(
