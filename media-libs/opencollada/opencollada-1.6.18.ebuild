@@ -9,7 +9,7 @@ inherit multilib cmake-utils
 DESCRIPTION="Stream based read/write library for COLLADA files"
 HOMEPAGE="http://www.opencollada.org/"
 LICENSE="MIT"
-IUSE="expat"
+IUSE="expat static-libs"
 
 # seems like the Khronos Group hasnt invented the SOVERSION yet
 MY_SOVERSION="1.6"
@@ -17,18 +17,15 @@ MY_SOVERSION="1.6"
 SLOT="0"
 
 SRC_URI="https://github.com/KhronosGroup/OpenCOLLADA/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-KEYWORDS="amd64 ~ppc64 x86"
+KEYWORDS="~amd64 ~ppc64 ~x86"
 
 RDEPEND="dev-libs/libpcre
 	dev-libs/zziplib
 	media-libs/lib3ds
 	sys-libs/zlib
-	>=sys-devel/gcc-4.7
 	expat? ( dev-libs/expat )
 	!expat? ( dev-libs/libxml2 )"
-DEPEND="${RDEPEND}
-	sys-apps/findutils
-	sys-apps/sed"
+DEPEND="${RDEPEND}"
 
 S=${WORKDIR}/OpenCOLLADA-${PV}
 BUILD_DIR="${S}"/build
@@ -41,9 +38,7 @@ PATCHES=(
 )
 
 src_prepare() {
-
-	# Remove some bundled dependencies
-	edos2unix CMakeLists.txt || die
+	edos2unix CMakeLists.txt
 
 	default
 
@@ -57,26 +52,23 @@ src_prepare() {
 }
 
 src_configure() {
-	local mycmakeargs=(-DUSE_SHARED=ON -DUSE_STATIC=OFF)
+	local mycmakeargs=(
+		-DUSE_SHARED=ON
+		-DUSE_STATIC=$(usex static-libs ON OFF)
+		-DUSE_EXPAT=$(usex expat ON OFF)
+		-DUSE_LIBXML=$(usex !expat ON OFF)
+		-Dsoversion=${MY_SOVERSION}
+	)
 
-	# Master CMakeLists.txt says "EXPAT support not implemented"
-	# Something like "set(LIBEXPAT_LIBRARIES expat)" is missing to make it build
-	use expat \
-		&& mycmakeargs+=(-DUSE_EXPAT=ON -DUSE_LIBXML=OFF) \
-		|| mycmakeargs+=(-DUSE_EXPAT=OFF -DUSE_LIBXML=ON)
-
-        # Seems like the Khronos Group hasnt invented the SOVERSION yet.
-	mycmakeargs+=(-Dsoversion=${MY_SOVERSION})
-	
 	cmake-utils_src_configure
 }
 
 src_install() {
 	cmake-utils_src_install
 
-	dodir /etc/env.d || die
-	echo "LDPATH=/usr/$(get_libdir)/opencollada" \
-			> "${D}"/etc/env.d/99opencollada || die
+	dodir /etc/env.d
+	echo "LDPATH=/usr/$(get_libdir)/opencollada" > "${T}"/99${PN}; \
+            doenvd ${T}/99${PN}
 
-	dobin build/bin/OpenCOLLADAValidator || die
+	dobin build/bin/OpenCOLLADAValidator
 }
