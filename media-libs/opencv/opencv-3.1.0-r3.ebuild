@@ -9,7 +9,7 @@ inherit toolchain-funcs cmake-utils python-single-r1 \
 		java-pkg-opt-2 java-ant-2
 
 DESCRIPTION="A collection of algorithms and sample code for various \
-		computer vision problems"
+	computer vision problems"
 HOMEPAGE="http://opencv.org"
 
 mygithash="cd5993c6576267875adac300b9ddd1f881bb1766"
@@ -18,7 +18,7 @@ SRC_URI="
 	mirror://sourceforge/opencvlibrary/opencv-unix/${PV}/${P}.zip
 	https://github.com/Itseez/${PN}/archive/${PV}.zip -> ${P}.zip
 	contrib? ( https://github.com/Itseez/${PN}_contrib/archive/${mygithash}.zip \
-			-> ${P}_contrib.zip )" #commit from Sun, 27 Mar 2016 17:31:51
+		-> ${P}_contrib.zip )" #commit from Sun, 27 Mar 2016 17:31:51
 
 LICENSE="BSD"
 SLOT="0/3.1" # subslot = libopencv* soname version
@@ -43,25 +43,25 @@ RDEPEND="
 	ffmpeg?		(
 				libav? ( media-video/libav:0= )
 				!libav? ( media-video/ffmpeg:0= )
-	  )
+	)
 	gdal?		( sci-libs/gdal )
 	gphoto2?	( media-libs/libgphoto2 )
 	gstreamer?	(
 				media-libs/gstreamer:1.0
 				media-libs/gst-plugins-base:1.0
-	  )
+	)
 	gtk?		(
 				dev-libs/glib:2
 				x11-libs/gtk+:2
 				opengl? ( x11-libs/gtkglext )
-	  )
+	)
 	java?		( >=virtual/jre-1.6:* )
 	jpeg?		( virtual/jpeg:0 )
 	jpeg2k?		( media-libs/jasper )
 	ieee1394?	(
 				media-libs/libdc1394
 				sys-libs/libraw1394
-	  )
+	)
 	ipp?		( sci-libs/ipp )
 	opencl?		( virtual/opencl )
 	openexr?	( media-libs/openexr )
@@ -72,13 +72,13 @@ RDEPEND="
 				dev-qt/qtgui:4
 				dev-qt/qttest:4
 				opengl? ( dev-qt/qtopengl:4 )
-	  )
+	)
 	qt5? 		(
 				dev-qt/qtgui:5
 				dev-qt/qttest:5
 				dev-qt/qtconcurrent:5
 				opengl? ( dev-qt/qtopengl:5 )
-	  )
+	)
 	threads?	( dev-cpp/tbb )
 	tiff?		( media-libs/tiff:0 )
 	v4l?		( >=media-libs/libv4l-0.8.3 )
