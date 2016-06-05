@@ -13,7 +13,7 @@ else
 	KEYWORDS="~amd64 ~ppc64 ~x86"
 fi
 
-inherit multilib cmake-utils git-r3
+inherit multilib cmake-utils
 
 DESCRIPTION="Stream based read/write library for COLLADA files"
 HOMEPAGE="http://www.opencollada.org/"
