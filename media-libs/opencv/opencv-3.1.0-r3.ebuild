@@ -128,8 +128,6 @@ src_configure() {
 	# please dont sort here, order is the same as in CMakeLists.txt
 	local mycmakeargs=(
 	# Turned off due to incompatibility
-		
-		-
 		-DWITH_VFW=OFF     		# Video windows support
 		-DWITH_CLP=OFF
 		-DWITH_MSMF=OFF
