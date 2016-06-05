@@ -4,6 +4,16 @@
 
 EAPI=6
 
+if [ ${PV} == "9999" ] ; then
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/KhronosGroup/OpenCOLLADA.git"
+else
+	SRC_URI="https://github.com/KhronosGroup/OpenCOLLADA/archive/v${PV}.tar.gz \
+		-> ${P}.tar.gz"
+	KEYWORDS="~amd64 ~ppc64 ~x86"
+	S=${WORKDIR}/OpenCOLLADA-${PV}
+fi
+
 inherit multilib cmake-utils
 
 DESCRIPTION="Stream based read/write library for COLLADA files"
@@ -16,9 +26,6 @@ MY_SOVERSION="1.6"
 
 SLOT="0"
 
-SRC_URI="https://github.com/KhronosGroup/OpenCOLLADA/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-KEYWORDS="~amd64 ~ppc64 ~x86"
-
 RDEPEND="dev-libs/libpcre
 	dev-libs/zziplib
 	media-libs/lib3ds
@@ -27,7 +34,7 @@ RDEPEND="dev-libs/libpcre
 	!expat? ( dev-libs/libxml2 )"
 DEPEND="${RDEPEND}"
 
-S=${WORKDIR}/OpenCOLLADA-${PV}
+
 BUILD_DIR="${S}"/build
 
 PATCHES=(

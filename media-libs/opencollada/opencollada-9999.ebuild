@@ -11,9 +11,10 @@ else
 	SRC_URI="https://github.com/KhronosGroup/OpenCOLLADA/archive/v${PV}.tar.gz \
 		-> ${P}.tar.gz"
 	KEYWORDS="~amd64 ~ppc64 ~x86"
+	S=${WORKDIR}/OpenCOLLADA-${PV}
 fi
 
-inherit multilib cmake-utils
+inherit multilib cmake-utils git-r3
 
 DESCRIPTION="Stream based read/write library for COLLADA files"
 HOMEPAGE="http://www.opencollada.org/"
