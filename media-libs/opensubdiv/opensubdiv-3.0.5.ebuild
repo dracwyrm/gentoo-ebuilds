@@ -8,7 +8,9 @@ inherit cmake-utils
 DESCRIPTION="An Open-Source subdivision surface library"
 HOMEPAGE="http://graphics.pixar.com/opensubdiv/"
 
-SRC_URI="https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v${PV//./_}.tar.gz \
+MY_PV=${PV//./_}
+
+SRC_URI="https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v${MY_PV}.tar.gz
 	-> ${P}.tar.gz"
 
 LICENSE="ZLIB"
@@ -17,18 +19,18 @@ IUSE="ptex cuda tbb examples tutorials test doc openmp opencl"
 
 RDEPEND=">=media-libs/glew-1.9.0
 	>=media-libs/glfw-3.0.0
-	opencl?	( virtual/opencl )
-	cuda?	( >=dev-util/nvidia-cuda-toolkit-4.0 )
-	ptex?	( >=media-libs/ptex-2.0 )"
+	opencl? ( virtual/opencl )
+	cuda? ( >=dev-util/nvidia-cuda-toolkit-4.0 )
+	ptex? ( >=media-libs/ptex-2.0 )"
 
 DEPEND="${RDEPEND}
-	tbb?		( >=dev-cpp/tbb-4.0 )
-	doc?		( dev-python/docutils app-doc/doxygen )
-	openmp?	( sys-devel/gcc:*[openmp] )"
+	tbb? ( >=dev-cpp/tbb-4.0 )
+	doc? ( dev-python/docutils app-doc/doxygen )
+	openmp? ( sys-devel/gcc:*[openmp] )"
 
 KEYWORDS="~amd64 ~x86"
 
-S=${WORKDIR}/OpenSubdiv-${PV//./_}
+S=${WORKDIR}/OpenSubdiv-${MY_PV}
 
 PATCHES=(
 	"${FILESDIR}"/${P}-fix-gpu-architecture.patch

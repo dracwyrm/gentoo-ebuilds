@@ -22,46 +22,46 @@ IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +
       tiff c++0x valgrind jack sdl"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
-	player?      ( game-engine )
-	cycles?      ( boost openexr tiff openimageio )
-	colorio?     ( boost )
-	openvdb?     ( boost )
-	nls?         ( boost )
-	openal?      ( boost )
+	player? ( game-engine )
+	cycles? ( boost openexr tiff openimageio )
+	colorio? ( boost )
+	openvdb? ( boost )
+	nls? ( boost )
+	openal? ( boost )
 	game-engine? ( boost )
 	^^ ( ffmpeg libav )"
 
 OPTIONAL_DEPENDS="
-	boost?               ( >=dev-libs/boost-1.60[nls?,threads(+)] )
-	collada?             ( >=media-libs/opencollada-1.6.18 )
-	colorio?             ( >=media-libs/opencolorio-1.0.9-r2 )
-	ffmpeg?              ( >=media-video/ffmpeg-2.8.6:0=[x264,mp3,encode,theora,jpeg2k?] )
-	libav?               ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
-	fftw?                ( sci-libs/fftw:3.0 )
-	jack?                ( media-sound/jack-audio-connection-kit )
-	jemalloc?            ( dev-libs/jemalloc )
-	jpeg2k? 	     ( media-libs/openjpeg:0 )
-	ndof?                (
-				app-misc/spacenavd
-				dev-libs/libspnav
-	  )
-	nls?                 ( virtual/libiconv )
-	openal?              ( >=media-libs/openal-1.6.372 )
-	openimageio?         ( >=media-libs/openimageio-1.6.9 )
-	openexr?             ( 
-				media-libs/ilmbase
-				>=media-libs/openexr-2.2.0
-	  )
-	opensubdiv?	     ( >=media-libs/opensubdiv-3.0.5 )
-	openvdb?	     ( 
-				>=media-gfx/openvdb-2.1.0[${PYTHON_USEDEP},openvdb-compression=] 
-				>=dev-cpp/tbb-3.0
-	  )
+	boost? ( >=dev-libs/boost-1.60[nls?,threads(+)] )
+	collada? ( >=media-libs/opencollada-1.6.18 )
+	colorio? ( >=media-libs/opencolorio-1.0.9-r2 )
+	ffmpeg? ( >=media-video/ffmpeg-2.8.6:0=[x264,mp3,encode,theora,jpeg2k?] )
+	libav? ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
+	fftw? ( sci-libs/fftw:3.0 )
+	jack? ( media-sound/jack-audio-connection-kit )
+	jemalloc? ( dev-libs/jemalloc )
+	jpeg2k? ( media-libs/openjpeg:0 )
+	ndof? (
+		app-misc/spacenavd
+		dev-libs/libspnav
+	)
+	nls? ( virtual/libiconv )
+	openal? ( >=media-libs/openal-1.6.372 )
+	openimageio? ( >=media-libs/openimageio-1.6.9 )
+	openexr? ( 
+		media-libs/ilmbase
+		>=media-libs/openexr-2.2.0
+	)
+	opensubdiv? ( >=media-libs/opensubdiv-3.0.5 )
+	openvdb? ( 
+		>=media-gfx/openvdb-2.1.0[${PYTHON_USEDEP},openvdb-compression=] 
+		>=dev-cpp/tbb-3.0
+	)
 	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
-	sdl?                 ( media-libs/libsdl2[sound,joystick] )
-	sndfile?             ( media-libs/libsndfile )
-	tiff?                ( media-libs/tiff:0 )
-	valgrind?            ( dev-util/valgrind )"
+	sdl? ( media-libs/libsdl2[sound,joystick] )
+	sndfile? ( media-libs/libsndfile )
+	tiff? ( media-libs/tiff:0 )
+	valgrind? ( dev-util/valgrind )"
 
 RDEPEND="${PYTHON_DEPS}
 	dev-libs/lzo:2
