@@ -56,6 +56,18 @@ src_prepare() {
 		-i Makefile || die "sed failed"
 }
 
+trim() {
+	local str="$*"
+	str="${str##+( )}"
+	str="${str%%+( )}"
+	echo -n "$str"
+}
+
+quote() {
+	local str="$(trim $*)"
+	echo -n "\"$str\""
+}
+
 python_module_compile() {
 	local mypythonargs=""
 
@@ -64,16 +76,17 @@ python_module_compile() {
 	else
 		mypythonargs+="EPYDOC= "
 	fi
+
 	mypythonargs+="
 		PYTHON_VERSION=${EPYTHON/python/}
-		PYTHON_INCL_DIR=\"$(python_get_includedir)\"
-		PYCONFIG_INCL_DIR=\"$(python_get_includedir)\"
-		PYTHON_LIB_DIR=\"$(python_get_library_path)\"
-		PYTHON_LIB=\"$(python_get_LIBS)\"
-		PYTHON_INSTALL_INCL_DIR=\"${myinstallbase}$(python_get_includedir)\"
-		PYTHON_INSTALL_LIB_DIR=\"${myinstallbase}$(python_get_sitedir)\"
-		NUMPY_INCL_DIR=\"$(python_get_sitedir)\"/numpy/core/include/numpy
-		BOOST_PYTHON_LIB_DIR=\"${myprefix}/$(get_libdir)\"
+		PYTHON_INCL_DIR=$(quote $(python_get_includedir))
+		PYCONFIG_INCL_DIR=$(quote $(python_get_includedir))
+		PYTHON_LIB_DIR=$(quote $(python_get_library_path))
+		PYTHON_LIB=$(quote $(python_get_LIBS))
+		PYTHON_INSTALL_INCL_DIR=$(quote ${myinstallbase}$(python_get_includedir))
+		PYTHON_INSTALL_LIB_DIR=$(quote ${myinstallbase}$(python_get_sitedir))
+		NUMPY_INCL_DIR=$(quote $(python_get_sitedir)/numpy/core/include/numpy)
+		BOOST_PYTHON_LIB_DIR=$(quote ${myprefix}/$(get_libdir))
 		BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/} "
 
         einfo "Compiling module for ${EPYTHON}."
@@ -91,19 +104,19 @@ src_compile() {
 	myemakeargs="
 		rpath=no shared=yes
 		LIBOPENVDB_RPATH= \
-		DESTDIR=\"${myinstalldir}\"
-		HFS=\"${myprefix}\"
-		HT=\"${myprefix}\"
-		HDSO=\"${myprefix}/$(get_libdir)\"
-		CPPUNIT_INCL_DIR=\"${myprefix}\"/include/cppunit
-		CPPUNIT_LIB_DIR=\"${myprefix}/$(get_libdir)\"
-		LOG4CPLUS_INCL_DIR=\"${myprefix}\"/include/log4cplus
-		LOG4CPLUS_LIB_DIR=\"${myprefix}/$(get_libdir)\" "
+		DESTDIR=$(quote ${myinstalldir})
+		HFS=$(quote ${myprefix})
+		HT=$(quote ${myprefix})
+		HDSO=$(quote ${myprefix}/$(get_libdir))
+		CPPUNIT_INCL_DIR=$(quote ${myprefix}/include/cppunit)
+		CPPUNIT_LIB_DIR=$(quote ${myprefix}/$(get_libdir))
+		LOG4CPLUS_INCL_DIR=$(quote ${myprefix}/include/log4cplus)
+		LOG4CPLUS_LIB_DIR=$(quote ${myprefix}/$(get_libdir)) "
 
 
 	if use X; then
-		myemakeargs+="GLFW_INCL_DIR=\"${myprefix}/$(get_libdir)\" "
-		myemakeargs+="GLFW_LIB_DIR=\"${myprefix}/$(get_libdir)\" "
+		myemakeargs+="GLFW_INCL_DIR=$(quote ${myprefix}/$(get_libdir)) "
+		myemakeargs+="GLFW_LIB_DIR=$(quote ${myprefix}/$(get_libdir)) "
 	else
 		myemakeargs+="GLFW_INCL_DIR= "
 		myemakeargs+="GLFW_LIB_DIR= "
@@ -112,8 +125,8 @@ src_compile() {
 	fi
 
 	if use openvdb-compression; then
-		myemakeargs+="BLOSC_INCL_DIR=\"${myprefix}\"/include "
-		myemakeargs+="BLOSC_LIB_DIR=\"${myprefix}/$(get_libdir)\" "
+		myemakeargs+="BLOSC_INCL_DIR=$(quote ${myprefix}/include) "
+		myemakeargs+="BLOSC_LIB_DIR=$(quote ${myprefix}/$(get_libdir)) "
 	else
 		myemakeargs+="BLOSC_INCL_DIR= "
 		myemakeargs+="BLOSC_LIB_DIR= "
