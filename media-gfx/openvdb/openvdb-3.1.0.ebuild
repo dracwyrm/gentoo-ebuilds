@@ -64,7 +64,7 @@ python_module_compile() {
 	else
 		mypythonargs+="EPYDOC= "
 	fi
-	mypythonargs=+"
+	mypythonargs+="
 		PYTHON_VERSION=${EPYTHON/python/}
 		PYTHON_INCL_DIR=\"$(python_get_includedir)\"
 		PYCONFIG_INCL_DIR=\"$(python_get_includedir)\"
