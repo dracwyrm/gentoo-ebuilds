@@ -4,14 +4,14 @@
 
 EAPI=6
 
-if [ ${PV} == "9999" ] ; then
+if [[ ${PV} == "9999" ]] ; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/KhronosGroup/OpenCOLLADA.git"
 else
-	SRC_URI="https://github.com/KhronosGroup/OpenCOLLADA/archive/v${PV}.tar.gz \
+	SRC_URI="https://github.com/KhronosGroup/OpenCOLLADA/archive/v${PV}.tar.gz
 		-> ${P}.tar.gz"
 	KEYWORDS="~amd64 ~ppc64 ~x86"
-	S=${WORKDIR}/OpenCOLLADA-${PV}
+	S="${WORKDIR}"/OpenCOLLADA-${PV}
 fi
 
 inherit multilib cmake-utils
@@ -72,7 +72,7 @@ src_install() {
 	cmake-utils_src_install
 
 	echo "LDPATH=/usr/$(get_libdir)/opencollada" > "${T}"/99${PN}; \
-		doenvd ${T}/99${PN}
+		doenvd "${T}"/99${PN}
 
 	dobin build/bin/OpenCOLLADAValidator
 }

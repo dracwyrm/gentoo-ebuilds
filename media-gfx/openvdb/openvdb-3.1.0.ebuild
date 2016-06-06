@@ -15,9 +15,10 @@ SRC_URI="http://www.openvdb.org/download/${PN}_${PV//./_}_library.zip"
 LICENSE="MPL-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="doc +openvdb-compression X"
+IUSE="doc pdfdoc python +openvdb-compression X"
 
-REQUIRED_USE="${PYTHON_REQUIRED_USE}"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}
+	pdfdoc? ( doc )"
 
 RDEPEND="${PYTHON_DEPS}"
 
@@ -29,13 +30,15 @@ DEPEND="${RDEPEND}
 	>=dev-util/cppunit-1.10
 	doc? (
 		>=app-doc/doxygen-1.4.7
-		>=dev-python/pdoc-0.2.4[${PYTHON_USEDEP}]
-		>=dev-texlive/texlive-latex-2015
-		>=app-text/ghostscript-gpl-8.70 
+		python? ( >=dev-python/pdoc-0.2.4[${PYTHON_USEDEP}] )
+		pdfdoc? ( 
+			>=dev-texlive/texlive-latex-2015
+			>=app-text/ghostscript-gpl-8.70
+		)
 	)
 	X? ( media-libs/glfw )
 	dev-libs/jemalloc
-	dev-python/numpy[${PYTHON_USEDEP}]
+	python? ( dev-python/numpy[${PYTHON_USEDEP}] )
 	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
 	dev-libs/log4cplus"
 
@@ -137,7 +140,7 @@ src_compile() {
 	fi
 	
 	# Create python modules for each version selected
-	python_foreach_impl python_module_compile
+	use python && python_foreach_impl python_module_compile
 
 	# Installing to a temp dir, because all targets install.
 	einfo "Compiling the main library."

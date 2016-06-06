@@ -29,7 +29,7 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	nls? ( boost )
 	openal? ( boost )
 	game-engine? ( boost )
-	^^ ( ffmpeg libav )"
+	?? ( ffmpeg libav )"
 
 OPTIONAL_DEPENDS="
 	boost? ( >=dev-libs/boost-1.60[nls?,threads(+)] )
