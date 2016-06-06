@@ -25,37 +25,9 @@ KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86 ~amd64-linux"
 IUSE="contrib cuda doc +eigen examples ffmpeg gdal gphoto2 gstreamer gtk \
 	ieee1394 ipp jpeg jpeg2k libav opencl openexr opengl openmp pch png \
 	+python qt4 qt5 testprograms threads tiff vaapi v4l vtk webp xine"
-	
-# Strings for CPU features in the useflag[:configure_option] form
-# if :configure_option isn't set, it will use 'useflag' as configure option
-ARM_CPU_FEATURES=(neon:NEON vfpv3:VFPV3)
-X86_CPU_FEATURES=(
-	avx:AVX avx2:AVX2 fma3:FMA3 popcnt:POPCNT sse:SSE sse2:SSE2 sse3:SSE3
-	ssse3:SSSE3 sse4_1:SSE41 sse4_2:SSE42
-)
-X86_CPU_REQUIRED_USE="
-	cpu_flags_x86_avx2? ( cpu_flags_x86_avx )
-	cpu_flags_x86_fma3? ( cpu_flags_x86_avx )
-	cpu_flags_x86_avx?  ( cpu_flags_x86_sse4_2 )
-	cpu_flags_x86_sse4_2?  ( cpu_flags_x86_sse4_1 )
-	cpu_flags_x86_sse4_1?  ( cpu_flags_x86_ssse3 )
-	cpu_flags_x86_ssse3?  ( cpu_flags_x86_sse3 )
-	cpu_flags_x86_sse3?  ( cpu_flags_x86_sse2 )
-	cpu_flags_x86_sse2?  ( cpu_flags_x86_sse )
-"
-# String for CPU features in the useflag[:configure_option] form
-# if :configure_option isn't set, it will use 'useflag' as configure option
-CPU_FEATURES=( \
-	${ARM_CPU_FEATURES[@]/#/cpu_flags_arm_} \
-	${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} \
-) 
-IUSE+=" ${CPU_FEATURES[@]%:*}"
-unset {ARM,MIPS,PPC,X86}_CPU_FEATURES
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )
-	?? ( qt4 qt5 ) 
-	${X86_CPU_REQUIRED_USE}"
-unset X86_CPU_REQUIRED_USE
+	?? ( qt4 qt5 )"
 
 # The following logic is intrinsic in the build system, but we do not enforce
 # it on the useflags since this just blocks emerging pointlessly:
@@ -160,11 +132,7 @@ src_configure() {
 		-DWITH_1394=$(usex ieee1394 ON OFF)
 		-DWITH_AVFOUNDATION=OFF 	# IOS
 		-DWITH_CARBON=OFF 		# APPLE Only
-		-DWITH_CUDA=$(usex cuda ON OFF)
 		-DWITH_VTK=$(usex vtk ON OFF)
-		-DWITH_CUFFT=$(usex cuda ON OFF)
-		-DWITH_CUBLAS=$(usex cuda ON OFF)
-		-DWITH_NVCUVID=$(usex cuda ON OFF)
 		-DWITH_EIGEN=$(usex eigen ON OFF)
 		-DWITH_VFW=OFF     		# Video windows support
 		-DWITH_FFMPEG=$(usex ffmpeg ON OFF)
@@ -232,8 +200,6 @@ src_configure() {
 	# ===================================================
 		-DENABLE_PRECOMPILED_HEADERS=$(usex pch ON OFF)
 		-DHAVE_opencv_java=$(usex java YES NO)
-		#-DBUILD_opencv_python2=
-		#-DBUILD_opencv_python3=
 	)
 
 	if use qt4; then
@@ -253,11 +219,6 @@ src_configure() {
 	else
 		mycmakeargs+=( "-DINSTALL_PYTHON_EXAMPLES=OFF" )
 	fi
-	
-	# CPU Features
-	for cpufeature in "${CPU_FEATURES[@]}"; \
-		do mycmakeargs+=( -DENABLE_${cpufeature#*:}=$(usex ${cpufeature%:*} ON OFF) ); \
-		done
 
 	# things we want to be hard off or not yet figured out
 	mycmakeargs+=(
@@ -272,11 +233,17 @@ src_configure() {
 		"-DCMAKE_SKIP_RPATH=ON"
 		"-DOPENCV_DOC_INSTALL_PATH=${EPREFIX}/usr/share/doc/${PF}"
 	)
+	
+	# Cuda:
+	mycmakeargs+=(
+		-DWITH_CUDA=$(usex cuda ON OFF)
+		-DWITH_CUFFT=$(usex cuda ON OFF)
+		-DWITH_CUBLAS=$(usex cuda ON OFF)
+		-DWITH_NVCUVID=$(usex cuda ON OFF)
+	)
 
 	# hardcode cuda paths
-	mycmakeargs+=(
-		"-DCUDA_NPP_LIBRARY_ROOT_DIR=/opt/cuda"
-	)
+	mycmakeargs+=( "-DCUDA_NPP_LIBRARY_ROOT_DIR=/opt/cuda" )
 
 	# workaround for bug 413429
 	tc-export CC CXX
