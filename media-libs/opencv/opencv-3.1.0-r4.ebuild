@@ -209,6 +209,25 @@ src_configure() {
 	else
 		mycmakeargs+=( "-DWITH_QT=OFF" )
 	fi
+	
+	if use cuda; then
+		if [[ "$(gcc-version)" > "4.7" ]]; then
+			ewarn "CUDA and >=sys-devel/gcc-4.8 do not play well together. Disabling CUDA support."
+			mycmakeargs+=( "-DWITH_CUDA=OFF" )
+			mycmakeargs+=( "-DWITH_CUBLAS=OFF" )
+			mycmakeargs+=( "-DWITH_CUFFT=OFF" )
+
+		else
+			mycmakeargs+=( "-DWITH_CUDA=ON" )
+			mycmakeargs+=( "-DWITH_CUBLAS=ON" )
+			mycmakeargs+=( "-DWITH_CUFFT=ON" )
+			mycmakeargs+=( "-DCUDA_NPP_LIBRARY_ROOT_DIR=/opt/cuda" )
+		fi
+	else
+		mycmakeargs+=( "-DWITH_CUDA=OFF" )
+		mycmakeargs+=( "-DWITH_CUBLAS=OFF" )
+		mycmakeargs+=( "-DWITH_CUFFT=OFF" )
+	fi
 
 	if use contrib; then
 		mycmakeargs+=( "-DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib-${PV}/modules" )
@@ -232,14 +251,6 @@ src_configure() {
 	mycmakeargs+=(
 		"-DCMAKE_SKIP_RPATH=ON"
 		"-DOPENCV_DOC_INSTALL_PATH=${EPREFIX}/usr/share/doc/${PF}"
-	)
-	
-	# Cuda:
-	mycmakeargs+=(
-		-DWITH_CUDA=$(usex cuda ON OFF)
-		-DWITH_CUFFT=$(usex cuda ON OFF)
-		-DWITH_CUBLAS=$(usex cuda ON OFF)
-		-DWITH_NVCUVID=$(usex cuda ON OFF)
 	)
 
 	# hardcode cuda paths
