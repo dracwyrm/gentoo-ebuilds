@@ -4,7 +4,7 @@
 
 EAPI=5
 
-PYTHON_COMPAT=( python3_5 )
+PYTHON_COMPAT=( python2_7 )
 
 # Switch to check out due to loads of patches since release.
 EGIT_REPO_URI="git://github.com/dracwyrm/OpenColorIO.git"
