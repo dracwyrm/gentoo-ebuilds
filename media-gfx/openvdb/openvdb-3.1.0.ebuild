@@ -50,6 +50,8 @@ PATCHES=(
 	"${FILESDIR}"/${P}-change-python-module-install-locations-to-variables.patch
 	"${FILESDIR}"/${P}-install-python-mod.patch
 	"${FILESDIR}"/${P}-install-pdfdoc.patch
+        "${FILESDIR}"/${P}-python-documentation-versioning.patch
+	"${FILESDIR}"/${P}-fix-jobserver-unavailable-qa-warning.patch
 )
 
 src_prepare() {
@@ -91,7 +93,8 @@ python_module_compile() {
 		PYTHON_INSTALL_LIB_DIR=$(quote ${myinstallbase}$(python_get_sitedir))
 		NUMPY_INCL_DIR=$(quote $(python_get_sitedir)/numpy/core/include/numpy)
 		BOOST_PYTHON_LIB_DIR=$(quote ${myprefix}/$(get_libdir))
-		BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/} "
+		BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/}
+		PYTHON_INSTALL_DOC_DIR=${WORKDIR}/install/usr/share/doc/openvdb/html/python${EPYTHON/python/} "
 
         einfo "Compiling module for ${EPYTHON}."
 	emake clean

@@ -8,10 +8,10 @@ diff -Naur a/Makefile b/Makefile
 +	@#
 +	if [ -d doc/latex ]; \
 +	then \
-+	    mkdir -p $(DESTDIR)/share/doc/openvdb; \
-+	    echo "Created $(DESTDIR)/share/doc/openvdb/"; \
-+	    cp -r -f doc/latex $(DESTDIR)/share/doc/openvdb; \
-+	    echo "Copied documentation to $(DESTDIR)/share/doc/openvdb/"; \
++	    mkdir -p $(DESTDIR)/share/doc/openvdb/latex; \
++	    echo "Created $(DESTDIR)/share/doc/openvdb/latex"; \
++	    cp -r -f doc/latex/refman.pdf $(DESTDIR)/share/doc/openvdb/latex/refman.pdf; \
++	    echo "Copied documentation to $(DESTDIR)/share/doc/openvdb/latex/refman.pdf"; \
 +	fi
  
  # TODO: This accumulates all source file dependencies into a single file

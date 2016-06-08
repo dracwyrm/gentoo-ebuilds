@@ -1,0 +1,12 @@
+diff -Naur a/Makefile b/Makefile
+--- a/Makefile	2016-06-08 15:26:59.467690119 +0930
++++ b/Makefile	2016-06-08 15:27:16.586689013 +0930
+@@ -707,7 +707,7 @@
+ 	@echo "Generating documentation because of $(list_deps)"
+ 	echo -e 'OUTPUT_DIRECTORY=./doc\nGENERATE_LATEX=YES\nGENERATE_HTML=NO' \
+ 	    | cat doxygen-config - | $(DOXYGEN) - $(QUIET) \
+-	    && cd ./doc/latex && make refman.pdf $(QUIET) \
++	    && cd ./doc/latex && ${MAKE} refman.pdf $(QUIET) \
+ 	    && echo 'Created doc/latex/refman.pdf'
+ 
+ ifneq (,$(strip $(DOXYGEN)))

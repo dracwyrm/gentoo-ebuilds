@@ -1,0 +1,25 @@
+diff -Naur a/Makefile b/Makefile
+--- a/Makefile	2016-06-08 13:37:01.564116350 +0930
++++ b/Makefile	2016-06-08 13:44:54.642085789 +0930
+@@ -174,7 +174,7 @@
+ # Compiling the Python module with PYTHON_WRAP_ALL_GRID_TYPES set to "yes"
+ # can be very memory-intensive.
+ PYTHON_WRAP_ALL_GRID_TYPES := no
+-
++PYTHON_INSTALL_DOC_DIR := doc/html/python
+ # The Doxygen executable
+ # (leave blank if Doxygen is unavailable)
+ DOXYGEN := doxygen
+@@ -779,7 +779,11 @@
+ 	echo "Created $${pydocdir}"; \
+ 	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$(CURDIR); \
+ 	export PYTHONPATH=${PYTHONPATH}:$(CURDIR); \
+-	    $(EPYDOC) --html -o $${pydocdir} $(PYTHON_MODULE_NAME) $(QUIET)
++	    $(EPYDOC) --html -o $${pydocdir} $(PYTHON_MODULE_NAME) $(QUIET); \
++	mkdir -p ${PYTHON_INSTALL_DOC_DIR}; \
++	echo "Created ${PYTHON_INSTALL_DOC_DIR}"; \
++	echo "Preserving python documentation at ${PYTHON_INSTALL_DOC_DIR}"; \
++	cp -R $${pydocdir}/pyopenvdb.m.html ${PYTHON_INSTALL_DOC_DIR}/pyopenvdb.m.html
+ else
+ pydoc:
+ 	@echo "$@"': $$EPYDOC is undefined'
