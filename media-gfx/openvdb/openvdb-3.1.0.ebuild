@@ -49,6 +49,7 @@ PATCHES=(
 	"${FILESDIR}"/use_svg.patch
 	"${FILESDIR}"/${P}-change-python-module-install-locations-to-variables.patch
 	"${FILESDIR}"/${P}-install-python-mod.patch
+	"${FILESDIR}"/${P}-install-pdfdoc.patch
 )
 
 src_prepare() {
@@ -75,7 +76,7 @@ python_module_compile() {
 	local mypythonargs=""
 
 	if use doc; then
-		mypythonargs+="pydoc EPYDOC=pdoc "
+                mypythonargs+="pydoc EPYDOC=/usr/lib/python-exec/python${EPYTHON/python/}/pdoc "
 	else
 		mypythonargs+="EPYDOC= "
 	fi
@@ -146,6 +147,7 @@ src_compile() {
 	einfo "Compiling the main library."
 	emake clean
 	mkdir -p "${myinstalldir}" || die "mkdir failed"
+	use pdfdoc && emake pdfdoc EPYDOC=pdoc
 	emake install ${myemakeargs} \
 		PYTHON_VERSION= \
 		PYTHON_INCL_DIR= \
