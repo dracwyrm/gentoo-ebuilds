@@ -11,12 +11,11 @@ DESCRIPTION="A collection of algorithms and sample code for
 	various computer vision problems"
 HOMEPAGE="http://opencv.org"
 
-mygithash="cd5993c6576267875adac300b9ddd1f881bb1766"
-
 SRC_URI="
 	mirror://sourceforge/opencvlibrary/opencv-unix/${PV}/${P}.zip
 	https://github.com/Itseez/${PN}/archive/${PV}.zip -> ${P}.zip
-	contrib? ( https://github.com/Itseez/${PN}_contrib/archive/${mygithash}.zip
+	contrib? ( 
+		https://github.com/Itseez/${PN}_contrib/archive/cd5993c6576267875adac300b9ddd1f881bb1766.zip
 		-> ${P}_contrib.zip )" #commit from Sun, 27 Mar 2016 17:31:51
 
 LICENSE="BSD"
@@ -96,6 +95,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.1.0-cmake-no-opengl.patch
 	"${FILESDIR}"/${P}-git-autodetect.patch
 	"${FILESDIR}"/${P}-java-magic.patch
+	"${FILESDIR}"/${P}-gentooify-python.patch
 )
 
 pkg_setup() {
@@ -116,6 +116,10 @@ src_prepare() {
 }
 
 src_configure() {
+	# Get python major and minor versions
+	pyMajorVer=${EPYTHON:6:1}
+	pyMinorVer=${EPYTHON:8:1}
+
 	if use openmp; then
 		tc-has-openmp || die "Please switch to an openmp compatible compiler"
 	fi
@@ -211,8 +215,10 @@ src_configure() {
 	fi
 	
 	if use cuda; then
-		if [[ "$(gcc-version)" > "4.7" ]]; then
-			ewarn "CUDA and >=sys-devel/gcc-4.8 do not play well together. Disabling CUDA support."
+		if [[ "$(gcc-version)" > "4.8" ]]; then
+			# bug 577410 
+			# #error -- unsupported GNU version! gcc 4.9 and up are not supported!
+			ewarn "CUDA and >=sys-devel/gcc-4.9 do not play well together. Disabling CUDA support."
 			mycmakeargs+=( "-DWITH_CUDA=OFF" )
 			mycmakeargs+=( "-DWITH_CUBLAS=OFF" )
 			mycmakeargs+=( "-DWITH_CUFFT=OFF" )
@@ -255,6 +261,19 @@ src_configure() {
 
 	# hardcode cuda paths
 	mycmakeargs+=( "-DCUDA_NPP_LIBRARY_ROOT_DIR=/opt/cuda" )
+	
+	use python && mycmakeargs+=(
+		-DWITH_PYTHON=ON
+		-DGENTOO_PYTHON_MODULE_NAME="python${pyMajorVer}"
+		-DGENTOO_PYTHON_INCLUDE_PATH="$(python_get_includedir)"
+		-DGENTOO_PYTHON_NUMPY_INCLUDE_DIRS="$(python_get_sitedir)/numpy/core/include/"
+		-DGENTOO_PYTHON_EXECUTABLE=${EPYTHON}
+		-DGENTOO_PYTHON_DEBUG_LIBRARIES="" # Absolutely no clue
+		-DGENTOO_PYTHON_LIBRARIES="$(python_get_library_path)"
+		-DGENTOO_PYTHON_PACKAGES_PATH="$(python_get_sitedir)"
+		-DGENTOO_PYTHON_MAJOR=${pyMajorVer}
+		-DGENTOO_PYTHON_MINOR=${pyMinorVer}
+	)
 
 	# workaround for bug 413429
 	tc-export CC CXX
