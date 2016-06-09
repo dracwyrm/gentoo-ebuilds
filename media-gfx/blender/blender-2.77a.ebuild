@@ -167,7 +167,7 @@ src_configure() {
 		-DWITH_OPENMP=$(usex openmp ON OFF )
 		-DWITH_OPENSUBDIV=$(usex opensubdiv ON OFF )
 		-DWITH_OPENVDB=$(usex openvdb ON OFF )
-		-DWITH_OPENSUBDIV_BLOSC=$(usex openvdb-compression ON OFF )
+		-DWITH_OPENVDB_BLOSC=$(usex openvdb-compression ON OFF )
 		-DWITH_PLAYER=$(usex player ON OFF )
 		-DWITH_SDL=$(usex sdl ON OFF )
 		-DWITH_RAYOPTIMIZATION=$(usex cpu_flags_x86_sse ON OFF )
