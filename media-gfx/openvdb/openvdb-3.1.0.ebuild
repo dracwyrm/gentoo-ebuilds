@@ -17,20 +17,19 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="doc pdfdoc python +openvdb-compression X"
 
-REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )
+REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	pdfdoc? ( doc )"
 
-RDEPEND="python? ( ${PYTHON_DEPS} )"
+RDEPEND="${PYTHON_DEPS}"
 
 DEPEND="${RDEPEND}
 	sys-libs/zlib
-	python? ( >=dev-libs/boost-1.56.0[${PYTHON_USEDEP}] )
-	!python? ( >=dev-libs/boost-1.56.0 )
+	>=dev-libs/boost-1.42.0[${PYTHON_USEDEP}]
 	media-libs/openexr
 	>=dev-cpp/tbb-3.0
 	>=dev-util/cppunit-1.10
 	doc? (
-		>=app-doc/doxygen-1.4.7
+		>=app-doc/doxygen-1.8.7
 		python? ( >=dev-python/pdoc-0.2.4[${PYTHON_USEDEP}] )
 		pdfdoc? ( 
 			>=dev-texlive/texlive-latex-2015
@@ -40,7 +39,7 @@ DEPEND="${RDEPEND}
 	X? ( media-libs/glfw )
 	dev-libs/jemalloc
 	python? ( dev-python/numpy[${PYTHON_USEDEP}] )
-	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
+	openvdb-compression? ( >=dev-libs/c-blosc-1.5.0 )
 	dev-libs/log4cplus"
 
 S="${WORKDIR}"/openvdb
