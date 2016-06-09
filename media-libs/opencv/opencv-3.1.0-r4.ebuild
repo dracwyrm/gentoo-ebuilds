@@ -116,10 +116,6 @@ src_prepare() {
 }
 
 src_configure() {
-	# Get python major and minor versions
-	pyMajorVer=${EPYTHON:6:1}
-	pyMinorVer=${EPYTHON:8:1}
-
 	if use openmp; then
 		tc-has-openmp || die "Please switch to an openmp compatible compiler"
 	fi
@@ -219,31 +215,44 @@ src_configure() {
 			# bug 577410 
 			# #error -- unsupported GNU version! gcc 4.9 and up are not supported!
 			ewarn "CUDA and >=sys-devel/gcc-4.9 do not play well together. Disabling CUDA support."
-			mycmakeargs+=( "-DWITH_CUDA=OFF" )
-			mycmakeargs+=( "-DWITH_CUBLAS=OFF" )
-			mycmakeargs+=( "-DWITH_CUFFT=OFF" )
+			mycmakeargs+=( -DWITH_CUDA=OFF )
+			mycmakeargs+=( -DWITH_CUBLAS=OFF )
+			mycmakeargs+=( -DWITH_CUFFT=OFF )
 
 		else
-			mycmakeargs+=( "-DWITH_CUDA=ON" )
-			mycmakeargs+=( "-DWITH_CUBLAS=ON" )
-			mycmakeargs+=( "-DWITH_CUFFT=ON" )
-			mycmakeargs+=( "-DCUDA_NPP_LIBRARY_ROOT_DIR=/opt/cuda" )
+			mycmakeargs+=( -DWITH_CUDA=ON )
+			mycmakeargs+=( -DWITH_CUBLAS=ON )
+			mycmakeargs+=( -DWITH_CUFFT=ON )
+			mycmakeargs+=( -DCUDA_NPP_LIBRARY_ROOT_DIR="/opt/cuda" )
 		fi
 	else
-		mycmakeargs+=( "-DWITH_CUDA=OFF" )
-		mycmakeargs+=( "-DWITH_CUBLAS=OFF" )
-		mycmakeargs+=( "-DWITH_CUFFT=OFF" )
+		mycmakeargs+=( -DWITH_CUDA=OFF )
+		mycmakeargs+=( -DWITH_CUBLAS=OFF )
+		mycmakeargs+=( -DWITH_CUFFT=OFF )
 	fi
 
-	if use contrib; then
-		mycmakeargs+=( "-DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib-${PV}/modules" )
-	fi
+	use contrib && mycmakeargs+=( 
+		-DOPENCV_EXTRA_MODULES_PATH="../opencv_contrib-${PV}/modules"
+	)
 
 	if use examples && use python; then
 		mycmakeargs+=( "-DINSTALL_PYTHON_EXAMPLES=ON" )
 	else
 		mycmakeargs+=( "-DINSTALL_PYTHON_EXAMPLES=OFF" )
 	fi
+	
+	# Set all python variables to load the correct Gentoo paths
+	use python && mycmakeargs+=(
+		-DWITH_PYTHON=ON
+		-DGENTOO_PYTHON_EXECUTABLE=${EPYTHON}
+		-DGENTOO_PYTHON_MODULE_NAME="python${EPYTHON:6:1}"
+		-DGENTOO_PYTHON_INCLUDE_PATH="$(python_get_includedir)"
+		-DGENTOO_PYTHON_LIBRARIES="$(python_get_library_path)"
+		-DGENTOO_PYTHON_PACKAGES_PATH="$(python_get_sitedir)"
+		-DGENTOO_PYTHON_MAJOR=${EPYTHON:6:1}
+		-DGENTOO_PYTHON_MINOR=${EPYTHON:8:1}
+		-DGENTOO_PYTHON_DEBUG_LIBRARIES="" # Absolutely no clue what this is
+	)
 
 	# things we want to be hard off or not yet figured out
 	mycmakeargs+=(
@@ -259,21 +268,7 @@ src_configure() {
 		"-DOPENCV_DOC_INSTALL_PATH=${EPREFIX}/usr/share/doc/${PF}"
 	)
 
-	# hardcode cuda paths
-	mycmakeargs+=( "-DCUDA_NPP_LIBRARY_ROOT_DIR=/opt/cuda" )
-	
-	use python && mycmakeargs+=(
-		-DWITH_PYTHON=ON
-		-DGENTOO_PYTHON_MODULE_NAME="python${pyMajorVer}"
-		-DGENTOO_PYTHON_INCLUDE_PATH="$(python_get_includedir)"
-		-DGENTOO_PYTHON_NUMPY_INCLUDE_DIRS="$(python_get_sitedir)/numpy/core/include/"
-		-DGENTOO_PYTHON_EXECUTABLE=${EPYTHON}
-		-DGENTOO_PYTHON_DEBUG_LIBRARIES="" # Absolutely no clue
-		-DGENTOO_PYTHON_LIBRARIES="$(python_get_library_path)"
-		-DGENTOO_PYTHON_PACKAGES_PATH="$(python_get_sitedir)"
-		-DGENTOO_PYTHON_MAJOR=${pyMajorVer}
-		-DGENTOO_PYTHON_MINOR=${pyMinorVer}
-	)
+
 
 	# workaround for bug 413429
 	tc-export CC CXX
