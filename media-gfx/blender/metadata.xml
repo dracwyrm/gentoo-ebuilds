@@ -56,10 +56,6 @@
 		<flag name="doc">
 			Build C and Python API documentation directly from the source code.
 		</flag>
-		<flag name="redcode">
-			This flag add support for RED CODE camera digital format (5K HD
-			images *.r3d) - EXPERIMENTAL.
-		</flag>
 		<flag name="boost">
 			Enable features depending on boost.
 		</flag>
@@ -74,6 +70,5 @@
 			Enable NDOF input devices (SpaceNavigator and friends).
 		</flag>
 		<flag name="openimageio">Enable OpenImageIO Support</flag>
-		<flag name="opennl">Enable use of Open Numerical Library</flag>
 	</use>
 </pkgmetadata>

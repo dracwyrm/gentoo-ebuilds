@@ -18,7 +18,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE="doc pdfdoc python +openvdb-compression X"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
-	pdfdoc? ( doc )"
+	pdfdoc? ( doc python )"
 
 RDEPEND="${PYTHON_DEPS}"
 
@@ -31,7 +31,7 @@ DEPEND="${RDEPEND}
 	doc? (
 		>=app-doc/doxygen-1.8.7
 		python? ( >=dev-python/pdoc-0.2.4[${PYTHON_USEDEP}] )
-		pdfdoc? ( 
+		pdfdoc? (
 			>=dev-texlive/texlive-latex-2015
 			>=app-text/ghostscript-gpl-8.70
 		)
@@ -50,7 +50,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-change-python-module-install-locations-to-variables.patch
 	"${FILESDIR}"/${P}-install-python-mod.patch
 	"${FILESDIR}"/${P}-install-pdfdoc.patch
-        "${FILESDIR}"/${P}-python-documentation-versioning.patch
+	"${FILESDIR}"/${P}-python-documentation-versioning.patch
 	"${FILESDIR}"/${P}-fix-jobserver-unavailable-qa-warning.patch
 )
 
@@ -62,87 +62,85 @@ src_prepare() {
 		-i Makefile || die "sed failed"
 }
 
-trim() {
-	local str="$*"
-	str="${str##+( )}"
-	str="${str%%+( )}"
-	echo -n "$str"
-}
-
-quote() {
-	local str="$(trim $*)"
-	echo -n "\"$str\""
-}
-
 python_module_compile() {
-	local mypythonargs=""
-
+	local mypythonargs=( )
 	if use doc; then
-                mypythonargs+="pydoc EPYDOC=/usr/lib/python-exec/python${EPYTHON/python/}/pdoc "
+		mypythonargs+=(
+			pydoc
+			EPYDOC="${EPREFIX}"/usr/lib/python-exec/python${EPYTHON/python/}/pdoc
+		)
 	else
-		mypythonargs+="EPYDOC= "
+		mypythonargs+=( EPYDOC= )
 	fi
 
-	mypythonargs+="
+	mypythonargs+=(
 		PYTHON_VERSION=${EPYTHON/python/}
-		PYTHON_INCL_DIR=$(quote $(python_get_includedir))
-		PYCONFIG_INCL_DIR=$(quote $(python_get_includedir))
-		PYTHON_LIB_DIR=$(quote $(python_get_library_path))
-		PYTHON_LIB=$(quote $(python_get_LIBS))
-		PYTHON_INSTALL_INCL_DIR=$(quote ${myinstallbase}$(python_get_includedir))
-		PYTHON_INSTALL_LIB_DIR=$(quote ${myinstallbase}$(python_get_sitedir))
-		NUMPY_INCL_DIR=$(quote $(python_get_sitedir)/numpy/core/include/numpy)
-		BOOST_PYTHON_LIB_DIR=$(quote ${myprefix}/$(get_libdir))
+		PYTHON_INCL_DIR="$(python_get_includedir)"
+		PYCONFIG_INCL_DIR="$(python_get_includedir)"
+		PYTHON_LIB_DIR="$(python_get_library_path)"
+		PYTHON_LIB="$(python_get_LIBS)"
+		PYTHON_INSTALL_INCL_DIR="${myinstallbase}$(python_get_includedir)"
+		PYTHON_INSTALL_LIB_DIR="${myinstallbase}$(python_get_sitedir)"
+		NUMPY_INCL_DIR="$(python_get_sitedir)"/numpy/core/include/numpy
+		BOOST_PYTHON_LIB_DIR="${myprefix}"/"$(get_libdir)"
 		BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/}
-		PYTHON_INSTALL_DOC_DIR=${WORKDIR}/install/usr/share/doc/openvdb/html/python${EPYTHON/python/} "
+		PYTHON_INSTALL_DOC_DIR="${WORKDIR}"/install/usr/share/doc/openvdb/html/python${EPYTHON/python/}
+	)
 
-        einfo "Compiling module for ${EPYTHON}."
+	einfo "Compiling module for ${EPYTHON}."
 	emake clean
-	emake python ${mypythonargs} ${myemakeargs}
+	emake python ${mypythonargs[@]} ${myemakeargs[@]}
 }
 
 src_compile() {
 	local myprefix="${EPREFIX}"/usr
 	local myinstallbase="${WORKDIR}"/install
 	local myinstalldir="${myinstallbase}${myprefix}"
-	local myemakeargs=""
-	
-	# So individule targets can be called without duplication
-	myemakeargs="
-		rpath=no shared=yes
-		LIBOPENVDB_RPATH= \
-		DESTDIR=$(quote ${myinstalldir})
-		HFS=$(quote ${myprefix})
-		HT=$(quote ${myprefix})
-		HDSO=$(quote ${myprefix}/$(get_libdir))
-		CPPUNIT_INCL_DIR=$(quote ${myprefix}/include/cppunit)
-		CPPUNIT_LIB_DIR=$(quote ${myprefix}/$(get_libdir))
-		LOG4CPLUS_INCL_DIR=$(quote ${myprefix}/include/log4cplus)
-		LOG4CPLUS_LIB_DIR=$(quote ${myprefix}/$(get_libdir)) "
 
+	# So individule targets can be called without duplication
+	local myemakeargs=(
+		rpath=no shared=yes
+		LIBOPENVDB_RPATH=
+		DESTDIR="${myinstalldir}"
+		HFS="${myprefix}"
+		HT="${myprefix}"
+		HDSO="${myprefix}"/"$(get_libdir)"
+		CPPUNIT_INCL_DIR="${myprefix}"/include/cppunit
+		CPPUNIT_LIB_DIR="${myprefix}"/"$(get_libdir)"
+		LOG4CPLUS_INCL_DIR="${myprefix}"/include/log4cplus
+		LOG4CPLUS_LIB_DIR="${myprefix}"/"$(get_libdir)"
+	)
 
 	if use X; then
-		myemakeargs+="GLFW_INCL_DIR=$(quote ${myprefix}/$(get_libdir)) "
-		myemakeargs+="GLFW_LIB_DIR=$(quote ${myprefix}/$(get_libdir)) "
+		myemakeargs+=(
+			GLFW_INCL_DIR="${myprefix}"/"$(get_libdir)"
+			GLFW_LIB_DIR="${myprefix}"/"$(get_libdir)"
+		)
 	else
-		myemakeargs+="GLFW_INCL_DIR= "
-		myemakeargs+="GLFW_LIB_DIR= "
-		myemakeargs+="GLFW_LIB= "
-		myemakeargs+="GLFW_MAJOR_VERSION= "
+		myemakeargs+=(
+			GLFW_INCL_DIR=
+			GLFW_LIB_DIR=
+			GLFW_LIB=
+			GLFW_MAJOR_VERSION=
+		)
 	fi
 
 	if use openvdb-compression; then
-		myemakeargs+="BLOSC_INCL_DIR=$(quote ${myprefix}/include) "
-		myemakeargs+="BLOSC_LIB_DIR=$(quote ${myprefix}/$(get_libdir)) "
+		myemakeargs+=(
+			BLOSC_INCL_DIR="${myprefix}"/include
+			BLOSC_LIB_DIR="${myprefix}"/"$(get_libdir)"
+		)
 	else
-		myemakeargs+="BLOSC_INCL_DIR= "
-		myemakeargs+="BLOSC_LIB_DIR= "
+		myemakeargs+=(
+			BLOSC_INCL_DIR=
+			BLOSC_LIB_DIR=
+		)
 	fi
-	
+
 	if use !doc; then
-		myemakeargs+="DOXYGEN= "
+		myemakeargs+=( DOXYGEN= )
 	fi
-	
+
 	# Create python modules for each version selected
 	use python && python_foreach_impl python_module_compile
 
@@ -151,7 +149,7 @@ src_compile() {
 	emake clean
 	mkdir -p "${myinstalldir}" || die "mkdir failed"
 	use pdfdoc && emake pdfdoc EPYDOC=pdoc
-	emake install ${myemakeargs} \
+	emake install ${myemakeargs[@]} \
 		PYTHON_VERSION= \
 		PYTHON_INCL_DIR= \
 		PYCONFIG_INCL_DIR= \
@@ -162,7 +160,7 @@ src_compile() {
 		NUMPY_INCL_DIR= \
 		BOOST_PYTHON_LIB_DIR= \
 		BOOST_PYTHON_LIB= \
-		EPYDOC= 
+		EPYDOC=
 }
 
 src_install() {
