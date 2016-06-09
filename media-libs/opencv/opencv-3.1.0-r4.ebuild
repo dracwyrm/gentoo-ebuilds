@@ -21,7 +21,7 @@ SRC_URI="
 LICENSE="BSD"
 SLOT="0/3.1" # subslot = libopencv* soname version
 KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86 ~amd64-linux"
-IUSE="contrib cuda doc +eigen examples ffmpeg gdal gphoto2 gstreamer gtk \
+IUSE="contrib cuda +eigen examples ffmpeg gdal gphoto2 gstreamer gtk \
 	ieee1394 ipp jpeg jpeg2k libav opencl openexr opengl openmp pch png \
 	+python qt4 qt5 testprograms threads tiff vaapi v4l vtk webp xine"
 
@@ -186,7 +186,7 @@ src_configure() {
 	# ===================================================
 		-DBUILD_SHARED_LIBS=ON
 		-DBUILD_ANDROID_EXAMPLES=OFF
-		-DBUILD_DOCS=$(usex doc ON OFF)
+		-DBUILD_DOCS=OFF # Doesn't install anyways.
 		-DBUILD_examples=$(usex examples ON OFF)
 		-DBUILD_PERF_TESTS=OFF
 		-DBUILD_TESTS=$(usex testprograms ON OFF)
@@ -203,11 +203,11 @@ src_configure() {
 	)
 
 	if use qt4; then
-		mycmakeargs+=( "-DWITH_QT=4" )
+		mycmakeargs+=( -DWITH_QT=4 )
 	elif use qt5; then
-		mycmakeargs+=( "-DWITH_QT=5" )
+		mycmakeargs+=( -DWITH_QT=5 )
 	else
-		mycmakeargs+=( "-DWITH_QT=OFF" )
+		mycmakeargs+=( -DWITH_QT=OFF )
 	fi
 	
 	if use cuda; then
@@ -235,37 +235,36 @@ src_configure() {
 		-DOPENCV_EXTRA_MODULES_PATH="../opencv_contrib-${PV}/modules"
 	)
 
-	if use examples && use python; then
-		mycmakeargs+=( "-DINSTALL_PYTHON_EXAMPLES=ON" )
+	if use python; then
+		# Set all python variables to load the correct Gentoo paths
+		mycmakeargs+=(
+			-DWITH_PYTHON=ON
+			-DGENTOO_PYTHON_EXECUTABLE=${EPYTHON}
+			-DGENTOO_PYTHON_MODULE_NAME="python${EPYTHON:6:1}"
+			-DGENTOO_PYTHON_INCLUDE_PATH="$(python_get_includedir)"
+			-DGENTOO_PYTHON_LIBRARIES="$(python_get_library_path)"
+			-DGENTOO_PYTHON_PACKAGES_PATH="$(python_get_sitedir)"
+			-DGENTOO_PYTHON_MAJOR=${EPYTHON:6:1}
+			-DGENTOO_PYTHON_MINOR=${EPYTHON:8:1}
+			-DGENTOO_PYTHON_DEBUG_LIBRARIES="" # Absolutely no clue what this is
+		)
+		use examples && mycmakeargs+=( -DINSTALL_PYTHON_EXAMPLES=ON )
 	else
-		mycmakeargs+=( "-DINSTALL_PYTHON_EXAMPLES=OFF" )
+		mycmakeargs+=( -DINSTALL_PYTHON_EXAMPLES=OFF )
 	fi
-	
-	# Set all python variables to load the correct Gentoo paths
-	use python && mycmakeargs+=(
-		-DWITH_PYTHON=ON
-		-DGENTOO_PYTHON_EXECUTABLE=${EPYTHON}
-		-DGENTOO_PYTHON_MODULE_NAME="python${EPYTHON:6:1}"
-		-DGENTOO_PYTHON_INCLUDE_PATH="$(python_get_includedir)"
-		-DGENTOO_PYTHON_LIBRARIES="$(python_get_library_path)"
-		-DGENTOO_PYTHON_PACKAGES_PATH="$(python_get_sitedir)"
-		-DGENTOO_PYTHON_MAJOR=${EPYTHON:6:1}
-		-DGENTOO_PYTHON_MINOR=${EPYTHON:8:1}
-		-DGENTOO_PYTHON_DEBUG_LIBRARIES="" # Absolutely no clue what this is
-	)
 
 	# things we want to be hard off or not yet figured out
 	mycmakeargs+=(
-		"-DOPENCV_BUILD_3RDPARTY_LIBS=OFF"
-		"-DBUILD_LATEX_DOCS=OFF"
-		"-DBUILD_PACKAGE=OFF"
-		"-DENABLE_PROFILING=OFF"
+		-DOPENCV_BUILD_3RDPARTY_LIBS=OFF
+		-DBUILD_LATEX_DOCS=OFF
+		-DBUILD_PACKAGE=OFF
+		-DENABLE_PROFILING=OFF
 	)
 
 	# things we want to be hard enabled not worth useflag
 	mycmakeargs+=(
-		"-DCMAKE_SKIP_RPATH=ON"
-		"-DOPENCV_DOC_INSTALL_PATH=${EPREFIX}/usr/share/doc/${PF}"
+		-DCMAKE_SKIP_RPATH=ON
+		-DOPENCV_DOC_INSTALL_PATH=
 	)
 
 
