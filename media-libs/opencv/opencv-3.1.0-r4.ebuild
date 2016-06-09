@@ -209,7 +209,7 @@ src_configure() {
 	else
 		mycmakeargs+=( -DWITH_QT=OFF )
 	fi
-	
+
 	if use cuda; then
 		if [[ "$(gcc-version)" > "4.8" ]]; then
 			# bug 577410 
@@ -266,8 +266,6 @@ src_configure() {
 		-DCMAKE_SKIP_RPATH=ON
 		-DOPENCV_DOC_INSTALL_PATH=
 	)
-
-
 
 	# workaround for bug 413429
 	tc-export CC CXX
