@@ -17,14 +17,15 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="doc pdfdoc python +openvdb-compression X"
 
-REQUIRED_USE="${PYTHON_REQUIRED_USE}
+REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )
 	pdfdoc? ( doc )"
 
-RDEPEND="${PYTHON_DEPS}"
+RDEPEND="python? ( ${PYTHON_DEPS} )"
 
 DEPEND="${RDEPEND}
 	sys-libs/zlib
-	>=dev-libs/boost-1.56.0[${PYTHON_USEDEP}]
+	python? ( >=dev-libs/boost-1.56.0[${PYTHON_USEDEP}] )
+	!python? ( >=dev-libs/boost-1.56.0 )
 	media-libs/openexr
 	>=dev-cpp/tbb-3.0
 	>=dev-util/cppunit-1.10

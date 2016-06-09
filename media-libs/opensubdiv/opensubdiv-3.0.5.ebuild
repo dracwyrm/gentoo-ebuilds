@@ -26,7 +26,7 @@ RDEPEND=">=media-libs/glew-1.9.0
 DEPEND="${RDEPEND}
 	tbb? ( >=dev-cpp/tbb-4.0 )
 	doc? ( dev-python/docutils app-doc/doxygen )
-	openmp? ( sys-devel/gcc:*[openmp] )"
+	openmp? ( sys-devel/gcc[openmp] )"
 
 KEYWORDS="~amd64 ~x86"
 
