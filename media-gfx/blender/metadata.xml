@@ -70,6 +70,12 @@
 			Enable NDOF input devices (SpaceNavigator and friends).
 		</flag>
 		<flag name="openimageio">Enable OpenImageIO Support</flag>
+		<flag name="llvm">
+			Enable features depending on llvm.
+		</flag>
+		<flag name="osl">
+			Add support for Open Shading Language through
+			<pkg>media-libs/osl</pkg> (requires <pkg>sys-devel/llvm</pkg>).
 		<flag name="test">
 			Build the provided unit tests.
 		</flag>
