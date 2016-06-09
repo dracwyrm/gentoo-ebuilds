@@ -131,7 +131,6 @@ src_configure() {
 	# ===================================================
 		-DWITH_1394=$(usex ieee1394 ON OFF)
 		-DWITH_AVFOUNDATION=OFF 	# IOS
-		-DWITH_CARBON=OFF 		# APPLE Only
 		-DWITH_VTK=$(usex vtk ON OFF)
 		-DWITH_EIGEN=$(usex eigen ON OFF)
 		-DWITH_VFW=OFF     		# Video windows support
@@ -140,7 +139,6 @@ src_configure() {
 		-DWITH_GSTREAMER_0_10=OFF	# Don't want this
 		-DWITH_GTK=$(usex gtk ON OFF)
 		-DWITH_GTK_2_X=OFF
-		-DWITH_IMAGEIO=OFF		# OS X only
 		-DWITH_IPP=$(usex ipp ON OFF)
 		-DWITH_JASPER=$(usex jpeg2k ON OFF)
 		-DWITH_JPEG=$(usex jpeg ON OFF)
@@ -187,7 +185,7 @@ src_configure() {
 		-DBUILD_SHARED_LIBS=ON
 		-DBUILD_ANDROID_EXAMPLES=OFF
 		-DBUILD_DOCS=OFF # Doesn't install anyways.
-		-DBUILD_examples=$(usex examples ON OFF)
+		-DBUILD_EXAMPLES=$(usex examples ON OFF)
 		-DBUILD_PERF_TESTS=OFF
 		-DBUILD_TESTS=$(usex testprograms ON OFF)
 	# ===================================================
@@ -232,7 +230,7 @@ src_configure() {
 	fi
 
 	use contrib && mycmakeargs+=( 
-		-DOPENCV_EXTRA_MODULES_PATH="../opencv_contrib-${PV}/modules"
+		-DOPENCV_EXTRA_MODULES_PATH="${WORKDIR}/opencv_contrib-${PV}/modules"
 	)
 
 	if use python; then
@@ -240,7 +238,6 @@ src_configure() {
 		mycmakeargs+=(
 			-DWITH_PYTHON=ON
 			-DGENTOO_PYTHON_EXECUTABLE=${EPYTHON}
-			-DGENTOO_PYTHON_MODULE_NAME="python${EPYTHON:6:1}"
 			-DGENTOO_PYTHON_INCLUDE_PATH="$(python_get_includedir)"
 			-DGENTOO_PYTHON_LIBRARIES="$(python_get_library_path)"
 			-DGENTOO_PYTHON_PACKAGES_PATH="$(python_get_sitedir)"
@@ -255,8 +252,6 @@ src_configure() {
 
 	# things we want to be hard off or not yet figured out
 	mycmakeargs+=(
-		-DOPENCV_BUILD_3RDPARTY_LIBS=OFF
-		-DBUILD_LATEX_DOCS=OFF
 		-DBUILD_PACKAGE=OFF
 		-DENABLE_PROFILING=OFF
 	)
