@@ -107,7 +107,7 @@ src_prepare() {
 	default
 
 	# remove bundled stuff
-	rm -rf 3rdparty
+	rm -rf 3rdparty || die "Removing 3rd party components failed"
 	sed -i \
 		-e '/add_subdirectory(.*3rdparty.*)/ d' \
 		CMakeLists.txt cmake/*cmake || die
