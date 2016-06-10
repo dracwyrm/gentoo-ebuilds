@@ -18,7 +18,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE="doc pdfdoc python +openvdb-compression X"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
-	pdfdoc? ( doc python )"
+	pdfdoc? ( doc )"
 
 RDEPEND="${PYTHON_DEPS}"
 
@@ -47,11 +47,7 @@ S="${WORKDIR}"/openvdb
 PATCHES=(
 	"${FILESDIR}"/${P}-python3-compat.patch
 	"${FILESDIR}"/use_svg.patch
-	"${FILESDIR}"/${P}-change-python-module-install-locations-to-variables.patch
-	"${FILESDIR}"/${P}-install-python-mod.patch
-	"${FILESDIR}"/${P}-install-pdfdoc.patch
-	"${FILESDIR}"/${P}-python-documentation-versioning.patch
-	"${FILESDIR}"/${P}-fix-jobserver-unavailable-qa-warning.patch
+	"${FILESDIR}"/${P}-makefile-fixes.patch
 )
 
 src_prepare() {
@@ -63,17 +59,7 @@ src_prepare() {
 }
 
 python_module_compile() {
-	local mypythonargs=( )
-	if use doc; then
-		mypythonargs+=(
-			pydoc
-			EPYDOC="${EPREFIX}"/usr/lib/python-exec/python${EPYTHON/python/}/pdoc
-		)
-	else
-		mypythonargs+=( EPYDOC= )
-	fi
-
-	mypythonargs+=(
+	mypythonargs=(
 		PYTHON_VERSION=${EPYTHON/python/}
 		PYTHON_INCL_DIR="$(python_get_includedir)"
 		PYCONFIG_INCL_DIR="$(python_get_includedir)"
@@ -84,12 +70,10 @@ python_module_compile() {
 		NUMPY_INCL_DIR="$(python_get_sitedir)"/numpy/core/include/numpy
 		BOOST_PYTHON_LIB_DIR="${myprefix}"/"$(get_libdir)"
 		BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/}
-		PYTHON_INSTALL_DOC_DIR="${WORKDIR}"/install/usr/share/doc/openvdb/html/python${EPYTHON/python/}
 	)
 
 	einfo "Compiling module for ${EPYTHON}."
-	emake clean
-	emake python ${mypythonargs[@]} ${myemakeargs[@]}
+	emake python ${myemakeargs[@]} ${mypythonargs[@]} EPYDOC=
 }
 
 src_compile() {
@@ -98,6 +82,7 @@ src_compile() {
 	local myinstalldir="${myinstallbase}${myprefix}"
 
 	# So individule targets can be called without duplication
+	# Common depends:
 	local myemakeargs=(
 		rpath=no shared=yes
 		LIBOPENVDB_RPATH=
@@ -111,6 +96,7 @@ src_compile() {
 		LOG4CPLUS_LIB_DIR="${myprefix}"/"$(get_libdir)"
 	)
 
+	# Optional depends:
 	if use X; then
 		myemakeargs+=(
 			GLFW_INCL_DIR="${myprefix}"/"$(get_libdir)"
@@ -137,30 +123,43 @@ src_compile() {
 		)
 	fi
 
-	if use !doc; then
-		myemakeargs+=( DOXYGEN= )
-	fi
+	use doc || myemakeargs+=( DOXYGEN= )
+	
+	# Create python list here for use during install phase:
+	# - If python is used, then the last used module will trigger
+	#   document install phase. It's the same doc, so build once.
+	# - If no python used, then this will remail blanked out to
+	#   disable pydoc.
+	# - pydoc will be called if doc and python use flags are set.
+	local mypythonargs=(
+		PYTHON_VERSION=
+		PYTHON_INCL_DIR=
+		PYCONFIG_INCL_DIR=
+		PYTHON_LIB_DIR=
+		PYTHON_LIB=
+		PYTHON_INSTALL_INCL_DIR=
+		PYTHON_INSTALL_LIB_DIR=
+		NUMPY_INCL_DIR=
+		BOOST_PYTHON_LIB_DIR=
+		BOOST_PYTHON_LIB=
+	)
+
+	# The install won't like like it if this is not down
+	mkdir -p "${myinstalldir}" || die "mkdir failed"
 
 	# Create python modules for each version selected
 	use python && python_foreach_impl python_module_compile
+	
+	if use python && use doc; then
+		mypythonargs+=( EPYDOC=pdoc )
+	else
+		mypythonargs+=( EPYDOC= )
+	fi
 
-	# Installing to a temp dir, because all targets install.
-	einfo "Compiling the main library."
-	emake clean
-	mkdir -p "${myinstalldir}" || die "mkdir failed"
-	use pdfdoc && emake pdfdoc EPYDOC=pdoc
-	emake install ${myemakeargs[@]} \
-		PYTHON_VERSION= \
-		PYTHON_INCL_DIR= \
-		PYCONFIG_INCL_DIR= \
-		PYTHON_LIB_DIR= \
-		PYTHON_LIB= \
-		PYTHON_INSTALL_INCL_DIR= \
-		PYTHON_INSTALL_LIB_DIR= \
-		NUMPY_INCL_DIR= \
-		BOOST_PYTHON_LIB_DIR= \
-		BOOST_PYTHON_LIB= \
-		EPYDOC=
+	# Installing to a temp dir, because variables won't be remembered.
+	einfo "Compiling the main components."
+	emake install ${myemakeargs[@]} ${mypythonargs[@]}
+	use pdfdoc && emake pdfdoc ${myemakeargs[@]} ${mypythonargs[@]}
 }
 
 src_install() {
