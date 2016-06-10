@@ -26,5 +26,9 @@
 			<pkg>dev-libs/c-blosc</pkg>. Very useful so
 			enabled by dfault.
 		</flag>
+		<flag name="pdfdoc">
+			Install the documentation in pdf format 
+			(Requires <pkg>dev-texlive/texlive-latex</pkg>).
+		</flag>
 	</use>
 </pkgmetadata>
