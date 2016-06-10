@@ -15,9 +15,10 @@ HOMEPAGE="http://opensource.imageworks.com/?p=osl"
 LICENSE="Osl"
 SLOT="0"
 KEYWORDS="amd64 x86"
-IUSE="test"
+IUSE="doc test"
 
-RDEPEND="dev-libs/boost
+RDEPEND="<dev-libs/boost-1.61.0
+	<sys-devel/llvm-3.6.0
 	media-libs/openexr
 	media-libs/openimageio
 	dev-libs/pugixml
@@ -27,11 +28,19 @@ RDEPEND="dev-libs/boost
 # Restricting tests
 RESTRICT="test"
 
+PATCHES=(
+        "${FILESDIR}"/${PN}-1.7.2-remove-mcjit.patch
+)
+
 src_configure() {
 	local mycmakeargs=(
 		-DUSE_EXTERNAL_PUGIXML=ON
 		-DOSL_BUILD_CPP11=ON
 		-DENABLERTTI=OFF
+		-DSTOP_ON_WARNING=OFF
+                -DSELF_CONTAINED_INSTALL_TREE=OFF
+                -DOSL_BUILD_TESTS=$(usex test ON OFF)
+                -DINSTALL_DOCS=$(usex doc ON OFF)
 	)
 
 	cmake-utils_src_configure
