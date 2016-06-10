@@ -23,5 +23,19 @@
 			Adds support for faster per-face texture mapping through
 			<pkg>media-libs/ptex</pkg>.
 		</flag>
+		<flag name="cuda">
+			Enable NVIDIA CUDA Toolkit support through
+			<pkg>dev-util/nvidia-cuda-toolkit</pkg>.
+		</flag>
+		<flag name="tbb">
+			Enable multithreading with the Intel Threads Building Blocks through
+			<pkg>dev-cpp/tbb</pkg>.
+		</flag>
+		<flag name="opencl">
+			Enable OpenCL support through
+			<pkg>virtual/opencl</pkg>.
+		</flag>
+		<flag name="tutorials">
+		</flag>
 	</use>
 </pkgmetadata>
