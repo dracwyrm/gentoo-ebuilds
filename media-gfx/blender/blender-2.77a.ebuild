@@ -60,7 +60,7 @@ OPTIONAL_DEPENDS="
 		>=dev-cpp/tbb-3.0
 	)
 	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
-	osl? ( <media-libs/osl-1.6 )
+	osl? ( media-libs/osl )
 	sdl? ( media-libs/libsdl2[sound,joystick] )
 	sndfile? ( media-libs/libsndfile )
 	tiff? ( media-libs/tiff:0 )
