@@ -30,6 +30,7 @@ RESTRICT="test"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-1.7.2-remove-mcjit.patch
+	"${FILESDIR}"/${P}-fix-pdf-install-dir.patch
 )
 
 src_configure() {
