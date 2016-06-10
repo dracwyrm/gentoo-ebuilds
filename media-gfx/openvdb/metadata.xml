@@ -8,7 +8,7 @@
         </maintainer>
 	<maintainer restrict="&gt;=media-gfx/openvdb-3.1.0" type="person">
 		<email>agrigo2001@yahoo.com.au</email>
-		<name>Adrian</name>
+		<name>Adrian Grigo</name>
 		<description>Proxy maintainer</description>
 	</maintainer>
 	<maintainer type="project">
@@ -25,6 +25,10 @@
 			Adds enhanced compression to files through
 			<pkg>dev-libs/c-blosc</pkg>. Very useful so
 			enabled by dfault.
+		</flag>
+		<flag name="pdfdoc">
+			Install the documentation in pdf format 
+			(Requires <pkg>dev-texlive/texlive-latex</pkg>).
 		</flag>
 	</use>
 </pkgmetadata>

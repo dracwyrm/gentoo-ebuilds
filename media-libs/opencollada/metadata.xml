@@ -16,6 +16,6 @@
 		<name>Proxy Maintainers</name>
 	</maintainer>
 	<longdescription>
-		Per-Face Texture Mapping for Production Rendering.
+		Stream based read/write library for COLLADA files.
 	</longdescription>
 </pkgmetadata>
