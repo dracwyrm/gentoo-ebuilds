@@ -50,13 +50,13 @@ OPTIONAL_DEPENDS="
 	nls? ( virtual/libiconv )
 	openal? ( >=media-libs/openal-1.6.372 )
 	openimageio? ( >=media-libs/openimageio-1.6.9 )
-	openexr? ( 
+	openexr? (
 		media-libs/ilmbase
 		>=media-libs/openexr-2.2.0
 	)
 	opensubdiv? ( >=media-libs/opensubdiv-3.0.5 )
-	openvdb? ( 
-		>=media-gfx/openvdb-2.1.0[${PYTHON_USEDEP},openvdb-compression=] 
+	openvdb? (
+		>=media-gfx/openvdb-2.1.0[${PYTHON_USEDEP},openvdb-compression=]
 		>=dev-cpp/tbb-3.0
 	)
 	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )

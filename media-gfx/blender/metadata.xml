@@ -83,5 +83,15 @@
 		<flag name="man">
 			Build and install man pages.
 		</flag>
+		<flag name="c++0x">
+			Build with C++11 standard enabled.
+		</flag>
+		<flag name="valgrind">
+			Add support for memory debugging using
+			<pkg>dev-util/valgrind</pkg>
+		</flag>
+		<flag name="jemalloc">
+			Use <pkg>dev-libs/jemalloc</pkg> for memory allocation..
+		</flag>
 	</use>
 </pkgmetadata>
