@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer restrict="&gt;=media-libs/opensubdiv-3.0.5" type="person">
+		<email>j.scruggs@gmail.com</email>
+		<name>Jonathan Scruggs</name>
+		<description>Proxy maintainer</description>
+        </maintainer>
+	<maintainer restrict="&gt;=media-libs/opensubdiv-3.0.5" type="person">
+		<email>agrigo2001@yahoo.com.au</email>
+		<name>Adrian</name>
+		<description>Proxy maintainer</description>
+	</maintainer>
+	<maintainer type="project">
+		<email>proxy-maint@gentoo.org</email>
+		<name>Proxy Maintainers</name>
+	</maintainer>
+	<longdescription>
+		Advanced shading language for production GI renderers
+	</longdescription>
+	<use>
+		<flag name="doc">
+			Install the documentation.
+		</flag>
+		<flag name="test">
+			Build the provided unit tests.
+		</flag>
+	</use>
+</pkgmetadata>

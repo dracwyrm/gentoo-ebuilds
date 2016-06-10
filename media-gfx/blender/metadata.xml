@@ -92,5 +92,11 @@
 		<flag name="jemalloc">
 			Use <pkg>dev-libs/jemalloc</pkg> for memory allocation..
 		</flag>
+		<flag name="test">
+			Build the provided unit tests.
+		</flag>
+		<flag name="man">
+			Build and install man pages.
+		</flag>
 	</use>
 </pkgmetadata>
