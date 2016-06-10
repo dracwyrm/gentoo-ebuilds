@@ -70,5 +70,11 @@
 			Enable NDOF input devices (SpaceNavigator and friends).
 		</flag>
 		<flag name="openimageio">Enable OpenImageIO Support</flag>
+		<flag name="test">
+			Build the provided unit tests.
+		</flag>
+		<flag name="man">
+			Build and install man pages.
+		</flag>
 	</use>
 </pkgmetadata>
