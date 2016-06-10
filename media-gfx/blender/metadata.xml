@@ -77,5 +77,11 @@
 			Add support for Open Shading Language through
 			<pkg>media-libs/osl</pkg> (requires <pkg>sys-devel/llvm</pkg>).
 		</flag>
+		<flag name="test">
+			Build the provided unit tests.
+		</flag>
+		<flag name="man">
+			Build and install man pages.
+		</flag>
 	</use>
 </pkgmetadata>
