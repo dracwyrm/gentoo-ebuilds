@@ -29,7 +29,7 @@ RDEPEND="<dev-libs/boost-1.61.0
 RESTRICT="test"
 
 PATCHES=(
-        "${FILESDIR}"/${PN}-1.7.2-remove-mcjit.patch
+	"${FILESDIR}"/${PN}-1.7.2-remove-mcjit.patch
 )
 
 src_configure() {
@@ -38,9 +38,9 @@ src_configure() {
 		-DOSL_BUILD_CPP11=ON
 		-DENABLERTTI=OFF
 		-DSTOP_ON_WARNING=OFF
-                -DSELF_CONTAINED_INSTALL_TREE=OFF
-                -DOSL_BUILD_TESTS=$(usex test ON OFF)
-                -DINSTALL_DOCS=$(usex doc ON OFF)
+		-DSELF_CONTAINED_INSTALL_TREE=OFF
+		-DOSL_BUILD_TESTS=$(usex test ON OFF)
+		-DINSTALL_DOCS=$(usex doc ON OFF)
 	)
 
 	cmake-utils_src_configure
