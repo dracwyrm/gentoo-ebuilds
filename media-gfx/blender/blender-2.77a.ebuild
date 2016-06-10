@@ -17,7 +17,7 @@ SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
 IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +game-engine \
-      jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv \
+      headless jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv \
       openvdb openvdb-compression player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
       tiff c++0x valgrind jack sdl"
 
@@ -151,6 +151,7 @@ src_configure() {
 		-DWITH_CYCLES=$(usex cycles ON OFF )
 		-DWITH_FFTW3=$(usex fftw ON OFF )
 		-DWITH_GAMEENGINE=$(usex game-engine ON OFF )
+		-DWITH_HEADLESS=$(usex headless ON OFF )
 		-DWITH_IMAGE_DDS=$(usex dds ON OFF )
 		-DWITH_IMAGE_OPENEXR=$(usex openexr ON OFF )
 		-DWITH_IMAGE_OPENJPEG=$(usex jpeg2k ON OFF )
