@@ -183,15 +183,15 @@ src_configure() {
 }
 
 src_compile() {
-	# Workaround for binary drivers.
-	cards=$(echo -n /dev/ati/card* /dev/nvidiactl* | sed 's/ /:/g')
-	if test -n "${cards}"; then 
-		addpredict "${cards}"
-	fi
-
 	cmake-utils_src_compile
 
 	if use doc; then
+		# Workaround for binary drivers.
+		cards=$(echo -n /dev/ati/card* /dev/nvidiactl* | sed 's/ /:/g')
+		if test -n "${cards}"; then 
+			addpredict "${cards}"
+		fi
+
 		einfo "Generating Blender C/C++ API docs ..."
 		cd "${CMAKE_USE_DIR}"/doc/doxygen || die
 		doxygen -u Doxyfile || die
