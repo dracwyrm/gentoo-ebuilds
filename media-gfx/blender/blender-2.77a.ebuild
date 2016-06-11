@@ -16,9 +16,9 @@ SRC_URI="http://download.blender.org/source/${P}.tar.gz"
 SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
-IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +game-engine llvm \
-      headless jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv \
-      openvdb openvdb-compression osl player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
+IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +game-engine \
+      jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv \
+      openvdb openvdb-compression player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
       tiff c++0x valgrind jack sdl"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
@@ -28,7 +28,6 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	openvdb? ( boost )
 	nls? ( boost )
 	openal? ( boost )
-	osl? ( cycles llvm )
 	game-engine? ( boost )
 	?? ( ffmpeg libav )"
 
@@ -42,7 +41,6 @@ OPTIONAL_DEPENDS="
 	jack? ( media-sound/jack-audio-connection-kit )
 	jemalloc? ( dev-libs/jemalloc )
 	jpeg2k? ( media-libs/openjpeg:0 )
-	llvm? ( sys-devel/llvm )
 	ndof? (
 		app-misc/spacenavd
 		dev-libs/libspnav
@@ -50,17 +48,16 @@ OPTIONAL_DEPENDS="
 	nls? ( virtual/libiconv )
 	openal? ( >=media-libs/openal-1.6.372 )
 	openimageio? ( >=media-libs/openimageio-1.6.9 )
-	openexr? (
+	openexr? ( 
 		media-libs/ilmbase
 		>=media-libs/openexr-2.2.0
 	)
 	opensubdiv? ( >=media-libs/opensubdiv-3.0.5 )
-	openvdb? (
-		>=media-gfx/openvdb-2.1.0[${PYTHON_USEDEP},openvdb-compression=]
+	openvdb? ( 
+		>=media-gfx/openvdb-2.1.0[${PYTHON_USEDEP},openvdb-compression=] 
 		>=dev-cpp/tbb-3.0
 	)
 	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
-	osl? ( media-libs/osl )
 	sdl? ( media-libs/libsdl2[sound,joystick] )
 	sndfile? ( media-libs/libsndfile )
 	tiff? ( media-libs/tiff:0 )
@@ -154,7 +151,6 @@ src_configure() {
 		-DWITH_CYCLES=$(usex cycles ON OFF )
 		-DWITH_FFTW3=$(usex fftw ON OFF )
 		-DWITH_GAMEENGINE=$(usex game-engine ON OFF )
-		-DWITH_HEADLESS=$(usex headless ON OFF )
 		-DWITH_IMAGE_DDS=$(usex dds ON OFF )
 		-DWITH_IMAGE_OPENEXR=$(usex openexr ON OFF )
 		-DWITH_IMAGE_OPENJPEG=$(usex jpeg2k ON OFF )
@@ -172,7 +168,6 @@ src_configure() {
 		-DWITH_OPENSUBDIV=$(usex opensubdiv ON OFF )
 		-DWITH_OPENVDB=$(usex openvdb ON OFF )
 		-DWITH_OPENVDB_BLOSC=$(usex openvdb-compression ON OFF )
-		-DWITH_CYCLES_OSL=$(usex osl ON OFF )
 		-DWITH_PLAYER=$(usex player ON OFF )
 		-DWITH_SDL=$(usex sdl ON OFF )
 		-DWITH_RAYOPTIMIZATION=$(usex cpu_flags_x86_sse ON OFF )
@@ -188,6 +183,12 @@ src_configure() {
 }
 
 src_compile() {
+	# Workaround for binary drivers.
+	cards=$(echo -n /dev/ati/card* /dev/nvidiactl* | sed 's/ /:/g')
+	if test -n "${cards}"; then 
+		addpredict "${cards}"
+	fi
+
 	cmake-utils_src_compile
 
 	if use doc; then
