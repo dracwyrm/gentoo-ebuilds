@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 PYTHON_COMPAT=( python2_7 python3_{3,4,5} )
 
@@ -22,5 +22,4 @@ RDEPEND="
 	dev-python/markdown[${PYTHON_USEDEP}]
 	dev-python/pygments[${PYTHON_USEDEP}]
 "
-DEPEND="${RDEPEND}
-	"
+DEPEND="${RDEPEND}"
