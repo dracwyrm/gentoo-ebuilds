@@ -32,7 +32,7 @@ DEPEND="${RDEPEND}
 		>=app-doc/doxygen-1.8.7
 		python? ( >=dev-python/pdoc-0.2.4[${PYTHON_USEDEP}] )
 		pdfdoc? (
-			>=dev-texlive/texlive-latex-2015
+			>=dev-texlive/texlive-latex-2014
 			>=app-text/ghostscript-gpl-8.70
 		)
 	)
@@ -124,7 +124,7 @@ src_compile() {
 	fi
 
 	use doc || myemakeargs+=( DOXYGEN= )
-	
+
 	# Create python list here for use during install phase:
 	# - If python is used, then the last used module will trigger
 	#   document install phase. It's the same doc, so build once.
@@ -149,7 +149,7 @@ src_compile() {
 
 	# Create python modules for each version selected
 	use python && python_foreach_impl python_module_compile
-	
+
 	if use python && use doc; then
 		mypythonargs+=( EPYDOC=pdoc )
 	else
