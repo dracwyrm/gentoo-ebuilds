@@ -1,6 +1,6 @@
 # Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
+# $id$
 
 EAPI="6"
 PYTHON_COMPAT=( python{2_7,3_4,3_5} )
@@ -31,10 +31,10 @@ DEPEND="${RDEPEND}
 	doc? (
 		>=app-doc/doxygen-1.8.7
 		python? ( >=dev-python/pdoc-0.2.4[${PYTHON_USEDEP}] )
-		pdfdoc? (
-			>=dev-texlive/texlive-latex-2014
-			>=app-text/ghostscript-gpl-8.70
-		)
+	)
+	pdfdoc? (
+		>=app-doc/doxygen-1.8.7[dot,latex]
+		>=app-text/ghostscript-gpl-8.70
 	)
 	X? ( media-libs/glfw )
 	dev-libs/jemalloc
@@ -74,12 +74,16 @@ python_module_compile() {
 
 	einfo "Compiling module for ${EPYTHON}."
 	emake python ${myemakeargs[@]} ${mypythonargs[@]} EPYDOC=
+
+	# This is so the correct version of pdoc is used
+	mypyscriptdir=$(python_get_scriptdir)
 }
 
 src_compile() {
 	local myprefix="${EPREFIX}"/usr
 	local myinstallbase="${WORKDIR}"/install
 	local myinstalldir="${myinstallbase}${myprefix}"
+	local mypyscriptdir
 
 	# So individule targets can be called without duplication
 	# Common depends:
@@ -124,7 +128,7 @@ src_compile() {
 	fi
 
 	use doc || myemakeargs+=( DOXYGEN= )
-
+	
 	# Create python list here for use during install phase:
 	# - If python is used, then the last used module will trigger
 	#   document install phase. It's the same doc, so build once.
@@ -148,10 +152,11 @@ src_compile() {
 	mkdir -p "${myinstalldir}" || die "mkdir failed"
 
 	# Create python modules for each version selected
-	use python && python_foreach_impl python_module_compile
 
+	use python && python_foreach_impl python_module_compile
+	
 	if use python && use doc; then
-		mypythonargs+=( EPYDOC=pdoc )
+		mypythonargs+=( EPYDOC="${mypyscriptdir}"/pdoc )
 	else
 		mypythonargs+=( EPYDOC= )
 	fi

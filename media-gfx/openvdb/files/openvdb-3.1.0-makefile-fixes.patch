@@ -30,7 +30,7 @@ index fba4fb6..0054f64 100644
 +	@#
 +	    mkdir -p $(DESTDIR)/share/doc/openvdb/pdf; \
 +	    echo "Created $(DESTDIR)/share/doc/openvdb/pdf"; \
-+	    cp -r -f refman.pdf $(DESTDIR)/share/doc/openvdb/pdf/; \
++	    cp -r -f doc/latex/refman.pdf $(DESTDIR)/share/doc/openvdb/pdf/; \
 +	    echo "Copied documentation to $(DESTDIR)/share/doc/openvdb/pdf/"; \
  
  ifneq (,$(strip $(DOXYGEN)))
