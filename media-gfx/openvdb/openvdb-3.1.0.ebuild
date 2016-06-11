@@ -24,17 +24,17 @@ RDEPEND="${PYTHON_DEPS}"
 
 DEPEND="${RDEPEND}
 	sys-libs/zlib
-	>=dev-libs/boost-1.42.0[${PYTHON_USEDEP}]
+	dev-libs/boost[${PYTHON_USEDEP}]
 	media-libs/openexr
-	>=dev-cpp/tbb-3.0
-	>=dev-util/cppunit-1.10
+	dev-cpp/tbb
+	dev-util/cppunit
 	doc? (
-		>=app-doc/doxygen-1.8.7
-		python? ( >=dev-python/pdoc-0.2.4[${PYTHON_USEDEP}] )
+		app-doc/doxygen
+		python? ( dev-python/pdoc[${PYTHON_USEDEP}] )
 	)
 	pdfdoc? (
-		>=app-doc/doxygen-1.8.7[dot,latex]
-		>=app-text/ghostscript-gpl-8.70
+		app-doc/doxygen[dot,latex]
+		app-text/ghostscript-gpl
 	)
 	X? ( media-libs/glfw )
 	dev-libs/jemalloc

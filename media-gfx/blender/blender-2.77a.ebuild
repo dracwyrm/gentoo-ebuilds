@@ -35,7 +35,7 @@ OPTIONAL_DEPENDS="
 	boost? ( >=dev-libs/boost-1.60[nls?,threads(+)] )
 	collada? ( >=media-libs/opencollada-1.6.18 )
 	colorio? ( >=media-libs/opencolorio-1.0.9-r2 )
-	ffmpeg? ( >=media-video/ffmpeg-2.8.6:0=[x264,mp3,encode,theora,jpeg2k?] )
+	ffmpeg? ( media-video/ffmpeg:0=[x264,mp3,encode,theora,jpeg2k?] )
 	libav? ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
 	fftw? ( sci-libs/fftw:3.0 )
 	jack? ( media-sound/jack-audio-connection-kit )
@@ -46,28 +46,29 @@ OPTIONAL_DEPENDS="
 		dev-libs/libspnav
 	)
 	nls? ( virtual/libiconv )
-	openal? ( >=media-libs/openal-1.6.372 )
+	openal? ( media-libs/openal )
 	openimageio? ( >=media-libs/openimageio-1.6.9 )
 	openexr? ( 
 		media-libs/ilmbase
 		>=media-libs/openexr-2.2.0
 	)
-	opensubdiv? ( >=media-libs/opensubdiv-3.0.5 )
+	opensubdiv? ( media-libs/opensubdiv )
 	openvdb? ( 
-		>=media-gfx/openvdb-2.1.0[${PYTHON_USEDEP},openvdb-compression=] 
-		>=dev-cpp/tbb-3.0
+		media-gfx/openvdb[${PYTHON_USEDEP},openvdb-compression=] 
+		dev-cpp/tbb
 	)
 	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
 	sdl? ( media-libs/libsdl2[sound,joystick] )
 	sndfile? ( media-libs/libsndfile )
 	tiff? ( media-libs/tiff:0 )
-	valgrind? ( dev-util/valgrind )"
+	valgrind? ( dev-util/valgrind )
+"
 
 RDEPEND="${PYTHON_DEPS}
 	dev-libs/lzo:2
 	>=dev-python/numpy-1.10.1[${PYTHON_USEDEP}]
 	dev-python/requests[${PYTHON_USEDEP}]
-	>=media-libs/freetype-2.0:2
+	media-libs/freetype
 	media-libs/glew
 	media-libs/libpng:0
 	media-libs/libsamplerate
@@ -80,7 +81,8 @@ RDEPEND="${PYTHON_DEPS}
 	x11-libs/libX11
 	x11-libs/libXi
 	x11-libs/libXxf86vm
-	${OPTIONAL_DEPENDS}"
+	${OPTIONAL_DEPENDS}
+"
 
 DEPEND="${RDEPEND}
 	>=dev-cpp/eigen-3.2.8:3
@@ -88,7 +90,8 @@ DEPEND="${RDEPEND}
 		app-doc/doxygen[-nodot(-),dot(+),latex]
 		dev-python/sphinx[latex]
 	)
-	nls? ( sys-devel/gettext )"
+	nls? ( sys-devel/gettext )
+"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.68-doxyfile.patch

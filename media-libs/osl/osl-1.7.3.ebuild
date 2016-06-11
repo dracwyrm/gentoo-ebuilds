@@ -23,7 +23,7 @@ RDEPEND="<dev-libs/boost-1.61.0
 	media-libs/openimageio
 	dev-libs/pugixml
 	sys-libs/zlib
-	"
+"
 
 # Restricting tests
 RESTRICT="test"

@@ -17,14 +17,14 @@ LICENSE="ZLIB"
 SLOT="0"
 IUSE="ptex cuda tbb examples tutorials test doc openmp opencl"
 
-RDEPEND=">=media-libs/glew-1.9.0
-	>=media-libs/glfw-3.0.0
+RDEPEND="media-libs/glew
+	media-libs/glfw
 	opencl? ( virtual/opencl )
-	cuda? ( >=dev-util/nvidia-cuda-toolkit-4.0 )
-	ptex? ( >=media-libs/ptex-2.0 )"
+	cuda? ( dev-util/nvidia-cuda-toolkit )
+	ptex? ( media-libs/ptex )"
 
 DEPEND="${RDEPEND}
-	tbb? ( >=dev-cpp/tbb-4.0 )
+	tbb? ( dev-cpp/tbb )
 	doc? ( dev-python/docutils app-doc/doxygen )
 	openmp? ( sys-devel/gcc[openmp] )"
 
