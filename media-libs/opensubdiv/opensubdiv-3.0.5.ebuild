@@ -10,8 +10,9 @@ HOMEPAGE="http://graphics.pixar.com/opensubdiv/"
 
 MY_PV=${PV//./_}
 
-SRC_URI="https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v${MY_PV}.tar.gz
-	-> ${P}.tar.gz"
+SRC_URI="https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v${MY_PV}.tar.gz -> ${P}.tar.gz
+https://github.com/dracwyrm/gentoo-distfiles/raw/master/opensubdiv/3.0.5/opensubdiv-3.0.5-patchset-1.tar.xz
+	https://github.com/dracwyrm/gentoo-distfiles/raw/master/${PN}/${PV}/${P}-patchset-1.tar.xz"
 
 LICENSE="ZLIB"
 SLOT="0"
@@ -35,7 +36,7 @@ S=${WORKDIR}/OpenSubdiv-${MY_PV}
 PATCHES=(
 	"${FILESDIR}"/${P}-fix-gpu-architecture.patch
 	"${FILESDIR}"/${P}-skip-osd-regression.patch
-	"${FILESDIR}"/${P}-Improved-Ptex-configuration-and-DX-compatibility.patch
+	"${WORKDIR}"/${P}-Improved-Ptex-configuration-and-DX-compatibility.patch
 )
 
 src_configure() {
