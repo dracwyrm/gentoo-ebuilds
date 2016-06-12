@@ -113,6 +113,16 @@ pkg_pretend() {
 	if use doc; then
 		CHECKREQS_DISK_BUILD="4G" check-reqs_pkg_pretend
 	fi
+
+	# So far, only nVidia binary drivers are supported.
+	cards=( /dev/nvidiactl* )
+	if use opensubdiv && ! test -e "${cards[0]}"; then
+		eerror "Currently, only nVidia binary drivers are supported for"
+		eerror "OpenSubdiv features to work correctly. Please disable"
+		eerror "the 'opensubdiv' use flag and try installing again."
+		eerror "Support may be added in future versions."
+		die "Need binary nVidia drivers"
+	fi
 }
 
 pkg_setup() {
@@ -195,8 +205,8 @@ src_compile() {
 
 	if use doc; then
 		# Workaround for binary drivers.
-		cards=$(echo -n /dev/ati/card* /dev/nvidiactl* | sed 's/ /:/g')
-		if test -n "${cards}"; then
+		cards=( /dev/ati/card* /dev/nvidiactl* )
+		if test -e "${cards[0]}"; then
 			addpredict "${cards}"
 		fi
 
