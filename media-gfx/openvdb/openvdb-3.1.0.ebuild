@@ -128,7 +128,7 @@ src_compile() {
 	fi
 
 	use doc || myemakeargs+=( DOXYGEN= )
-	
+
 	# Create python list here for use during install phase:
 	# - If python is used, then the last used module will trigger
 	#   document install phase. It's the same doc, so build once.
@@ -154,7 +154,7 @@ src_compile() {
 	# Create python modules for each version selected
 
 	use python && python_foreach_impl python_module_compile
-	
+
 	if use python && use doc; then
 		mypythonargs+=( EPYDOC="${mypyscriptdir}"/pdoc )
 	else
