@@ -60,7 +60,7 @@ OPTIONAL_DEPENDS="
 		dev-cpp/tbb
 	)
 	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
-	ols? ( media-libs/osl )
+	osl? ( media-libs/osl )
 	sdl? ( media-libs/libsdl2[sound,joystick] )
 	sndfile? ( media-libs/libsndfile )
 	tiff? ( media-libs/tiff:0 )
@@ -196,7 +196,7 @@ src_compile() {
 	if use doc; then
 		# Workaround for binary drivers.
 		cards=$(echo -n /dev/ati/card* /dev/nvidiactl* | sed 's/ /:/g')
-		if test -n "${cards}"; then 
+		if test -n "${cards}"; then
 			addpredict "${cards}"
 		fi
 
