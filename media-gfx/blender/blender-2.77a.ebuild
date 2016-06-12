@@ -205,10 +205,8 @@ src_compile() {
 
 	if use doc; then
 		# Workaround for binary drivers.
-		cards=( /dev/ati/card* /dev/nvidiactl* )
-		if test -e "${cards[0]}"; then
-			addpredict "${cards}"
-		fi
+		cards=( /dev/ati/card* /dev/nvidia* )
+		for card in "${cards[@]}"; do addpredict ${card}; done
 
 		einfo "Generating Blender C/C++ API docs ..."
 		cd "${CMAKE_USE_DIR}"/doc/doxygen || die
