@@ -17,5 +17,3 @@ DEPEND="${RDEPEND}
 	app-doc/doxygen"
 
 KEYWORDS="~amd64 ~x86"
-
-PATCHES=( "${FILESDIR}/${P}-install-version-header.patch" )
