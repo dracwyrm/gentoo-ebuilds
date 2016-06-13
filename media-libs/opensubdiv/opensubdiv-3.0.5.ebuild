@@ -11,8 +11,7 @@ HOMEPAGE="http://graphics.pixar.com/opensubdiv/"
 MY_PV=${PV//./_}
 
 SRC_URI="https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v${MY_PV}.tar.gz -> ${P}.tar.gz
-https://github.com/dracwyrm/gentoo-distfiles/raw/master/opensubdiv/3.0.5/opensubdiv-3.0.5-patchset-1.tar.xz
-	https://github.com/dracwyrm/gentoo-distfiles/raw/master/${PN}/${PV}/${P}-patchset-1.tar.xz"
+	https://github.com/dracwyrm/gentoo-patches/raw/master/${PN}/${PV}/${P}-patchset-1.tar.xz"
 
 LICENSE="ZLIB"
 SLOT="0"
