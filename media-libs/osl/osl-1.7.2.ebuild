@@ -3,18 +3,17 @@
 # $Id$
 
 EAPI=6
-
-EGIT_REPO_URI="https://github.com/imageworks/OpenShadingLanguage.git"
-EGIT_BRANCH="RB-1.7"
-
-inherit cmake-utils git-r3
+inherit cmake-utils
 
 DESCRIPTION="Advanced shading language for production GI renderers"
 HOMEPAGE="http://opensource.imageworks.com/?p=osl"
 
+SRC_URI="https://github.com/imageworks/OpenShadingLanguage/archive/Release-${PV}.tar.gz -> ${P}.tar.gz
+	https://github.com/dracwyrm/gentoo-patches/raw/master/${PN}/${PV}/${P}-patchset-1.tar.xz"
+
 LICENSE="Osl"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="~amd64 ~x86"
 IUSE="doc test"
 
 RDEPEND="<dev-libs/boost-1.61.0
@@ -28,10 +27,9 @@ RDEPEND="<dev-libs/boost-1.61.0
 # Restricting tests
 RESTRICT="test"
 
-PATCHES=(
-	"${FILESDIR}"/${PN}-1.7.2-remove-mcjit.patch
-	"${FILESDIR}"/${P}-fix-pdf-install-dir.patch
-)
+S=${WORKDIR}/OpenShadingLanguage-Release-${PV}
+
+PATCHES=( "${WORKDIR}"/${P}-patchset-1.patch )
 
 src_configure() {
 	local mycmakeargs=(
