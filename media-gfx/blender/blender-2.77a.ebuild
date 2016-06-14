@@ -19,13 +19,15 @@ KEYWORDS="~amd64 ~x86"
 IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +game-engine llvm \
       headless jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv \
       openvdb openvdb-compression osl player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
-      tiff c++0x valgrind jack sdl"
+      tiff c++0x valgrind jack sdl cuda"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
-	player? ( game-engine )
+	player? ( game-engine !headless )
+	cuda? ( cycles )
 	cycles? ( boost openexr tiff openimageio )
 	colorio? ( boost )
 	openvdb? ( boost )
+	opensubdiv? ( cuda )
 	nls? ( boost )
 	openal? ( boost )
 	osl? ( cycles llvm )
@@ -36,9 +38,15 @@ OPTIONAL_DEPENDS="
 	boost? ( >=dev-libs/boost-1.60[nls?,threads(+)] )
 	collada? ( >=media-libs/opencollada-1.6.18 )
 	colorio? ( >=media-libs/opencolorio-1.0.9-r2 )
+	cuda? ( dev-util/nvidia-cuda-sdk )
 	ffmpeg? ( media-video/ffmpeg:0=[x264,mp3,encode,theora,jpeg2k?] )
 	libav? ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
 	fftw? ( sci-libs/fftw:3.0 )
+	!headless? (
+		x11-libs/libX11
+		x11-libs/libXi
+		x11-libs/libXxf86vm
+	)
 	jack? ( media-sound/jack-audio-connection-kit )
 	jemalloc? ( dev-libs/jemalloc )
 	jpeg2k? ( media-libs/openjpeg:0 )
@@ -81,9 +89,7 @@ RDEPEND="${PYTHON_DEPS}
 	virtual/jpeg:0
 	virtual/libintl
 	virtual/opengl
-	x11-libs/libX11
-	x11-libs/libXi
-	x11-libs/libXxf86vm
+
 	${OPTIONAL_DEPENDS}
 "
 
@@ -112,16 +118,6 @@ pkg_pretend() {
 
 	if use doc; then
 		CHECKREQS_DISK_BUILD="4G" check-reqs_pkg_pretend
-	fi
-
-	# So far, only nVidia binary drivers are supported.
-	cards=( /dev/nvidiactl* )
-	if use opensubdiv && ! test -e "${cards[0]}"; then
-		eerror "Currently, only nVidia binary drivers are supported for"
-		eerror "OpenSubdiv features to work correctly. Please disable"
-		eerror "the 'opensubdiv' use flag and try installing again."
-		eerror "Support may be added in future versions."
-		die "Need binary nVidia drivers"
 	fi
 }
 
@@ -166,9 +162,11 @@ src_configure() {
 		-DWITH_CPP11=$(usex c++0x ON OFF )
 		-DWITH_CYCLES=$(usex cycles ON OFF )
 		-DWITH_CYCLES_OSL=$(usex osl ON OFF )
+		-DWITH_CYCLES_CUDA_BINARIES=$(usex cuda ON OFF)
 		-DWITH_FFTW3=$(usex fftw ON OFF )
 		-DWITH_GAMEENGINE=$(usex game-engine ON OFF )
 		-DWITH_HEADLESS=$(usex headless ON OFF )
+		-DWITH_X11=$(usex headless OFF ON )
 		-DWITH_IMAGE_DDS=$(usex dds ON OFF )
 		-DWITH_IMAGE_OPENEXR=$(usex openexr ON OFF )
 		-DWITH_IMAGE_OPENJPEG=$(usex jpeg2k ON OFF )
@@ -189,6 +187,7 @@ src_configure() {
 		-DWITH_PLAYER=$(usex player ON OFF )
 		-DWITH_SDL=$(usex sdl ON OFF )
 		-DWITH_RAYOPTIMIZATION=$(usex cpu_flags_x86_sse ON OFF )
+		-DWITH_CPU_SSE=$(usex cpu_flags_x86_sse ON OFF )
 		-DWITH_SSE2=$(usex cpu_flags_x86_sse2 ON OFF )
 		-DWITH_CXX_GUARDEDALLOC=$(usex debug ON OFF )
 		-DWITH_ASSERT_ABORT=$(usex debug ON OFF )
@@ -206,7 +205,7 @@ src_compile() {
 	if use doc; then
 		# Workaround for binary drivers.
 		cards=( /dev/ati/card* /dev/nvidia* )
-		for card in "${cards[@]}"; do addpredict ${card}; done
+		for card in "${cards[@]}"; do addpredict "${card}"; done
 
 		einfo "Generating Blender C/C++ API docs ..."
 		cd "${CMAKE_USE_DIR}"/doc/doxygen || die

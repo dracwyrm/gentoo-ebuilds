@@ -1,5 +1,6 @@
---- a/intern/cycles/render/svm.cpp       2016-05-28 13:53:38.459907548 +0930
-+++ b/intern/cycles/render/svm.cpp   2016-05-28 12:30:42.331979674 +0930
+diff -purN a/intern/cycles/render/svm.cpp b/intern/cycles/render/svm.cpp
+--- a/intern/cycles/render/svm.cpp	2016-03-23 08:49:49.000000000 +0000
++++ b/intern/cycles/render/svm.cpp	2016-06-14 08:33:25.822603800 +0100
 @@ -28,6 +28,8 @@
  #include "util_foreach.h"
  #include "util_progress.h"
@@ -9,4 +10,3 @@
  CCL_NAMESPACE_BEGIN
  
  /* Shader Manager */
-

@@ -94,7 +94,7 @@
 			Use <pkg>dev-libs/jemalloc</pkg> for memory allocation.
 		</flag>
 		<flag name="headless">
-			Enable headless (render farm) operation.
+			Build without graphical support (renderfarm, server mode only).
 		</flag>
 	</use>
 </pkgmetadata>
