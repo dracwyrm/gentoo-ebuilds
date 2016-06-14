@@ -90,7 +90,7 @@ src_compile() {
 	local myemakeargs=(
 		rpath=no shared=yes
 		LIBOPENVDB_RPATH=
-		DESTDIR="${myinstalldir}"
+		DESTDIR="${myprefix}"/"$(get_libdir)"
 		HFS="${myprefix}"
 		HT="${myprefix}"
 		HDSO="${myprefixlibdir}"
@@ -149,7 +149,7 @@ src_compile() {
 	)
 
 	# The installer won't like it if this is not done
-	mkdir -p "${myinstalldir}" || die "mkdir failed"
+	mkdir -p "${myprefix}"/"$(get_libdir)" || die "mkdir failed"
 
 	# Create python modules for each version selected
 	use python && python_foreach_impl python_module_compile
