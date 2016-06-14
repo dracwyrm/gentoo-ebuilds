@@ -33,8 +33,8 @@ KEYWORDS="~amd64 ~x86"
 S=${WORKDIR}/OpenSubdiv-${MY_PV}
 
 PATCHES=(
-	"${FILESDIR}"/${P}-fix-gpu-architecture.patch
-	"${FILESDIR}"/${P}-skip-osd-regression.patch
+	"${WORKDIR}"/${P}-fix-gpu-architecture.patch
+	"${WORKDIR}"/${P}-skip-osd-regression.patch
 	"${WORKDIR}"/${P}-Improved-Ptex-configuration-and-DX-compatibility.patch
 )
 
