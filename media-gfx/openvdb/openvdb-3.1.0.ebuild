@@ -68,7 +68,7 @@ python_module_compile() {
 		PYTHON_INSTALL_INCL_DIR="${myinstallbase}$(python_get_includedir)"
 		PYTHON_INSTALL_LIB_DIR="${myinstallbase}$(python_get_sitedir)"
 		NUMPY_INCL_DIR="$(python_get_sitedir)"/numpy/core/include/numpy
-		BOOST_PYTHON_LIB_DIR="${myprefix}"/"$(get_libdir)"
+		BOOST_PYTHON_LIB_DIR="${myprefixlibdir}"
 		BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/}
 	)
 
@@ -81,8 +81,8 @@ python_module_compile() {
 
 src_compile() {
 	local myprefix="${EPREFIX}"/usr
+	local myprefixlibdir="${myprefix}"/"$(get_libdir)"
 	local myinstallbase="${WORKDIR}"/install
-	local myinstalldir="${myinstallbase}${myprefix}"
 	local mypyscriptdir
 
 	# So individule targets can be called without duplication
@@ -93,18 +93,18 @@ src_compile() {
 		DESTDIR="${myinstalldir}"
 		HFS="${myprefix}"
 		HT="${myprefix}"
-		HDSO="${myprefix}"/"$(get_libdir)"
+		HDSO="${myprefixlibdir}"
 		CPPUNIT_INCL_DIR="${myprefix}"/include/cppunit
-		CPPUNIT_LIB_DIR="${myprefix}"/"$(get_libdir)"
+		CPPUNIT_LIB_DIR="${myprefixlibdir}"
 		LOG4CPLUS_INCL_DIR="${myprefix}"/include/log4cplus
-		LOG4CPLUS_LIB_DIR="${myprefix}"/"$(get_libdir)"
+		LOG4CPLUS_LIB_DIR="${myprefixlibdir}"
 	)
 
 	# Optional depends:
 	if use X; then
 		myemakeargs+=(
-			GLFW_INCL_DIR="${myprefix}"/"$(get_libdir)"
-			GLFW_LIB_DIR="${myprefix}"/"$(get_libdir)"
+			GLFW_INCL_DIR="${myprefixlibdir}"
+			GLFW_LIB_DIR="${myprefixlibdir}"
 		)
 	else
 		myemakeargs+=(
@@ -118,7 +118,7 @@ src_compile() {
 	if use openvdb-compression; then
 		myemakeargs+=(
 			BLOSC_INCL_DIR="${myprefix}"/include
-			BLOSC_LIB_DIR="${myprefix}"/"$(get_libdir)"
+			BLOSC_LIB_DIR="${myprefixlibdir}"
 		)
 	else
 		myemakeargs+=(
@@ -148,11 +148,10 @@ src_compile() {
 		BOOST_PYTHON_LIB=
 	)
 
-	# The install won't like like it if this is not down
+	# The installer won't like it if this is not done
 	mkdir -p "${myinstalldir}" || die "mkdir failed"
 
 	# Create python modules for each version selected
-
 	use python && python_foreach_impl python_module_compile
 
 	if use python && use doc; then
