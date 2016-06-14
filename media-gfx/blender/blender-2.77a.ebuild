@@ -89,7 +89,6 @@ RDEPEND="${PYTHON_DEPS}
 	virtual/jpeg:0
 	virtual/libintl
 	virtual/opengl
-
 	${OPTIONAL_DEPENDS}
 "
 
