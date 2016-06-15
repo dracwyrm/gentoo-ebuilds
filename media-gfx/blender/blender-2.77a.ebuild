@@ -21,9 +21,13 @@ IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +
       openvdb openvdb-compression osl player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
       tiff c++0x valgrind jack sdl cuda-kernel"
 
+# TODO: Obtain permission to add CUDA_KERNEL_VERSION to the USE_EXPAND list
+# For some reason adding it into /usr/portage/base/make.defaults for testing fails for me
+# are the entries cached seomwhere?
+# Or is it necessary to specify which packages the USE_EXPAND variables apply to somewhere
 CYCLES_CUDA_VERSION_LIST="sm_20 sm_21 sm_30 sm_35 sm_37 sm_50 sm_52"
 for ccv in ${CYCLES_CUDA_VERSION_LIST}; do
-        IUSE+=" cycles_cuda_version_${ccv}"
+        IUSE+=" cuda_kernel_version_${ccv}"
 done
 unset ccv
 
@@ -203,20 +207,22 @@ src_configure() {
 	)
 
 	# Specify selected CYCLES_CUDA_VERSION use expand variables
-	local cyclescudaversion;
-	if use cycles_cuda_version_sm_20; then cyclescudaversion+="sm_20 "; fi
-	if use cycles_cuda_version_sm_21; then cyclescudaversion+="sm_21 "; fi
-	if use cycles_cuda_version_sm_30; then cyclescudaversion+="sm_30 "; fi
-	if use cycles_cuda_version_sm_35; then cyclescudaversion+="sm_35 "; fi
-	if use cycles_cuda_version_sm_37; then cyclescudaversion+="sm_37 "; fi
-	if use cycles_cuda_version_sm_50; then cyclescudaversion+="sm_50 "; fi
-	if use cycles_cuda_version_sm_52; then cyclescudaversion+="sm_52 "; fi
-	if cyclescudaversion; then
-		mycmakeargs+=-DCYCLES_CUDA_BINARIES_ARCH="${cyclescudaversion}"
+	# Is it a security risk to just add CYCLES_CUDA_VERSION directly as specified in make.conf
+	# rather than parsing it for acceptable values
+	local cyclescudaversion
+	if use cuda_kernel_version_sm_20; then cyclescudaversion+="sm_20 "; fi
+	if use cuda_kernel_version_sm_21; then cyclescudaversion+="sm_21 "; fi
+	if use cuda_kernel_version_sm_30; then cyclescudaversion+="sm_30 "; fi
+	if use cuda_kernel_version_sm_35; then cyclescudaversion+="sm_35 "; fi
+	if use cuda_kernel_version_sm_37; then cyclescudaversion+="sm_37 "; fi
+	if use cuda_kernel_version_sm_50; then cyclescudaversion+="sm_50 "; fi
+	if use cuda_kernel_version_sm_52; then cyclescudaversion+="sm_52 "; fi
+	if [ -z ${cyclescudaversion} ]; then
+		mycmakeargs+=" -DCYCLES_CUDA_VERSION=\"sm_20 sm_21 sm_30 sm_35 sm_37 sm_50 sm_52\""
 	else
-		mycmakeargs+=-DCYCLES_CUDA_BINARIES_ARCH="sm_20 sm_21 sm_30 sm_35 sm_37 sm_50 sm_52";
+		mycmakeargs+=" -DCYCLES_CUDA_VERSION=\"${cyclescudaversion}\""
 	fi
-	elog "Cuda binaries ${cyclescudaversion}"
+	elog "Args: ${mycmakeargs[@]}"
 
 	cmake-utils_src_configure
 }
