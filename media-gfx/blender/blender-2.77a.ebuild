@@ -19,15 +19,21 @@ KEYWORDS="~amd64 ~x86"
 IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +game-engine llvm \
       headless jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv \
       openvdb openvdb-compression osl player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
-      tiff c++0x valgrind jack sdl cuda"
+      tiff c++0x valgrind jack sdl cuda-kernel"
+
+CYCLES_CUDA_VERSION_LIST="sm_20 sm_21 sm_30 sm_35 sm_37 sm_50 sm_52"
+for ccv in ${CYCLES_CUDA_VERSION_LIST}; do
+        IUSE+=" cycles_cuda_version_${ccv}"
+done
+unset ccv
+
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine !headless )
-	cuda? ( cycles )
+	cuda-kernel? ( cycles )
 	cycles? ( boost openexr tiff openimageio )
 	colorio? ( boost )
 	openvdb? ( boost )
-	opensubdiv? ( cuda )
 	nls? ( boost )
 	openal? ( boost )
 	osl? ( cycles llvm )
@@ -38,7 +44,7 @@ OPTIONAL_DEPENDS="
 	boost? ( >=dev-libs/boost-1.60[nls?,threads(+)] )
 	collada? ( >=media-libs/opencollada-1.6.18 )
 	colorio? ( >=media-libs/opencolorio-1.0.9-r2 )
-	cuda? ( dev-util/nvidia-cuda-toolkit )
+	cuda-kernel? ( dev-util/nvidia-cuda-toolkit )
 	ffmpeg? ( media-video/ffmpeg:0=[x264,mp3,encode,theora,jpeg2k?] )
 	libav? ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
 	fftw? ( sci-libs/fftw:3.0 )
@@ -62,7 +68,7 @@ OPTIONAL_DEPENDS="
 		media-libs/ilmbase
 		>=media-libs/openexr-2.2.0
 	)
-	opensubdiv? ( media-libs/opensubdiv[cuda=] )
+	opensubdiv? ( media-libs/opensubdiv[cuda] )
 	openvdb? (
 		media-gfx/openvdb[${PYTHON_USEDEP},openvdb-compression=]
 		dev-cpp/tbb
@@ -161,7 +167,7 @@ src_configure() {
 		-DWITH_CPP11=$(usex c++0x ON OFF )
 		-DWITH_CYCLES=$(usex cycles ON OFF )
 		-DWITH_CYCLES_OSL=$(usex osl ON OFF )
-		-DWITH_CYCLES_CUDA_BINARIES=$(usex cuda ON OFF)
+		-DWITH_CYCLES_CUDA_BINARIES=$(usex cuda-kernel ON OFF)
 		-DWITH_FFTW3=$(usex fftw ON OFF )
 		-DWITH_GAMEENGINE=$(usex game-engine ON OFF )
 		-DWITH_HEADLESS=$(usex headless ON OFF )
@@ -195,6 +201,23 @@ src_configure() {
 		-DWITH_MEM_JEMALLOC=$(usex jemalloc ON OFF )
 		-DWITH_MEM_VALGRIND=$(usex valgrind ON OFF )
 	)
+
+	# Specify selected CYCLES_CUDA_VERSION use expand variables
+	local cyclescudaversion;
+	if use cycles_cuda_version_sm_20; then cyclescudaversion+="sm_20 "; fi
+	if use cycles_cuda_version_sm_21; then cyclescudaversion+="sm_21 "; fi
+	if use cycles_cuda_version_sm_30; then cyclescudaversion+="sm_30 "; fi
+	if use cycles_cuda_version_sm_35; then cyclescudaversion+="sm_35 "; fi
+	if use cycles_cuda_version_sm_37; then cyclescudaversion+="sm_37 "; fi
+	if use cycles_cuda_version_sm_50; then cyclescudaversion+="sm_50 "; fi
+	if use cycles_cuda_version_sm_52; then cyclescudaversion+="sm_52 "; fi
+	if cyclescudaversion; then
+		mycmakeargs+=-DCYCLES_CUDA_BINARIES_ARCH="${cyclescudaversion}"
+	else
+		mycmakeargs+=-DCYCLES_CUDA_BINARIES_ARCH="sm_20 sm_21 sm_30 sm_35 sm_37 sm_50 sm_52";
+	fi
+	elog "Cuda binaries ${cyclescudaversion}"
+
 	cmake-utils_src_configure
 }
 
