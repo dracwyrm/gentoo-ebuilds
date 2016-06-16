@@ -23,7 +23,7 @@ IUSE="+boost +bullet collada colorio cuda cycles +dds debug doc +elbeem ffmpeg f
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine !headless )
-	cuda? ( cycles )
+	cuda? ( cycles !opencl )
 	cycles? ( boost openexr tiff openimageio )
 	colorio? ( boost )
 	openvdb? ( boost )
@@ -242,22 +242,24 @@ src_install() {
 	pax-mark m "${CMAKE_BUILD_DIR}"/bin/blender
 
 	if use doc; then
-		docinto "API/python"
-		dohtml -r "${CMAKE_USE_DIR}"/doc/python_api/BPY_API/*
+		docinto "html/API/python"
+		dodoc -r "${CMAKE_USE_DIR}"/doc/python_api/BPY_API/*
 
-		docinto "API/blender"
-		dohtml -r "${CMAKE_USE_DIR}"/doc/doxygen/html/*
+		docinto "html/API/blender"
+		dodoc -r "${CMAKE_USE_DIR}"/doc/doxygen/html/*
 	fi
 
 	# CMake will relink binary for no reason
 	emake -C "${CMAKE_BUILD_DIR}" DESTDIR="${D}" install/fast
 
 	# fix doc installdir
-	dohtml "${CMAKE_USE_DIR}"/release/text/readme.html
+	docinto "html"
+	dodoc "${CMAKE_USE_DIR}"/release/text/readme.html
 	rm -r "${ED%/}"/usr/share/doc/blender || die
 
 	python_fix_shebang "${ED%/}"/usr/bin/blender-thumbnailer.py
 	python_optimize "${ED%/}"/usr/share/blender/${PV}/scripts
+	die
 }
 
 pkg_preinst() {
@@ -288,4 +290,10 @@ pkg_postinst() {
 pkg_postrm() {
 	gnome2_icon_cache_update
 	fdo-mime_desktop_database_update
+
+	if use cuda; then
+		ewarn "You may need to uninstall the Cycles CUDA Kernel."
+		ewarn "It can be found in the following folder:"
+		ewarn "/home/{user}/.config/blender/2.77/cache/"
+	fi
 }
