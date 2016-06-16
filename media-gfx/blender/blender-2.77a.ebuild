@@ -64,7 +64,7 @@ OPTIONAL_DEPENDS="
 		media-libs/ilmbase
 		>=media-libs/openexr-2.2.0
 	)
-	opensubdiv? ( media-libs/opensubdiv[cuda] )
+	opensubdiv? ( media-libs/opensubdiv[cuda=,opencl=] )
 	openvdb? (
 		media-gfx/openvdb[${PYTHON_USEDEP},openvdb-compression=]
 		dev-cpp/tbb
