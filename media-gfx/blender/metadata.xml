@@ -96,5 +96,11 @@
 		<flag name="headless">
 			Build without graphical support (renderfarm, server mode only).
 		</flag>
+		<flag name="cuda">
+			Enable features depending on CUDA.
+		</flag>
+		<flag name="opencl">
+			Enable features depending on OpenCL.
+		</flag>
 	</use>
 </pkgmetadata>

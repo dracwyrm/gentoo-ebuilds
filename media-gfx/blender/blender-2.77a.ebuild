@@ -16,10 +16,10 @@ SRC_URI="http://download.blender.org/source/${P}.tar.gz"
 SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
-IUSE="+boost +bullet collada colorio cycles +dds debug doc +elbeem ffmpeg fftw +game-engine llvm \
-      headless jemalloc jpeg2k libav man ndof nls openal openimageio openmp +openexr opensubdiv \
+IUSE="+boost +bullet collada colorio cuda cycles +dds debug doc +elbeem ffmpeg fftw +game-engine llvm \
+      headless jemalloc jpeg2k libav man ndof nls openal opencl openimageio openmp +openexr opensubdiv \
       openvdb openvdb-compression osl player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
-      tiff c++0x valgrind jack sdl cuda"
+      tiff c++0x valgrind jack sdl"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine !headless )
@@ -30,6 +30,7 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	opensubdiv? ( cuda )
 	nls? ( boost )
 	openal? ( boost )
+	opencl? ( cycles )
 	osl? ( cycles llvm )
 	game-engine? ( boost )
 	?? ( ffmpeg libav )"
@@ -58,11 +59,12 @@ OPTIONAL_DEPENDS="
 	nls? ( virtual/libiconv )
 	openal? ( media-libs/openal )
 	openimageio? ( >=media-libs/openimageio-1.6.9 )
+	opencl? ( virtual/opencl )
 	openexr? (
 		media-libs/ilmbase
 		>=media-libs/openexr-2.2.0
 	)
-	opensubdiv? ( media-libs/opensubdiv[cuda=] )
+	opensubdiv? ( media-libs/opensubdiv[cuda] )
 	openvdb? (
 		media-gfx/openvdb[${PYTHON_USEDEP},openvdb-compression=]
 		dev-cpp/tbb
@@ -106,6 +108,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.68-fix-install-rules.patch
 	"${FILESDIR}"/${PN}-2.77-sse2.patch
 	"${FILESDIR}"/${PN}-2.77-C++0x-build-fix.patch
+	"${FILESDIR}"/${PN}-2.77-disable-gpu.patch
 )
 
 pkg_pretend() {
@@ -159,9 +162,9 @@ src_configure() {
 		-DWITH_CODEC_FFMPEG=$(usex ffmpeg ON OFF )
 		-DWITH_CODEC_SNDFILE=$(usex sndfile ON OFF )
 		-DWITH_CPP11=$(usex c++0x ON OFF )
+		-DWITH_CUDA=$(usex cuda ON OFF )
 		-DWITH_CYCLES=$(usex cycles ON OFF )
 		-DWITH_CYCLES_OSL=$(usex osl ON OFF )
-		-DWITH_CYCLES_CUDA_BINARIES=$(usex cuda ON OFF)
 		-DWITH_FFTW3=$(usex fftw ON OFF )
 		-DWITH_GAMEENGINE=$(usex game-engine ON OFF )
 		-DWITH_HEADLESS=$(usex headless ON OFF )
@@ -176,6 +179,7 @@ src_configure() {
 		-DWITH_MOD_FLUID=$(usex elbeem ON OFF )
 		-DWITH_MOD_OCEANSIM=$(usex fftw ON OFF )
 		-DWITH_OPENAL=$(usex openal ON OFF )
+		-DWITH_OPENCL=$(usex opencl ON OFF )
 		-DWITH_OPENCOLORIO=$(usex colorio ON OFF )
 		-DWITH_OPENCOLLADA=$(usex collada ON OFF )
 		-DWITH_OPENIMAGEIO=$(usex openimageio ON OFF )
