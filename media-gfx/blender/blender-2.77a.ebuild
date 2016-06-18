@@ -6,12 +6,16 @@ EAPI=6
 PYTHON_COMPAT=( python3_5 )
 
 inherit fdo-mime gnome2-utils cmake-utils python-single-r1 \
-	   flag-o-matic toolchain-funcs pax-utils check-reqs
+	flag-o-matic toolchain-funcs pax-utils check-reqs versionator
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
 HOMEPAGE="http://www.blender.org"
 
 SRC_URI="http://download.blender.org/source/${P}.tar.gz"
+
+# Blender can have letters in the version string,
+# so strip of the letter if it exists.
+MY_PV="$(get_version_component_range 1-2)"
 
 SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
@@ -144,7 +148,7 @@ src_configure() {
 	append-flags -funsigned-char
 	append-lfs-flags
 	# Makefile says not to use --as-needed as it breaks on certain distros.
-	# One gentoo causes bug #533514 with certain versions of GLibC
+	# On Gentoo it causes bug #533514 with certain versions of GLibC
 	append-ldflags $(no-as-needed)
 
 	local mycmakeargs=(
@@ -260,9 +264,8 @@ src_install() {
 	dodoc "${CMAKE_USE_DIR}"/release/text/readme.html
 	rm -r "${ED%/}"/usr/share/doc/blender || die
 
-	python_fix_shebang "${ED%/}"/usr/bin/blender-thumbnailer.py
-	python_optimize "${ED%/}"/usr/share/blender/${PV}/scripts
-	die
+	python_fix_shebang "${ED%/}/usr/bin/blender-thumbnailer.py"
+	python_optimize "${ED%/}/usr/share/blender/${MY_PV}/scripts"
 }
 
 pkg_preinst() {
@@ -296,7 +299,7 @@ pkg_postrm() {
 
 	ewarn ""
 	ewarn "You may want to remove the following directory."
-	ewarn "/home/{user}/.config/blender/2.77/cache/"
+	ewarn "/home/your_user/.config/blender/${MY_PV}/cache/"
 	ewarn "It may contain extra render kernels not tracked by portage"
 	ewarn ""
 }
