@@ -291,9 +291,9 @@ pkg_postrm() {
 	gnome2_icon_cache_update
 	fdo-mime_desktop_database_update
 
-	if use cuda; then
-		ewarn "You may need to uninstall the Cycles CUDA Kernel."
-		ewarn "It can be found in the following folder:"
-		ewarn "/home/{user}/.config/blender/2.77/cache/"
-	fi
+	ewarn ""
+	ewarn "You may want to remove the following directory."
+	ewarn "/home/{user}/.config/blender/2.77/cache/"
+	ewarn "It may contain extra render kernels not tracked by portage"
+	ewarn ""
 }
