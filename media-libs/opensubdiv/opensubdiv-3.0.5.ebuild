@@ -3,12 +3,12 @@
 # $Id$
 
 EAPI=6
-inherit cmake-utils
+inherit cmake-utils versionator
 
 DESCRIPTION="An Open-Source subdivision surface library"
 HOMEPAGE="http://graphics.pixar.com/opensubdiv/"
 
-MY_PV=${PV//./_}
+MY_PV="$(replace_all_version_separators '_')"
 
 SRC_URI="https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v${MY_PV}.tar.gz -> ${P}.tar.gz
 	https://github.com/dracwyrm/gentoo-patches/raw/master/${PN}/${PV}/${P}-patchset-1.tar.xz"

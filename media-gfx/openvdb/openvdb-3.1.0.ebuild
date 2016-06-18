@@ -5,12 +5,14 @@
 EAPI="6"
 PYTHON_COMPAT=( python{2_7,3_4,3_5} )
 
-inherit eutils multilib python-r1
+inherit eutils multilib python-r1 versionator
 
 DESCRIPTION="Libs for the efficient manipulation of volumetric data"
 HOMEPAGE="http://www.openvdb.org"
 
-SRC_URI="http://www.openvdb.org/download/${PN}_${PV//./_}_library.zip"
+MY_PV="$(replace_all_version_separators '_')"
+
+SRC_URI="http://www.openvdb.org/download/${PN}_${MY_PV}_library.zip"
 
 LICENSE="MPL-2.0"
 SLOT="0"
