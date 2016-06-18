@@ -143,6 +143,9 @@ src_configure() {
 	# shadows, see bug #276338 for reference
 	append-flags -funsigned-char
 	append-lfs-flags
+	# Makefile says not to use --as-needed as it breaks on certain distros.
+	# One gentoo causes bug #533514 with certain versions of GLibC
+	append-ldflags $(no-as-needed)
 
 	local mycmakeargs=(
 		-DCMAKE_INSTALL_PREFIX=/usr
