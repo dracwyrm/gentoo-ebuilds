@@ -171,6 +171,5 @@ src_compile() {
 src_install() {
 	einfo "Copying files to the image directory."
 	doins -r "${WORKDIR}"/install/*
-	die
 	einfo "Installing files to the system."
 }
