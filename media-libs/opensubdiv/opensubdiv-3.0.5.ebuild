@@ -15,7 +15,7 @@ SRC_URI="https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v${MY_PV}.t
 
 LICENSE="ZLIB"
 SLOT="0"
-IUSE="ptex cuda tbb examples tutorials test doc openmp opencl"
+IUSE="cuda doc examples opencl openmp ptex tbb test tutorials"
 
 RDEPEND="media-libs/glew
 	media-libs/glfw

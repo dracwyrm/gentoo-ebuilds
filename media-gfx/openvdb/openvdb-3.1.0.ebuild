@@ -17,7 +17,7 @@ SRC_URI="http://www.openvdb.org/download/${PN}_${MY_PV}_library.zip"
 LICENSE="MPL-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="doc pdfdoc python +openvdb-compression X"
+IUSE="+openvdb-compression doc pdfdoc python X"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	pdfdoc? ( doc )"

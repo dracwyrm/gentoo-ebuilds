@@ -20,10 +20,11 @@ MY_PV="$(get_version_component_range 1-2)"
 SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
-IUSE="+boost +bullet collada colorio cuda cycles +dds debug doc +elbeem ffmpeg fftw +game-engine llvm \
-      headless jemalloc jpeg2k libav man ndof nls openal opencl openimageio openmp +openexr opensubdiv \
-      openvdb openvdb-compression osl player sndfile cpu_flags_x86_sse cpu_flags_x86_sse2 test \
-      tiff c++0x valgrind jack sdl"
+IUSE="+boost +bullet +dds +elbeem +game-engine +openexr c++0x collada colorio \
+	cuda cycles debug doc ffmpeg fftw headless jack jemalloc jpeg2k libav \
+	llvm man ndof nls openal opencl openimageio openmp opensubdiv openvdb \
+	openvdb-compression osl player sdl sndfile test tiff valgrind \
+	cpu_flags_x86_sse cpu_flags_x86_sse2"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine !headless )
