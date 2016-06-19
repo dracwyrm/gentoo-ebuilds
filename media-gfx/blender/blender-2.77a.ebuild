@@ -299,7 +299,7 @@ pkg_postrm() {
 
 	ewarn ""
 	ewarn "You may want to remove the following directory."
-	ewarn "/home/your_user/.config/blender/${MY_PV}/cache/"
+	ewarn "~/.config/${PN}/${MY_PV}/cache/"
 	ewarn "It may contain extra render kernels not tracked by portage"
 	ewarn ""
 }
