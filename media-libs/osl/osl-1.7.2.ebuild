@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -16,15 +16,21 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="doc test"
 
-RDEPEND="<dev-libs/boost-1.61.0
-	<sys-devel/llvm-3.6.0
+RDEPEND="
 	media-libs/openexr
 	media-libs/openimageio
 	dev-libs/pugixml
 	sys-libs/zlib
 "
+DEPEND="${RDEPEND}
+	<dev-libs/boost-1.61.0
+	<sys-devel/llvm-3.6.0
+	sys-devel/bison
+	sys-devel/flex
+	virtual/pkgconfig
+"
 
-# Restricting tests
+# Restricting tests as Make file handles them differently
 RESTRICT="test"
 
 S=${WORKDIR}/OpenShadingLanguage-Release-${PV}

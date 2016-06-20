@@ -22,3 +22,14 @@ RDEPEND="
 	dev-python/pygments[${PYTHON_USEDEP}]
 "
 DEPEND="${RDEPEND}"
+
+src_prepare() {
+	default
+
+	# Markdown < 2.5 is only for Python 2.6 support, which we don't support
+	sed \
+		-e "s|markdown < 2.5|markdown|" \
+		-e "s|share/pdoc|share/doc/${PF}|" \
+		-e "s|'UNLICENSE', ||" \
+		-i setup.py || die "sed failed"
+}
