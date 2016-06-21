@@ -64,7 +64,7 @@ OPTIONAL_DEPENDS="
 	nls? ( virtual/libiconv )
 	openal? ( media-libs/openal )
 	openimageio? ( >=media-libs/openimageio-1.6.9 )
-	opencl? ( virtual/opencl )
+	opencl? ( x11-drivers/ati-drivers:* )
 	openexr? (
 		media-libs/ilmbase
 		>=media-libs/openexr-2.2.0
