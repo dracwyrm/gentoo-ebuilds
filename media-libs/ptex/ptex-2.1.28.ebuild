@@ -9,7 +9,7 @@ inherit cmake-utils
 DESCRIPTION="Per-Face Texture Mapping for Production Rendering"
 HOMEPAGE="http://ptex.us/"
 SRC_URI="https://github.com/wdas/ptex/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-LICENSE="Ptex"
+LICENSE="BSD"
 SLOT="0"
 RDEPEND="sys-libs/zlib"
 DEPEND="${RDEPEND}
