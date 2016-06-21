@@ -52,8 +52,8 @@ PATCHES=(
 src_prepare() {
 	default
 
-	sed	-e	"s|--html -o|--html --html-dir|" \
-		-e	"s|vdb_render vdb_test|vdb_render vdb_view vdb_test|" \
+	sed	-e "s|--html -o|--html --html-dir|" \
+		-e "s|vdb_render vdb_test|vdb_render vdb_view vdb_test|" \
 		-i Makefile || die "sed failed"
 
 	sed	-e "s|= png|= svg|" -i doxygen-config || die "sed doxygen failed"
