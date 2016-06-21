@@ -5,14 +5,12 @@
 EAPI="6"
 PYTHON_COMPAT=( python{2_7,3_4,3_5} )
 
-inherit eutils multilib python-r1 versionator
+inherit eutils multilib python-r1
 
 DESCRIPTION="Libs for the efficient manipulation of volumetric data"
 HOMEPAGE="http://www.openvdb.org"
 
-MY_PV="$(replace_all_version_separators '_')"
-
-SRC_URI="http://www.openvdb.org/download/${PN}_${MY_PV}_library.zip"
+SRC_URI="https://github.com/dreamworksanimation/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MPL-2.0"
 SLOT="0"
@@ -44,11 +42,10 @@ DEPEND="${RDEPEND}
 	openvdb-compression? ( >=dev-libs/c-blosc-1.5.0 )
 	dev-libs/log4cplus"
 
-S="${WORKDIR}"/openvdb
+S="${WORKDIR}/${P}/${PN}"
 
 PATCHES=(
 	"${FILESDIR}"/${P}-python3-compat.patch
-	"${FILESDIR}"/use_svg.patch
 	"${FILESDIR}"/${P}-makefile-fixes.patch
 )
 
@@ -58,6 +55,8 @@ src_prepare() {
 	sed	-e	"s|--html -o|--html --html-dir|" \
 		-e	"s|vdb_render vdb_test|vdb_render vdb_view vdb_test|" \
 		-i Makefile || die "sed failed"
+
+	sed	-e "s|= png|= svg|" -i doxygen-config || die "sed doxygen failed"
 }
 
 python_module_compile() {
