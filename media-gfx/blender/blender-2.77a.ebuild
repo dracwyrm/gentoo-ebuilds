@@ -26,6 +26,8 @@ IUSE="+boost +bullet +dds +elbeem +game-engine +openexr c++0x collada colorio \
 	openvdb-compression osl player sdl sndfile test tiff valgrind \
 	cpu_flags_x86_sse cpu_flags_x86_sse2"
 
+# CUDA and nVidia performance is rubbish with Blender
+# If you have nVidia, use CUDA.
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine !headless )
 	cuda? ( cycles !opencl )
@@ -40,6 +42,9 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	game-engine? ( boost )
 	?? ( ffmpeg libav )"
 
+# Since not using OpenCL with nVidia, depend on ATI binary
+# blobs as Cycles with OpenCL does not work with any open
+# source drivers.
 OPTIONAL_DEPENDS="
 	boost? ( >=dev-libs/boost-1.60[nls?,threads(+)] )
 	collada? ( >=media-libs/opencollada-1.6.18 )
