@@ -23,7 +23,7 @@ RDEPEND="
 	sys-libs/zlib
 "
 DEPEND="${RDEPEND}
-	<dev-libs/boost-1.60
+	<dev-libs/boost-1.61
 	<sys-devel/llvm-3.7
 	sys-devel/bison
 	sys-devel/flex
