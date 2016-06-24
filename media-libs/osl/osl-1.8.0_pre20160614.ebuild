@@ -23,7 +23,7 @@ RDEPEND="
 	sys-libs/zlib
 "
 DEPEND="${RDEPEND}
-	<dev-libs/boost-1.61
+	dev-libs/boost
 	<sys-devel/llvm-3.7
 	sys-devel/bison
 	sys-devel/flex
@@ -35,10 +35,12 @@ RESTRICT="test"
 
 #S=${WORKDIR}/OpenShadingLanguage-Release-${PV}
 
-PATCHES=( "${FILESDIR}"/${PN}-fix-pdf-install-dir.patch )
+PATCHES=(
+	"${FILESDIR}"/${PN}-fix-pdf-install-dir.patch
+	"${FILESDIR}"/${PN}-boost-compile-fix.patch
+)
 
 src_configure() {
-	# CPP11 is now default on. There is even a CPP14 option.
 	local mycmakeargs=(
 		-DUSE_EXTERNAL_PUGIXML=ON
 		-DENABLERTTI=OFF
@@ -46,6 +48,7 @@ src_configure() {
 		-DSELF_CONTAINED_INSTALL_TREE=OFF
 		-DOSL_BUILD_TESTS=$(usex test ON OFF)
 		-DINSTALL_DOCS=$(usex doc ON OFF)
+		-DUSE_CPP11=ON
 	)
 
 	cmake-utils_src_configure
