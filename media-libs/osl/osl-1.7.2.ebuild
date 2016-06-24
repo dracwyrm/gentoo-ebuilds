@@ -8,8 +8,7 @@ inherit cmake-utils
 DESCRIPTION="Advanced shading language for production GI renderers"
 HOMEPAGE="http://opensource.imageworks.com/?p=osl"
 
-SRC_URI="https://github.com/imageworks/OpenShadingLanguage/archive/Release-${PV}.tar.gz -> ${P}.tar.gz
-	https://github.com/dracwyrm/gentoo-patches/raw/master/${PN}/${PV}/${P}-patchset-1.tar.xz"
+SRC_URI="https://github.com/imageworks/OpenShadingLanguage/archive/Release-${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
@@ -23,7 +22,7 @@ RDEPEND="
 	sys-libs/zlib
 "
 DEPEND="${RDEPEND}
-	<dev-libs/boost-1.61.0
+	dev-libs/boost
 	<sys-devel/llvm-3.6.0
 	sys-devel/bison
 	sys-devel/flex
@@ -35,7 +34,11 @@ RESTRICT="test"
 
 S=${WORKDIR}/OpenShadingLanguage-Release-${PV}
 
-PATCHES=( "${WORKDIR}"/${P}-patchset-1.patch )
+PATCHES=(
+	"${FILESDIR}"/${P}-remove-mcjit.patch
+	"${FILESDIR}"/${PN}-boost-compile-fix
+	"${FILESDIR}"/${PN}-fix-pdf-install-dir
+)
 
 src_configure() {
 	local mycmakeargs=(
