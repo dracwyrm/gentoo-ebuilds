@@ -13,7 +13,7 @@ SRC_URI="https://github.com/imageworks/OpenShadingLanguage/archive/Release-${PV}
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="doc test"
+IUSE="c++11 doc test"
 
 RDEPEND="
 	media-libs/openexr
@@ -43,7 +43,7 @@ PATCHES=(
 src_configure() {
 	local mycmakeargs=(
 		-DUSE_EXTERNAL_PUGIXML=ON
-		-DOSL_BUILD_CPP11=ON
+		-DOSL_BUILD_CPP11=$(usex c++11 ON OFF)
 		-DENABLERTTI=OFF
 		-DSTOP_ON_WARNING=OFF
 		-DSELF_CONTAINED_INSTALL_TREE=OFF

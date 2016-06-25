@@ -20,7 +20,7 @@ MY_PV="$(get_version_component_range 1-2)"
 SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
-IUSE="+boost +bullet +dds +elbeem +game-engine +openexr c++0x collada colorio \
+IUSE="+boost +bullet +dds +elbeem +game-engine +openexr c++11 collada colorio \
 	cuda cycles debug doc ffmpeg fftw headless jack jemalloc jpeg2k libav \
 	llvm man ndof nls openal opencl openimageio openmp opensubdiv openvdb \
 	openvdb-compression osl player sdl sndfile test tiff valgrind \
@@ -117,7 +117,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.68-doxyfile.patch
 	"${FILESDIR}"/${PN}-2.68-fix-install-rules.patch
 	"${FILESDIR}"/${PN}-2.77-sse2.patch
-	"${FILESDIR}"/${PN}-2.77-C++0x-build-fix.patch
+	"${FILESDIR}"/${PN}-2.77-C++11-build-fix.patch
 	"${FILESDIR}"/${PN}-2.77-disable-gpu.patch
 )
 
@@ -174,7 +174,7 @@ src_configure() {
 		-DWITH_BULLET=$(usex bullet ON OFF )
 		-DWITH_CODEC_FFMPEG=$(usex ffmpeg ON OFF )
 		-DWITH_CODEC_SNDFILE=$(usex sndfile ON OFF )
-		-DWITH_CPP11=$(usex c++0x ON OFF )
+		-DWITH_CPP11=$(usex c++11 ON OFF )
 		-DWITH_CUDA=$(usex cuda ON OFF )
 		-DWITH_CYCLES=$(usex cycles ON OFF )
 		-DWITH_CYCLES_OSL=$(usex osl ON OFF )
