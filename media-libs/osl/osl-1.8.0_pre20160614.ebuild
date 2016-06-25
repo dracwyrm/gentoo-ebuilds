@@ -14,7 +14,7 @@ SRC_URI="https://github.com/imageworks/OpenShadingLanguage/archive/${mysnapshot}
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="doc test"
+IUSE="c++11 doc test"
 
 RDEPEND="
 	media-libs/openexr
@@ -23,7 +23,7 @@ RDEPEND="
 	sys-libs/zlib
 "
 DEPEND="${RDEPEND}
-	dev-libs/boost
+	dev-libs/boost[c++11=]
 	<sys-devel/llvm-3.7
 	sys-devel/bison
 	sys-devel/flex
@@ -37,7 +37,7 @@ RESTRICT="test"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-fix-pdf-install-dir.patch
-	"${FILESDIR}"/${PN}-boost-compile-fix.patch
+#	"${FILESDIR}"/${PN}-boost-compile-fix.patch
 )
 
 src_configure() {
@@ -48,7 +48,7 @@ src_configure() {
 		-DSELF_CONTAINED_INSTALL_TREE=OFF
 		-DOSL_BUILD_TESTS=$(usex test ON OFF)
 		-DINSTALL_DOCS=$(usex doc ON OFF)
-		-DUSE_CPP11=ON
+		-DUSE_CPP11=$(usex c++11 ON OFF)
 	)
 
 	cmake-utils_src_configure

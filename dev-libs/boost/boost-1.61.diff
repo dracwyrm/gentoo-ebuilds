@@ -1,0 +1,25 @@
+--- boost-1.61.0.ebuild	2016-05-18 13:30:30.000000000 +0100
++++ boost-1.61.0-r1.ebuild	2016-06-25 08:22:56.854855349 +0100
+@@ -18,7 +18,7 @@ LICENSE="Boost-1.0"
+ SLOT="0/${PV}" # ${PV} instead ${MAJOR_V} due to bug 486122
+ KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~ppc-aix ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc-solaris ~sparc64-solaris ~x86-solaris ~x86-winnt"
+ 
+-IUSE="context debug doc icu +nls mpi python static-libs +threads tools"
++IUSE="c++11 context debug doc icu +nls mpi python static-libs +threads tools"
+ 
+ RDEPEND="icu? ( >=dev-libs/icu-3.6:=[${MULTILIB_USEDEP}] )
+ 	!icu? ( virtual/libiconv[${MULTILIB_USEDEP}] )
+@@ -163,8 +163,11 @@ src_configure() {
+ 		[[ $(gcc-version) > 4.3 ]] && append-flags -mno-altivec
+ 	fi
+ 
+-	# Do _not_ use C++11 yet, make sure to force GNU C++ 98 standard.
+-	append-cxxflags -std=gnu++98
++	# Allow user choice of C++ 11 or 98 standards.
++	# Modern compilers use C++ 11 by default and Boost
++	# compiled with 98 standards causes build failures
++	append-cxxflags -std=$(usex c++11 c++11 gnu++98 )
++	
+ 
+ 	use icu && OPTIONS+=" -sICU_PATH=${EPREFIX}/usr"
+ 	use icu || OPTIONS+=" --disable-icu boost.locale.icu=off"
