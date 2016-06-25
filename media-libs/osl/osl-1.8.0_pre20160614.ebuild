@@ -37,7 +37,6 @@ RESTRICT="test"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-fix-pdf-install-dir.patch
-#	"${FILESDIR}"/${PN}-boost-compile-fix.patch
 )
 
 src_configure() {
