@@ -36,7 +36,7 @@ S=${WORKDIR}/OpenShadingLanguage-Release-${PV}
 
 PATCHES=(
 	"${FILESDIR}"/${P}-remove-mcjit.patch
-	"${FILESDIR}"/${PN}-fix-pdf-install-dir
+	"${FILESDIR}"/${PN}-fix-pdf-install-dir.patch
 )
 
 # TODO: Turn CPP11 on when Boost enables it.
