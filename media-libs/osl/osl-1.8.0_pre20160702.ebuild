@@ -50,15 +50,12 @@ PATCHES=(
 )
 
 src_configure() {
-	local mysimd=""
 	# Build with SIMD support (choices: 0, sse2, sse3,"
 	#	ssse3, sse4.1, sse4.2, f16c)"
 	# TODO: Figure out what f16c is
-	# So the comma separation works correctly
-	use cpu_flags_x86_sse2 && mysimd="sse2"
-	# Loop through the other options
-	for cpufeature in "${CPU_FEATURES[@]:1}"; \
-		do use ${cpufeature%:*} && mysimd+=",${cpufeature#*:}"; \
+	local mysimd=""
+	for cpufeature in "${CPU_FEATURES[@]}"; \
+		do use ${cpufeature%:*} && mysimd+="${cpufeature#*:},"; \
 		done
 
 	# LLVM needs CPP11. Do not disable.
@@ -71,7 +68,7 @@ src_configure() {
 		-DSELF_CONTAINED_INSTALL_TREE=OFF
 		-DOSL_BUILD_TESTS=$(usex test ON OFF)
 		-DINSTALL_DOCS=$(usex doc ON OFF)
-		-DUSE_SIMD=${mysimd}
+		-DUSE_SIMD=${mysimd%,}
 	)
 
 	cmake-utils_src_configure
