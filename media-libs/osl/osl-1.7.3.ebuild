@@ -14,16 +14,9 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-X86_CPU_FEATURES=( sse2:sse2 sse3:sse3 ssse3:ssse3 sse4_1:sse4.1 sse4_2:sse4.2 )
+X86_CPU_FEATURES=( sse2:sse2 sse3:sse3 ssse3:ssse3 sse4_1:sse4.1 sse4_2:sse4.2 f16c:f16c )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
 IUSE="doc test ${CPU_FEATURES[@]%:*}"
-
-REQUIRED_USE="
-	cpu_flags_x86_sse4_2? ( cpu_flags_x86_sse4_1 )
-	cpu_flags_x86_sse4_1?  ( cpu_flags_x86_ssse3 )
-	cpu_flags_x86_ssse3? ( cpu_flags_x86_sse3 )
-	cpu_flags_x86_sse3? ( cpu_flags_x86_sse2 )
-"
 
 RDEPEND="
 	media-libs/openexr
@@ -54,11 +47,13 @@ PATCHES=(
 src_configure() {
 	# Build with SIMD support (choices: 0, sse2, sse3,"
 	#	ssse3, sse4.1, sse4.2, f16c)"
-	# TODO: Figure out what f16c is
 	local mysimd=""
 	for cpufeature in "${CPU_FEATURES[@]}"; \
 		do use ${cpufeature%:*} && mysimd+="${cpufeature#*:},"; \
 		done
+
+	# If no CPU SIMDs were used, completely disable them
+	[[ -z $mysimd ]] && mysimd="0"
  
 	# LLVM needs CPP11. Do not disable.
 	local mycmakeargs=(
@@ -71,6 +66,7 @@ src_configure() {
 		-DOSL_BUILD_TESTS=$(usex test ON OFF)
 		-DINSTALL_DOCS=$(usex doc ON OFF)
 		-DUSE_SIMD=${mysimd%,}
+		-DVERBOSE=ON
 	)
 
 	cmake-utils_src_configure
