@@ -47,7 +47,10 @@ DEPEND="${RDEPEND}
 
 S="${WORKDIR}/${P}/${PN}"
 
-PATCHES=( "${FILESDIR}"/numpy-fix.patch "${FILESDIR}"/${PN}-3.1.0-makefile-fixes.patch )
+PATCHES=( 
+	"${FILESDIR}"/${PN}-3.2pre-numpy-fix.patch
+	"${FILESDIR}"/${PN}-3.1.0-makefile-fixes.patch
+)
 
 src_prepare() {
 	default

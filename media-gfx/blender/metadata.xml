@@ -32,9 +32,6 @@
 		<flag name="bullet">
 			Enable Bullet (Physics Engine).
 		</flag>
-		<flag name="c++0x" restrict="&gt;=media-gfx/blender-2.77">
-			Build with C++11 standard enabled.
-		</flag>
 		<flag name="collada">
 			Add support for Collada interchange format through
 			<pkg>media-libs/opencollada</pkg>.
