@@ -66,8 +66,8 @@ python_module_compile() {
 		PYCONFIG_INCL_DIR="$(python_get_includedir)"
 		PYTHON_LIB_DIR="$(python_get_library_path)"
 		PYTHON_LIB="$(python_get_LIBS)"
-		PYTHON_INSTALL_INCL_DIR="${myinstallbase}$(python_get_includedir)"
-		PYTHON_INSTALL_LIB_DIR="${myinstallbase}$(python_get_sitedir)"
+		PYTHON_INSTALL_INCL_DIR="${D}$(python_get_includedir)"
+		PYTHON_INSTALL_LIB_DIR="${D}$(python_get_sitedir)"
 		NUMPY_INCL_DIR="$(python_get_sitedir)"/numpy/core/include/numpy
 		BOOST_PYTHON_LIB_DIR="${myprefixlibdir}"
 		BOOST_PYTHON_LIB=-lboost_python-${EPYTHON/python/}
@@ -81,9 +81,16 @@ python_module_compile() {
 }
 
 src_compile() {
+	# The build system is designed to compile and install all
+	# in one go, so doing each phase separately would be be
+	# impossible and the functions would all overlap anyways.
+	# Do nothing
+	return
+}
+
+src_install() {
 	local myprefix="${EPREFIX}"/usr
 	local myprefixlibdir="${myprefix}"/"$(get_libdir)"
-	local myinstallbase="${WORKDIR}"/install
 	local mypyscriptdir
 
 	# So individule targets can be called without duplication
@@ -91,7 +98,7 @@ src_compile() {
 	local myemakeargs=(
 		rpath=no shared=yes
 		LIBOPENVDB_RPATH=
-		DESTDIR="${myinstallbase}${myprefix}"
+		DESTDIR="${D}"
 		HFS="${myprefix}"
 		HT="${myprefix}"
 		HDSO="${myprefixlibdir}"
@@ -99,6 +106,25 @@ src_compile() {
 		CPPUNIT_LIB_DIR="${myprefixlibdir}"
 		LOG4CPLUS_INCL_DIR="${myprefix}"/include/log4cplus
 		LOG4CPLUS_LIB_DIR="${myprefixlibdir}"
+	)
+
+	# Create python list here for use during install phase:
+	# - If python is used, then the last used module will trigger
+	#   document install phase. It's the same doc, so build once.
+	# - If no python used, then this will remail blanked out to
+	#   disable pydoc.
+	# - pydoc will be called if doc and python use flags are set.
+	local mypythonargs=(
+		PYTHON_VERSION=
+		PYTHON_INCL_DIR=
+		PYCONFIG_INCL_DIR=
+		PYTHON_LIB_DIR=
+		PYTHON_LIB=
+		PYTHON_INSTALL_INCL_DIR=
+		PYTHON_INSTALL_LIB_DIR=
+		NUMPY_INCL_DIR=
+		BOOST_PYTHON_LIB_DIR=
+		BOOST_PYTHON_LIB=
 	)
 
 	# Optional depends:
@@ -130,28 +156,6 @@ src_compile() {
 
 	use doc || myemakeargs+=( DOXYGEN= )
 
-	# Create python list here for use during install phase:
-	# - If python is used, then the last used module will trigger
-	#   document install phase. It's the same doc, so build once.
-	# - If no python used, then this will remail blanked out to
-	#   disable pydoc.
-	# - pydoc will be called if doc and python use flags are set.
-	local mypythonargs=(
-		PYTHON_VERSION=
-		PYTHON_INCL_DIR=
-		PYCONFIG_INCL_DIR=
-		PYTHON_LIB_DIR=
-		PYTHON_LIB=
-		PYTHON_INSTALL_INCL_DIR=
-		PYTHON_INSTALL_LIB_DIR=
-		NUMPY_INCL_DIR=
-		BOOST_PYTHON_LIB_DIR=
-		BOOST_PYTHON_LIB=
-	)
-
-	# The installer won't like it if this is not done
-	mkdir -p "${myinstallbase}${myprefix}" || die "mkdir failed"
-
 	# Create python modules for each version selected
 	use python && python_foreach_impl python_module_compile
 
@@ -165,10 +169,4 @@ src_compile() {
 	einfo "Compiling the main components."
 	emake install ${myemakeargs[@]} ${mypythonargs[@]}
 	use pdfdoc && emake pdfdoc ${myemakeargs[@]} ${mypythonargs[@]}
-}
-
-src_install() {
-	einfo "Copying files to the image directory."
-	doins -r "${WORKDIR}"/install/*
-	einfo "Installing files to the system."
 }
