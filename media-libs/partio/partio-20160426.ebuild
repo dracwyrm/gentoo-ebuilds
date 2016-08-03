@@ -10,9 +10,8 @@ inherit cmake-utils vcs-snapshot python-r1
 DESCRIPTION="A library for particle IO and manipulation"
 HOMEPAGE="http://www.disneyanimation.com/technology/partio.html"
 
-MY_EGIT_REV="7f3e0d19e1931a591f53d4485bfffc665724a967"
-https://github.com/wdas/partio/archive/${MY_EGIT_REV}.tar.gz
-SRC_URI="https://github.com/wdas/partio/archive/${MY_EGIT_REV}.tar.gz -> ${P}.tar.gz"
+MY_GIT_COMMIT="7f3e0d19e1931a591f53d4485bfffc665724a967"
+SRC_URI="https://github.com/wdas/partio/archive/${MY_GIT_COMMIT}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
