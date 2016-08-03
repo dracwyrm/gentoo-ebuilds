@@ -16,7 +16,7 @@ KEYWORDS="~amd64 ~x86"
 
 X86_CPU_FEATURES=( sse2:sse2 sse3:sse3 ssse3:ssse3 sse4_1:sse4.1 sse4_2:sse4.2 f16c:f16c )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
-IUSE="doc test ${CPU_FEATURES[@]%:*}"
+IUSE="doc partio test ${CPU_FEATURES[@]%:*}"
 
 RDEPEND="
 	media-libs/openexr
@@ -32,6 +32,7 @@ DEPEND="${RDEPEND}
 	sys-devel/bison
 	sys-devel/flex
 	virtual/pkgconfig
+	partio? ( media-libs/partio )
 "
 
 # Restricting tests as Make file handles them differently
@@ -54,11 +55,11 @@ src_configure() {
 
 	# If no CPU SIMDs were used, completely disable them
 	[[ -z $mysimd ]] && mysimd="0"
- 
+
 	# LLVM needs CPP11. Do not disable.
 	local mycmakeargs=(
 		-DUSE_EXTERNAL_PUGIXML=ON
-		-DUSE_PARTIO=OFF
+		-DUSE_PARTIO=$(usex partio ON OFF)
 		-DOSL_BUILD_CPP11=ON
 		-DENABLERTTI=OFF
 		-DSTOP_ON_WARNING=OFF
