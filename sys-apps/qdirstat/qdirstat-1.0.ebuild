@@ -1,14 +1,18 @@
+# Copyright 1999-2016 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $id$
+
 EAPI=6
 
 inherit qmake-utils
 
-DESCRIPTION="QDirStat - Qt-based directory statistics"
+DESCRIPTION="Qt app to show where your disk space has gone and to help you to clean it up."
 HOMEPAGE="https://github.com/shundhammer/qdirstat"
-SRC_URI="https://github.com/shundhammer/qdirstat/archive/${PV}.zip"
+SRC_URI="https://github.com/shundhammer/qdirstat/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
-LICENSE="GPL V2"
+LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86 ~amd64"
+KEYWORDS="~amd64 ~x86"
 
 DEPEND="dev-qt/qtgui:5"
 RDEPEND="${DEPEND}"
