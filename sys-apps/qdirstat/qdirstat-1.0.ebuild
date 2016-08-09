@@ -6,7 +6,7 @@ EAPI=6
 
 inherit qmake-utils
 
-DESCRIPTION="Qt app to show where your disk space has gone and to help you to clean it up."
+DESCRIPTION="Qt app to show where your disk space has gone and to help you to clean it up"
 HOMEPAGE="https://github.com/shundhammer/qdirstat"
 SRC_URI="https://github.com/shundhammer/qdirstat/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
