@@ -45,7 +45,7 @@ DEPEND="${RDEPEND}
 S="${WORKDIR}/${P}/${PN}"
 
 PATCHES=(
-	"${FILESDIR}"/${P}-python3-compat.patch
+	"${FILESDIR}"/${P}-numpy-fix.patch
 	"${FILESDIR}"/${P}-makefile-fixes.patch
 )
 
@@ -74,7 +74,7 @@ python_module_compile() {
 	)
 
 	einfo "Compiling module for ${EPYTHON}."
-	emake "python ${myemakeargs[@]} ${mypythonargs[@]} EPYDOC="
+	emake python ${myemakeargs[@]} ${mypythonargs[@]} EPYDOC=
 
 	# This is so the correct version of pdoc is used
 	mypyscriptdir=$(python_get_scriptdir)
@@ -167,6 +167,6 @@ src_install() {
 
 	# Installing to a temp dir, because variables won't be remembered.
 	einfo "Compiling the main components."
-	emake "install ${myemakeargs[@]} ${mypythonargs[@]}"
-	use pdfdoc && emake "pdfdoc ${myemakeargs[@]} ${mypythonargs[@]}"
+	emake install ${myemakeargs[@]} ${mypythonargs[@]}
+	use pdfdoc && emake pdfdoc ${myemakeargs[@]} ${mypythonargs[@]}
 }
