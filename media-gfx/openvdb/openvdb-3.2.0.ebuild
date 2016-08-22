@@ -74,7 +74,7 @@ python_module_compile() {
 	)
 
 	einfo "Compiling module for ${EPYTHON}."
-	emake python ${myemakeargs[@]} ${mypythonargs[@]} EPYDOC=
+	emake python "${myemakeargs[@]}" "${mypythonargs[@]}" EPYDOC=""
 
 	# This is so the correct version of pdoc is used
 	mypyscriptdir=$(python_get_scriptdir)
@@ -162,11 +162,11 @@ src_install() {
 	if use python && use doc; then
 		mypythonargs+=( EPYDOC="${mypyscriptdir}"/pdoc )
 	else
-		mypythonargs+=( EPYDOC= )
+		mypythonargs+=( EPYDOC="" )
 	fi
 
-	# Installing to a temp dir, because variables won't be remembered.
 	einfo "Compiling the main components."
-	emake install ${myemakeargs[@]} ${mypythonargs[@]}
-	use pdfdoc && emake pdfdoc ${myemakeargs[@]} ${mypythonargs[@]}
+	emake install "${myemakeargs[@]}" "${mypythonargs[@]}"
+	use pdfdoc && einfo "Building the PDF document"
+	use pdfdoc && emake pdfdoc "${myemakeargs[@]}" "${mypythonargs[@]}"
 }
