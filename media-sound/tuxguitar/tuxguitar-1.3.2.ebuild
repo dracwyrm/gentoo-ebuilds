@@ -21,7 +21,6 @@ KEYWORDS="~amd64 ~x86"
 CDEPEND="dev-java/swt:3.7[cairo]
 	alsa? ( media-libs/alsa-lib )
 	fluidsynth? ( media-sound/fluidsynth )
-	pdf? ( >=dev-java/itext-5.5.0 )
 	lilypond? ( media-sound/lilypond )"
 
 RDEPEND=">=virtual/jre-1.5
@@ -32,7 +31,9 @@ RDEPEND=">=virtual/jre-1.5
 	)
 	${CDEPEND}"
 
-DEPEND=">=virtual/jdk-1.5 ${CDEPEND}"
+DEPEND=">=virtual/jdk-1.5
+	pdf? ( dev-java/itext:5 )
+	${CDEPEND}"
 
 S="${WORKDIR}/${MY_P}"
 
@@ -54,7 +55,7 @@ src_prepare() {
 	LIBRARY_LIST=( TuxGuitar-lib TuxGuitar-awt-graphics TuxGuitar-editor-utils 
 		TuxGuitar-gm-utils TuxGuitar
 	)
-	
+
 	PLUGIN_LIST=( $(usev alsa) ascii browser-ftp community compat
 		converter $(usev fluidsynth) gm-settings gpx gtp gtp-ui image
 		$(usev jack) $(usex jack jack-ui "") jsa $(usev lilypond) midi musicxml
@@ -71,14 +72,13 @@ src_compile() {
 		if [[ -d jni ]]; then
 			append-flags -fPIC $(java-pkg_get-jni-cflags)
 			cd jni || die "\"cd jni\" failed"
-			CC=$(tc-getCC) emake || die "emake failed"
+			CC=$(tc-getCC) emake
 		fi
 	done
 }
 
 src_install() {
 	local TUXGUITAR_INST_PATH="/usr/share/${PN}"
-	local BIN_NAME
 
 	for library in ${LIBRARY_LIST[@]}; do
 		cd "${S}"/${library} || die "cd failed"
@@ -92,28 +92,27 @@ src_install() {
 
 	# Images and Files
 	insinto ${TUXGUITAR_INST_PATH}
-	doins -r share || die "doins failed"
+	doins -r share
 
 	java-pkg_sointo ${TUXGUITAR_INST_PATH}/lib
-	for plugin in ${PLUGIN_LIST[@]}; do
-		BIN_NAME=tuxguitar-${plugin}
-		cd "${S}"/TuxGuitar-${plugin} || die
-		insinto ${TUXGUITAR_INST_PATH}/share/plugins
-		doins ${BIN_NAME}.jar || die "doins ${BIN_NAME}.jar failed"
+	insinto ${TUXGUITAR_INST_PATH}/share/plugins
+	for plugin in ${PLUGIN_LIST[@]/#/TuxGuitar-}; do
+		cd "${S}"/${plugin} || die
+		doins ${plugin,,}.jar
 
 		#TuxGuitar has its own classloader. No need to register the plugins.
 		if [[ -d jni ]]; then
-			java-pkg_doso jni/lib${BIN_NAME}-jni.so
+			java-pkg_doso jni/lib${plugin,,}-jni.so
 		fi
 	done
 
 	insinto ${TUXGUITAR_INST_PATH}/share
 	doins -r ${S}/TuxGuitar-resources/resources/soundfont
-	doman "${S}/misc/${PN}.1" || die "doman failed"
+	doman "${S}/misc/${PN}.1"
 	insinto /usr/share/mime/packages
 	doins "${S}/misc/${PN}.xml"
-	doicon "${S}/misc/${PN}.xpm" || die "doicon failed"
-	domenu "${S}/misc/${PN}.desktop" || die "domenu failed"
+	doicon "${S}/misc/${PN}.xpm"
+	domenu "${S}/misc/${PN}.desktop"
 }
 
 pkg_postinst() {
