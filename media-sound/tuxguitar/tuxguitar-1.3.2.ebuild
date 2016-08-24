@@ -9,12 +9,12 @@ inherit eutils java-pkg-2 java-ant-2 toolchain-funcs flag-o-matic fdo-mime gnome
 
 MY_P="${P}-src"
 DESCRIPTION="TuxGuitar is a multitrack guitar tablature editor and player written in Java-SWT"
-HOMEPAGE="http://www.tuxguitar.com.ar/"
+HOMEPAGE="http://tuxguitar.herac.com.ar/"
 SRC_URI="mirror://sourceforge/${PN}/${MY_P}.tar.gz"
 LICENSE="LGPL-2.1"
 SLOT="0"
 
-IUSE="alsa fluidsynth jack lilypond oss pdf timidity"
+IUSE="alsa fluidsynth jack lilypond oss pdf timidity tray"
 
 KEYWORDS="~amd64 ~x86"
 
@@ -54,14 +54,14 @@ src_prepare() {
 		-i TuxGuitar-pdf/build.properties || die "Sed failed to live up to it's name"
 	fi
 
-	LIBRARY_LIST=( TuxGuitar-lib TuxGuitar-awt-graphics TuxGuitar-editor-utils 
+	LIBRARY_LIST=( TuxGuitar-lib TuxGuitar-awt-graphics TuxGuitar-editor-utils
 		TuxGuitar-gm-utils TuxGuitar
 	)
 
 	PLUGIN_LIST=( $(usev alsa) ascii browser-ftp community compat
 		converter $(usev fluidsynth) gm-settings gpx gtp gtp-ui image
-		$(usev jack) $(usex jack jack-ui "") jsa $(usev lilypond) midi musicxml
-		$(usev oss) $(usev pdf) ptb svg tef tray tuner
+		$(usev jack) $(usex jack jack-ui "") jsa $(usev lilypond) midi
+		musicxml $(usev oss) $(usev pdf) ptb svg tef $(usev tray) tuner
 	)
 }
 
@@ -73,7 +73,7 @@ src_compile() {
 		eant
 		if [[ -d jni ]]; then
 			append-flags -fPIC $(java-pkg_get-jni-cflags)
-			cd jni || die "\"cd jni\" failed"
+			cd jni || die "cd jni failed"
 			CC=$(tc-getCC) emake
 		fi
 	done
