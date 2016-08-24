@@ -20,6 +20,7 @@ KEYWORDS="~amd64 ~x86"
 
 CDEPEND="dev-java/swt:3.7[cairo]
 	alsa? ( media-libs/alsa-lib )
+	pdf? ( dev-java/itext:5 )
 	fluidsynth? ( media-sound/fluidsynth )
 	lilypond? ( media-sound/lilypond )"
 
@@ -32,7 +33,6 @@ RDEPEND=">=virtual/jre-1.5
 	${CDEPEND}"
 
 DEPEND=">=virtual/jdk-1.5
-	pdf? ( dev-java/itext:5 )
 	${CDEPEND}"
 
 S="${WORKDIR}/${MY_P}"
@@ -49,8 +49,10 @@ src_prepare() {
 	sed -e "s|../TuxGuitar/lib/swt.jar|$(java-pkg_getjar swt-3.7 swt.jar)|" \
 		-i TuxGuitar*/build.properties || die "Sed failed to live up to it's name"
 
-	sed -e "s|../TuxGuitar/lib/itext.jar|$(java-pkg_getjar itext-5 itext.jar)|" \
+	if use pdf; then
+		sed -e "s|../TuxGuitar/lib/itext.jar|$(java-pkg_getjar itext-5 itext.jar)|" \
 		-i TuxGuitar-pdf/build.properties || die "Sed failed to live up to it's name"
+	fi
 
 	LIBRARY_LIST=( TuxGuitar-lib TuxGuitar-awt-graphics TuxGuitar-editor-utils 
 		TuxGuitar-gm-utils TuxGuitar
