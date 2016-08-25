@@ -25,11 +25,7 @@ CDEPEND="dev-java/swt:3.7[cairo]
 	lilypond? ( media-sound/lilypond )"
 
 RDEPEND=">=virtual/jre-1.5
-	timidity? (
-		alsa? ( media-sound/timidity++[alsa] )
-		oss? ( media-sound/timidity++[oss] )
-		media-sound/timidity++
-	)
+	timidity? ( media-sound/timidity++[alsa?,oss?] )
 	${CDEPEND}"
 
 DEPEND=">=virtual/jdk-1.5
