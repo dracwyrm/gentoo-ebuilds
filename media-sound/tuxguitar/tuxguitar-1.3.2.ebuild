@@ -109,7 +109,7 @@ src_install() {
 	done
 
 	insinto ${TUXGUITAR_INST_PATH}/share
-	doins -r ${S}/TuxGuitar-resources/resources/soundfont
+	doins -r "${S}"/TuxGuitar-resources/resources/soundfont
 	doman "${S}/misc/${PN}.1"
 	insinto /usr/share/mime/packages
 	doins "${S}/misc/${PN}.xml"
