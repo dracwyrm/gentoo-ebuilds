@@ -33,14 +33,14 @@ DEPEND=">=virtual/jdk-1.5
 
 S="${WORKDIR}/${MY_P}"
 
+PATCHES=( "${FILESDIR}"/${PN}-fixed-ant-files.patch )
+
 LIBRARY_LIST=()
 PLUGIN_LIST=()
 
 src_prepare() {
 	java-pkg-2_src_prepare
-
-	eapply "${FILESDIR}"/${PN}-fixed-ant-files.patch
-	eapply_user
+	default_src_prepare
 
 	sed -e "s|../TuxGuitar/lib/swt.jar|$(java-pkg_getjar swt-3.7 swt.jar)|" \
 		-i TuxGuitar*/build.properties || die "Sed failed to live up to it's name"
