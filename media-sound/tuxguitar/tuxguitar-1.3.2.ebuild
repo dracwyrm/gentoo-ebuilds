@@ -66,7 +66,8 @@ src_prepare() {
 }
 
 src_compile() {
-	BUILD_ORDER=( ${LIBRARY_LIST[@]} ${PLUGIN_LIST[@]/#/TuxGuitar-} )
+	local BUILD_ORDER=( ${LIBRARY_LIST[@]} ${PLUGIN_LIST[@]/#/TuxGuitar-} )
+	local directory
 
 	for directory in ${BUILD_ORDER[@]}; do
 		cd "${S}"/${directory} || die "cd ${directory} failed"
@@ -81,6 +82,8 @@ src_compile() {
 
 src_install() {
 	local TUXGUITAR_INST_PATH="/usr/share/${PN}"
+	local library
+	local plugin
 
 	for library in ${LIBRARY_LIST[@]}; do
 		cd "${S}"/${library} || die "cd failed"
