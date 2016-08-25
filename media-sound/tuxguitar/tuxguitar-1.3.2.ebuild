@@ -74,8 +74,7 @@ src_compile() {
 		eant
 		if [[ -d jni ]]; then
 			append-flags -fPIC $(java-pkg_get-jni-cflags)
-			cd jni || die "cd jni failed"
-			CC=$(tc-getCC) emake
+			CC=$(tc-getCC) emake -C jni
 		fi
 	done
 }
