@@ -25,11 +25,7 @@ CDEPEND="dev-java/swt:3.7[cairo]
 	lilypond? ( media-sound/lilypond )"
 
 RDEPEND=">=virtual/jre-1.5
-	timidity? (
-		alsa? ( media-sound/timidity++[alsa] )
-		oss? ( media-sound/timidity++[oss] )
-		media-sound/timidity++
-	)
+	timidity? ( media-sound/timidity++[alsa?,oss?] )
 	${CDEPEND}"
 
 DEPEND=">=virtual/jdk-1.5
@@ -37,14 +33,14 @@ DEPEND=">=virtual/jdk-1.5
 
 S="${WORKDIR}/${MY_P}"
 
+PATCHES=( "${FILESDIR}"/${PN}-fixed-ant-files.patch )
+
 LIBRARY_LIST=()
 PLUGIN_LIST=()
 
 src_prepare() {
 	java-pkg-2_src_prepare
-
-	eapply "${FILESDIR}"/${PN}-fixed-ant-files.patch
-	eapply_user
+	default_src_prepare
 
 	sed -e "s|../TuxGuitar/lib/swt.jar|$(java-pkg_getjar swt-3.7 swt.jar)|" \
 		-i TuxGuitar*/build.properties || die "Sed failed to live up to it's name"
@@ -66,21 +62,23 @@ src_prepare() {
 }
 
 src_compile() {
-	BUILD_ORDER=( ${LIBRARY_LIST[@]} ${PLUGIN_LIST[@]/#/TuxGuitar-} )
+	local BUILD_ORDER=( ${LIBRARY_LIST[@]} ${PLUGIN_LIST[@]/#/TuxGuitar-} )
+	local directory
 
 	for directory in ${BUILD_ORDER[@]}; do
 		cd "${S}"/${directory} || die "cd ${directory} failed"
 		eant
 		if [[ -d jni ]]; then
 			append-flags -fPIC $(java-pkg_get-jni-cflags)
-			cd jni || die "cd jni failed"
-			CC=$(tc-getCC) emake
+			CC=$(tc-getCC) emake -C jni
 		fi
 	done
 }
 
 src_install() {
 	local TUXGUITAR_INST_PATH="/usr/share/${PN}"
+	local library
+	local plugin
 
 	for library in ${LIBRARY_LIST[@]}; do
 		cd "${S}"/${library} || die "cd failed"
@@ -109,7 +107,7 @@ src_install() {
 	done
 
 	insinto ${TUXGUITAR_INST_PATH}/share
-	doins -r ${S}/TuxGuitar-resources/resources/soundfont
+	doins -r "${S}"/TuxGuitar-resources/resources/soundfont
 	doman "${S}/misc/${PN}.1"
 	insinto /usr/share/mime/packages
 	doins "${S}/misc/${PN}.xml"
