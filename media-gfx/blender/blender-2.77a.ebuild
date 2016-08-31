@@ -46,13 +46,13 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 # blobs as Cycles with OpenCL does not work with any open
 # source drivers.
 OPTIONAL_DEPENDS="
-	boost? ( >=dev-libs/boost-1.60[nls?,threads(+)] )
+	boost? ( >=dev-libs/boost-1.60:=[nls?,threads(+)] )
 	collada? ( >=media-libs/opencollada-1.6.18 )
 	colorio? ( >=media-libs/opencolorio-1.0.9-r2 )
 	cuda? ( dev-util/nvidia-cuda-toolkit )
 	ffmpeg? ( media-video/ffmpeg:0=[x264,mp3,encode,theora,jpeg2k?] )
 	libav? ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
-	fftw? ( sci-libs/fftw:3.0 )
+	fftw? ( sci-libs/fftw:3.0= )
 	!headless? (
 		x11-libs/libX11
 		x11-libs/libXi

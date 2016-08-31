@@ -27,7 +27,7 @@ RDEPEND="
 # TODO: Logic to enable higher versions of Boost when
 #	Boost ebuild supports C++ 11 ABI.
 DEPEND="${RDEPEND}
-	<dev-libs/boost-1.61
+	<dev-libs/boost-1.61:=
 	<sys-devel/llvm-3.6.0
 	sys-devel/bison
 	sys-devel/flex

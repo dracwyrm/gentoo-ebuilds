@@ -24,8 +24,6 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 python_prepare_all() {
-	default
-
 	# Markdown < 2.5 is only for Python 2.6 support, which we don't support
 	sed \
 		-e "s|markdown < 2.5|markdown|" \

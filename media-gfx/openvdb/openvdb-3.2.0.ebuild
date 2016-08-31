@@ -24,7 +24,7 @@ RDEPEND="${PYTHON_DEPS}"
 
 DEPEND="${RDEPEND}
 	sys-libs/zlib
-	dev-libs/boost[${PYTHON_USEDEP}]
+	dev-libs/boost:=[${PYTHON_USEDEP}]
 	media-libs/openexr
 	dev-cpp/tbb
 	dev-util/cppunit
