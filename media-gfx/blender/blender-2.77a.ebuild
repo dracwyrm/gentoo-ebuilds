@@ -26,7 +26,7 @@ IUSE="+boost +bullet +dds +elbeem +game-engine +openexr collada colorio \
 	openvdb-compression osl player sdl sndfile test tiff valgrind \
 	cpu_flags_x86_sse cpu_flags_x86_sse2"
 
-# CUDA and nVidia performance is rubbish with Blender
+# OpenCL and nVidia performance is rubbish with Blender
 # If you have nVidia, use CUDA.
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine !headless )
