@@ -23,7 +23,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}"
 
-src_prepare() {
+python_prepare_all() {
 	default
 
 	# Markdown < 2.5 is only for Python 2.6 support, which we don't support
@@ -32,4 +32,6 @@ src_prepare() {
 		-e "s|share/pdoc|share/doc/${PF}|" \
 		-e "s|'UNLICENSE', ||" \
 		-i setup.py || die "sed failed"
+
+	distutils-r1_python_prepare_all
 }
