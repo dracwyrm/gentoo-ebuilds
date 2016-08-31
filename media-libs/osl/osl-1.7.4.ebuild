@@ -40,7 +40,7 @@ RESTRICT="test"
 S=${WORKDIR}/OpenShadingLanguage-Release-${PV}
 
 PATCHES=(
-	"${FILESDIR}"/${P}-remove-mcjit.patch
+	"${FILESDIR}"/${PN}-1.7.3-remove-mcjit.patch
 	"${FILESDIR}"/${PN}-fix-pdf-install-dir.patch
 )
 
