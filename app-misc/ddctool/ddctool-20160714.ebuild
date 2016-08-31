@@ -4,7 +4,7 @@
 
 EAPI=6
 
-inherit autotools vcs-snapshot
+inherit autotools linux-info vcs-snapshot
 
 DESCRIPTION="Program for querying and changing monitor settings"
 HOMEPAGE="http://www.ddctool.com/"
@@ -32,13 +32,7 @@ src_prepare() {
 }
 
 src_configure() {
-	local econfargs=()
-
-	if use video_cards_fglrx; then
-		econfargs+=( --with-adl-headers="/usr/include/ADL" )
-	fi
-
-	econf "${econfargs[@]}"
+	econf $(usex video_cards_fglrx "--with-adl-headers=/usr/include/ADL" "")
 }
 
 pkg_postinst() {
