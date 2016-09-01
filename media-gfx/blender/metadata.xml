@@ -4,12 +4,10 @@
 	<maintainer restrict="&gt;=media-gfx/blender-2.77" type="person">
 		<email>j.scruggs@gmail.com</email>
 		<name>Jonathan Scruggs</name>
-		<description>Proxy maintainer</description>
 	</maintainer>
 	<maintainer restrict="&gt;=media-gfx/blender-2.77" type="person">
 		<email>agrigo2001@yahoo.com.au</email>
 		<name>Adrian Grigo</name>
-		<description>Proxy maintainer</description>
 	</maintainer>
 	<maintainer type="project">
 		<email>proxy-maint@gentoo.org</email>
