@@ -24,7 +24,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	dev-libs/boost[c++11=]
-	<sys-devel/llvm-3.7
+	<sys-devel/llvm-3.7[clang]
 	sys-devel/bison
 	sys-devel/flex
 	virtual/pkgconfig
