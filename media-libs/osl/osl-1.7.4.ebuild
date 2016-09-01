@@ -28,7 +28,7 @@ RDEPEND="
 #	Boost ebuild supports C++ 11 ABI.
 DEPEND="${RDEPEND}
 	<dev-libs/boost-1.61:=
-	<sys-devel/llvm-3.6.0
+	<sys-devel/llvm-3.6.0[clang]
 	sys-devel/bison
 	sys-devel/flex
 	virtual/pkgconfig
