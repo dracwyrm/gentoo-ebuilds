@@ -22,9 +22,9 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-RDEPEND="x11-libs/libXrandr
-	 virtual/pkgconfig"
+RDEPEND="x11-libs/libXrandr"
 DEPEND="video_cards_fglrx? ( x11-libs/amd-adl-sdk )
+	virtual/pkgconfig
 	${RDEPEND}"
 
 pkg_pretend() {
@@ -39,12 +39,10 @@ src_configure() {
 }
 
 pkg_postinst() {
-	einfo ""
 	einfo "You many need to change device permissions to allow users to"
 	einfo "access the monitor. More information can be found here:"
 	einfo "http://www.ddctool.com/i2c_permissions/"
 	einfo "On Gentoo, you will need to create the i2c group."
-	einfo ""
 
 	if use video_cards_nvidia; then
 		einfo "=================================================================="
