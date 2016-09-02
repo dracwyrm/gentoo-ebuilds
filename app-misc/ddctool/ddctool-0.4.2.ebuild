@@ -53,7 +53,12 @@ pkg_postinst() {
 		einfo "For more information read: http://www.ddctool.com/i2c_permissions/"
 	fi
 	
-	use udev-usb && einfo "Make sure users are in the video group to access the monitor."
+	if use udev-usb; then
+		udev_reload
+		einfo "To access the USB monitor as non-root users, add the user"
+		einfo "to the video group. usermod -aG video user"
+		einfo "For more information read: http://www.ddctool.com/usb/"
+	fi
 
 	if use video_cards_nvidia; then
 		einfo "=================================================================="
