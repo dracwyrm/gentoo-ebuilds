@@ -40,11 +40,15 @@ RESTRICT="test"
 S=${WORKDIR}/OpenShadingLanguage-Release-${PV}
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-1.7.3-remove-mcjit.patch
+	"${FILESDIR}"/${P}-remove-mcjit.patch
 	"${FILESDIR}"/${PN}-fix-pdf-install-dir.patch
 )
 
+src_pretend
+
 src_configure() {
+	local cpufeature
+
 	# Build with SIMD support (choices: 0, sse2, sse3,"
 	#	ssse3, sse4.1, sse4.2, f16c)"
 	local mysimd=""

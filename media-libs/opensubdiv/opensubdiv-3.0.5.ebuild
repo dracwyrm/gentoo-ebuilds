@@ -3,7 +3,7 @@
 # $Id$
 
 EAPI=6
-inherit cmake-utils versionator
+inherit cmake-utils versionator toolchain-funcs
 
 DESCRIPTION="An Open-Source subdivision surface library"
 HOMEPAGE="http://graphics.pixar.com/opensubdiv/"
@@ -26,8 +26,7 @@ RDEPEND="media-libs/glew
 
 DEPEND="${RDEPEND}
 	tbb? ( dev-cpp/tbb )
-	doc? ( dev-python/docutils app-doc/doxygen )
-	openmp? ( sys-devel/gcc[openmp] )"
+	doc? ( dev-python/docutils app-doc/doxygen )"
 
 KEYWORDS="~amd64 ~x86"
 
@@ -39,19 +38,32 @@ PATCHES=(
 	"${WORKDIR}"/${P}-Improved-Ptex-configuration-and-DX-compatibility.patch
 )
 
+pkg_setup() {
+	if use openmp && ! tc-has-openmp; then
+		ewarn "OpenMP is not available in your current selected compiler"
+
+		if tc-is-clang; then
+			ewarn "OpenMP support in sys-devel/clang is provided by sys-libs/libomp,"
+			ewarn "which you will need to build ${CATEGORY}/${PN} with USE=\"openmp\""
+		fi
+
+		die "need openmp capable compiler"
+	fi
+}
+
 src_configure() {
 	mycmakeargs=(
 		-DNO_MAYA=1
 		-DNO_CLEW=1
-		-DNO_DOC=$(usex doc OFF ON)
-		-DNO_TBB=$(usex tbb OFF ON)
-		-DNO_PTEX=$(usex ptex OFF ON)
-		-DNO_OMP=$(usex openmp OFF ON)
-		-DNO_OPENCL=$(usex opencl OFF ON)
-		-DNO_CUDA=$(usex cuda CUDA OFF ON)
-		-DNO_REGRESSION=$(usex test OFF ON)
-		-DNO_EXAMPLES=$(usex examples OFF ON)
-		-DNO_TUTORIALS=$(usex tutorials OFF ON)
+		-DNO_DOC=$(usex !doc)
+		-DNO_TBB=$(usex !tbb)
+		-DNO_PTEX=$(usex !ptex)
+		-DNO_OMP=$(usex !openmp)
+		-DNO_OPENCL=$(usex !opencl)
+		-DNO_CUDA=$(usex !cuda CUDA)
+		-DNO_REGRESSION=$(usex !test)
+		-DNO_EXAMPLES=$(usex !examples)
+		-DNO_TUTORIALS=$(usex !tutorials)
 		-DGLEW_LOCATION="/usr/$(get_libdir)"
 		-DGLFW_LOCATION="/usr/$(get_libdir)"
 	)
