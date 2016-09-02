@@ -4,7 +4,7 @@
 
 EAPI=6
 
-inherit autotools linux-info vcs-snapshot
+inherit autotools linux-info vcs-snapshot udev user
 
 DESCRIPTION="Program for querying and changing monitor settings"
 HOMEPAGE="http://www.ddctool.com/"
@@ -16,7 +16,7 @@ SRC_URI="https://github.com/rockowitz/ddctool/raw/${MY_GIT_COMMIT}/${P}.tar.gz"
 # If a user switches drivers, they will need to set different use flags for
 # Xorg or Wayland or Mesa, so this will trigger the rebuild against
 # the different drivers.
-IUSE="video_cards_fglrx video_cards_nvidia"
+IUSE="udev-i2c udev-usb video_cards_fglrx video_cards_nvidia"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -38,11 +38,22 @@ src_configure() {
 	econf $(usex video_cards_fglrx "--with-adl-headers=/usr/include/ADL" "")
 }
 
+src_install() {
+	default
+	use udev-i2c && udev_dorules data/etc/udev/rules.d/45-ddctool-i2c.rules
+	use udev-usb && udev_dorules data/etc/udev/rules.d/45-ddctool-usb.rules
+}
+
 pkg_postinst() {
-	einfo "You many need to change device permissions to allow users to"
-	einfo "access the monitor. More information can be found here:"
-	einfo "http://www.ddctool.com/i2c_permissions/"
-	einfo "On Gentoo, you will need to create the i2c group."
+	if use udev-i2c; then
+		enewgroup i2c
+		udev_reload
+		einfo "To access the /dev/i2c devices as non-root users, add the user"
+		einfo "to the i2c group. usermod -aG i2c user"
+		einfo "For more information read: http://www.ddctool.com/i2c_permissions/"
+	fi
+	
+	use udev-usb && einfo "Make sure users are in the video group to access the monitor."
 
 	if use video_cards_nvidia; then
 		einfo "=================================================================="
