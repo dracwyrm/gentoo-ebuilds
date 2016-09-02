@@ -10,7 +10,7 @@ DESCRIPTION="Program for querying and changing monitor settings"
 HOMEPAGE="http://www.ddctool.com/"
 
 MY_GIT_COMMIT="9712e9b54693872cd390476a7606fc8d13b66034"
-SRC_URI="https://github.com/rockowitz/ddctool/archive/${MY_GIT_COMMIT}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/rockowitz/ddctool/raw/${MY_GIT_COMMIT}/${P}.tar.gz"
 
 # Binary drivers need special instructions compared to the open source counterparts.
 # If a user switches drivers, they will need to set different use flags for
@@ -22,19 +22,16 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-DEPEND="video_cards_fglrx? ( x11-libs/amd-adl-sdk )"
+RDEPEND="x11-libs/libXrandr
+	 virtual/pkgconfig"
+DEPEND="video_cards_fglrx? ( x11-libs/amd-adl-sdk )
+	${RDEPEND}"
 
 pkg_pretend() {
 	# This program needs /dev/ic2-* devices to communicate with the monitor.
 	# It will support control over USB if the monitor supports it.
 	CONFIG_CHECK="~I2C_CHARDEV"
 	ERROR_I2C_CHARDEV="You must enable I2C_CHARDEV in your kernel to continue"
-}
-
-src_prepare() {
-	default
-
-	eautoreconf
 }
 
 src_configure() {
