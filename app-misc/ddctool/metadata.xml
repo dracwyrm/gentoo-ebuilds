@@ -29,5 +29,5 @@
 			access USB connected monitors. Otherwise, only root will be
 			able to use ddctool.
 		</flag>
-	</user>
+	</use>
 </pkgmetadata>

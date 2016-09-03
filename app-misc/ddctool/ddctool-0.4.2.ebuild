@@ -4,7 +4,7 @@
 
 EAPI=6
 
-inherit autotools linux-info udev user
+inherit linux-info udev user
 
 DESCRIPTION="Program for querying and changing monitor settings"
 HOMEPAGE="http://www.ddctool.com/"
@@ -59,7 +59,7 @@ pkg_postinst() {
 		einfo "the new udev rule."
 		einfo "For more information read: http://www.ddctool.com/i2c_permissions/"
 	fi
-	
+
 	if use udev-usb; then
 		enewgroup video
 		udev_reload
