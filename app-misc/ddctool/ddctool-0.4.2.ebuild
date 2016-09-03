@@ -31,6 +31,10 @@ pkg_pretend() {
 	# This program needs /dev/ic2-* devices to communicate with the monitor.
 	CONFIG_CHECK="~I2C_CHARDEV"
 	ERROR_I2C_CHARDEV="You must enable I2C_CHARDEV in your kernel to continue"
+	if use udev-usb; then
+		CONFIG_CHECK="~USB_HIDDEV"
+		ERROR_I2C_CHARDEV="USB_HIDDEV is needed to support USB monitors"
+	fi
 }
 
 src_configure() {
@@ -49,13 +53,18 @@ pkg_postinst() {
 		udev_reload
 		einfo "To allow non-root users access to the /dev/i2c-* devices, add those"
 		einfo "users to the i2c group: usermod -aG i2c user"
+		einfo "A computer restart or reload the i2c-dev module to activate"
+		einfo "the new udev rule."
 		einfo "For more information read: http://www.ddctool.com/i2c_permissions/"
 	fi
 	
 	if use udev-usb; then
+		enewgroup video
 		udev_reload
 		einfo "To allow non-root users access to the USB monitor, add those users"
 		einfo "to the video group: usermod -aG video user"
+		einfo "A computer restart, reload the hiddev module, or replug the monitor"
+		einfo "to activate the new udev rule."
 		einfo "For more information read: http://www.ddctool.com/usb/"
 	fi
 
