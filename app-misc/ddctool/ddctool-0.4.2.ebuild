@@ -24,6 +24,8 @@ KEYWORDS="~amd64 ~x86"
 
 RDEPEND="x11-libs/libXrandr"
 DEPEND="video_cards_fglrx? ( x11-libs/amd-adl-sdk )
+	udev-usb? ( virtual/libusb )
+	virtual/udev
 	virtual/pkgconfig
 	${RDEPEND}"
 
@@ -53,7 +55,7 @@ pkg_postinst() {
 		udev_reload
 		einfo "To allow non-root users access to the /dev/i2c-* devices, add those"
 		einfo "users to the i2c group: usermod -aG i2c user"
-		einfo "A computer restart or reload the i2c-dev module to activate"
+		einfo "Restart the computer or reload the i2c-dev module to activate"
 		einfo "the new udev rule."
 		einfo "For more information read: http://www.ddctool.com/i2c_permissions/"
 	fi
@@ -63,7 +65,7 @@ pkg_postinst() {
 		udev_reload
 		einfo "To allow non-root users access to the USB monitor, add those users"
 		einfo "to the video group: usermod -aG video user"
-		einfo "A computer restart, reload the hiddev module, or replug the monitor"
+		einfo "Restart the computer, reload the hiddev module, or replug the monitor"
 		einfo "to activate the new udev rule."
 		einfo "For more information read: http://www.ddctool.com/usb/"
 	fi
