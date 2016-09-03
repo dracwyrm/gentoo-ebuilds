@@ -221,7 +221,7 @@ src_compile() {
 
 	if use doc; then
 		# Workaround for binary drivers.
-		cards=( /dev/ati/card* /dev/nvidia* )
+		local cards=( /dev/ati/card* /dev/nvidia* )
 		for card in "${cards[@]}"; do addpredict "${card}"; done
 
 		einfo "Generating Blender C/C++ API docs ..."
@@ -231,7 +231,7 @@ src_compile() {
 
 		cd "${CMAKE_USE_DIR}" || die
 		einfo "Generating (BPY) Blender Python API docs ..."
-		"${BUILD_DIR}"/bin/blender --background --python doc/python_api/sphinx_doc_gen.py -noaudio || die "blender failed."
+		"${BUILD_DIR}"/bin/blender --background --python doc/python_api/sphinx_doc_gen.py -noaudio || die "sphinx failed."
 
 		cd "${CMAKE_USE_DIR}"/doc/python_api || die
 		sphinx-build sphinx-in BPY_API || die "sphinx failed."
@@ -250,8 +250,6 @@ src_test() {
 }
 
 src_install() {
-	local i
-
 	# Pax mark blender for hardened support.
 	pax-mark m "${CMAKE_BUILD_DIR}"/bin/blender
 
@@ -263,7 +261,6 @@ src_install() {
 		dodoc -r "${CMAKE_USE_DIR}"/doc/doxygen/html/*
 	fi
 
-	# CMake will relink binary for no reason
 	emake -C "${CMAKE_BUILD_DIR}" DESTDIR="${D}" install/fast
 
 	# fix doc installdir
