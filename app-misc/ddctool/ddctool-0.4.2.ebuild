@@ -4,7 +4,7 @@
 
 EAPI=6
 
-inherit autotools linux-info vcs-snapshot udev user
+inherit autotools linux-info udev user
 
 DESCRIPTION="Program for querying and changing monitor settings"
 HOMEPAGE="http://www.ddctool.com/"
@@ -29,7 +29,6 @@ DEPEND="video_cards_fglrx? ( x11-libs/amd-adl-sdk )
 
 pkg_pretend() {
 	# This program needs /dev/ic2-* devices to communicate with the monitor.
-	# It will support control over USB if the monitor supports it.
 	CONFIG_CHECK="~I2C_CHARDEV"
 	ERROR_I2C_CHARDEV="You must enable I2C_CHARDEV in your kernel to continue"
 }
@@ -48,22 +47,22 @@ pkg_postinst() {
 	if use udev-i2c; then
 		enewgroup i2c
 		udev_reload
-		einfo "To access the /dev/i2c devices as non-root users, add the user"
-		einfo "to the i2c group. usermod -aG i2c user"
+		einfo "To allow non-root users access to the /dev/i2c-* devices, add those"
+		einfo "users to the i2c group: usermod -aG i2c user"
 		einfo "For more information read: http://www.ddctool.com/i2c_permissions/"
 	fi
 	
 	if use udev-usb; then
 		udev_reload
-		einfo "To access the USB monitor as non-root users, add the user"
-		einfo "to the video group. usermod -aG video user"
+		einfo "To allow non-root users access to the USB monitor, add those users"
+		einfo "to the video group: usermod -aG video user"
 		einfo "For more information read: http://www.ddctool.com/usb/"
 	fi
 
 	if use video_cards_nvidia; then
 		einfo "=================================================================="
 		einfo "Please read the following webpage on proper usage with the nVidia "
-		einfo "Binary drivers, or it may not work: http://www.ddctool.com/nvidia/"
+		einfo "binary drivers, or it may not work: http://www.ddctool.com/nvidia/"
 		einfo "=================================================================="
 	fi
 }

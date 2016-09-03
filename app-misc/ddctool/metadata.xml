@@ -20,14 +20,14 @@
 
 	<use>
 		<flag name="udev-i2c">
-			Adds a udev rule to allow non-root users of the i2c group to
-			access the /dev/i2c devices. Otherwise, only root will be
-			about to use ddctool.
+			Adds a udev rule to allow non-root users in the i2c group to
+			access the /dev/i2c-* devices. Otherwise, only root will be
+			able to use ddctool.
 		</flag>
 		<flag name="udev-usb">
-			Adds a udev rule to allow non-root users of the video group to
+			Adds a udev rule to allow non-root users in the video group to
 			access USB connected monitors. Otherwise, only root will be
-			about to use ddctool.
+			able to use ddctool.
 		</flag>
 	</user>
 </pkgmetadata>
