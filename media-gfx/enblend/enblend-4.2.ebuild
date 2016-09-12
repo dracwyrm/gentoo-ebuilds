@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 inherit eutils
 
@@ -18,21 +18,20 @@ KEYWORDS="amd64 ppc x86"
 IUSE="debug doc image-cache openmp tcmalloc"
 
 REQUIRED_USE="openmp? ( !image-cache )
-	      tcmalloc ( !debug )"
+	      tcmalloc? ( !debug )"
 
-RDEPEND="
-	>=dev-libs/boost-1.55.0:=
-	media-libs/glew
-	>=media-libs/lcms-2.5:2
-	>=media-libs/libpng-1.2.43:0=
-	>=media-libs/openexr-1.0:=
-	media-libs/plotutils[X]
-	media-libs/tiff:=
-	>=media-libs/vigra-1.9.0[openexr]
-	sci-libs/gsl:=
-	virtual/jpeg:0=
-	debug? ( dev-libs/dmalloc )
-	tcmalloc? ( dev-util/google-perftools )"
+RDEPEND=">=dev-libs/boost-1.55.0:=
+	 media-libs/glew
+	 >=media-libs/lcms-2.5:2
+	 >=media-libs/libpng-1.2.43:0=
+	 >=media-libs/openexr-1.0:=
+	 media-libs/plotutils[X]
+	 media-libs/tiff:=
+	 >=media-libs/vigra-1.9.0[openexr]
+	 sci-libs/gsl:=
+	 virtual/jpeg:0=
+	 debug? ( dev-libs/dmalloc )
+	 tcmalloc? ( dev-util/google-perftools )"
 DEPEND="${RDEPEND}
 	media-gfx/imagemagick
 	sys-apps/help2man
@@ -52,12 +51,15 @@ DEPEND="${RDEPEND}
 
 S="${WORKDIR}/${MY_P}"
 
-PATCHES=( "${FILESDIR}/${PN}-4.1.3-vigra_check.patch" )
+PATCHES=( "${FILESDIR}/${P}-no-latex-error.patch" )
 
 src_configure() {
-	use doc || sed -e "s|can_build_doc=yes|can_build_doc=no|" -i configure || die "sed failed"
+	if ! use doc; then
+		sed -e "s|can_build_doc=yes|can_build_doc=no|" \
+		    -i configure || die "sed failed"
+	fi
+
 	local myeconfargs=(
-		--CXXFLAGS="-O3"
 		--prefix="${EPREFIX}"
 		$(use_enable debug)
 		$(use_with debug dmalloc)
@@ -65,12 +67,12 @@ src_configure() {
 		$(use_enable image-cache)
 		$(use_enable openmp)
 	)
-	econf $(myeconfargs[@])
+	econf ${myeconfargs[@]}
 }
 
 src_compile() {
 	# latex writes to this directory
-	addwrite "/var/cache/fonts"
+	use doc && export VARTEXFONTS="${T}/fonts"
 
 	# forcing -j1 as every parallel compilation process needs about 1 GB RAM.
 	emake -j1
