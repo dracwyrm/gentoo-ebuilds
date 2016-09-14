@@ -25,13 +25,8 @@ IUSE="contrib cuda +eigen examples ffmpeg gdal gphoto2 gstreamer gtk \
 	+python qt4 qt5 testprograms threads tiff vaapi v4l vtk webp xine"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )
-	?? ( qt4 qt5 )"
-
-# The following logic is intrinsic in the build system, but we do not enforce
-# it on the useflags since this just blocks emerging pointlessly:
-#	gtk? ( !qt4 )
-#	opengl? ( || ( gtk qt4 ) )
-#	openmp? ( !threads )
+	?? ( gtk qt4 qt5 )
+	opengl? ( || ( gtk qt4 qt5 ) )"
 
 RDEPEND="
 	app-arch/bzip2
@@ -271,9 +266,13 @@ python_module_compile() {
 	rm -rf CMakeCache.txt || die "rm failed"
 	cmake-utils_src_configure
 	cmake-utils_src_compile opencv_${EPYTHON:0:7}
-	cmake-utils_src_install
+	cmake-utils_src_install install/fast
+
 	# Remove compiled binary so new version compiles
-	emake modules/${EPYTHON:0:7} clean
+	# Avoid conflicts with new module builds as build system doesn't
+	# really support it.
+	emake -C modules/${EPYTHON:0:7} clean
+	rm -rf modules/${EPYTHON:0:7} || die "rm failed"
 }
 
 src_install() {
