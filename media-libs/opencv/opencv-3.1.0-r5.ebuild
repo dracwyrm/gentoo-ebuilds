@@ -36,7 +36,7 @@ REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )
 RDEPEND="
 	app-arch/bzip2
 	sys-libs/zlib
-	cuda? ( >=dev-util/nvidia-cuda-toolkit-5.5 )
+	cuda? ( dev-util/nvidia-cuda-toolkit:0= )
 	ffmpeg? (
 		libav? ( media-video/libav:0= )
 		!libav? ( media-video/ffmpeg:0= )
@@ -100,7 +100,6 @@ PATCHES=(
 GLOBALCMAKEARGS=()
 
 pkg_setup() {
-	use python && python-single-r1_pkg_setup
 	java-pkg-opt-2_pkg_setup
 }
 
@@ -130,75 +129,92 @@ src_configure() {
 	GLOBALCMAKEARGS=(
 	# Optional 3rd party components
 	# ===================================================
-		-DWITH_1394=$(usex ieee1394 ON OFF)
+		-DWITH_1394=$(usex ieee1394)
 		-DWITH_AVFOUNDATION=OFF 	# IOS
-		-DWITH_VTK=$(usex vtk ON OFF)
-		-DWITH_EIGEN=$(usex eigen ON OFF)
+		-DWITH_VTK=$(usex vtk)
+		-DWITH_EIGEN=$(usex eigen)
 		-DWITH_VFW=OFF     		# Video windows support
-		-DWITH_FFMPEG=$(usex ffmpeg ON OFF)
-		-DWITH_GSTREAMER=$(usex gstreamer ON OFF)
+		-DWITH_FFMPEG=$(usex ffmpeg)
+		-DWITH_GSTREAMER=$(usex gstreamer)
 		-DWITH_GSTREAMER_0_10=OFF	# Don't want this
-		-DWITH_GTK=$(usex gtk ON OFF)
+		-DWITH_GTK=$(usex gtk)
 		-DWITH_GTK_2_X=OFF
-		-DWITH_IPP=$(usex ipp ON OFF)
-		-DWITH_JASPER=$(usex jpeg2k ON OFF)
-		-DWITH_JPEG=$(usex jpeg ON OFF)
-		-DWITH_WEBP=$(usex webp ON OFF)
-		-DWITH_OPENEXR=$(usex openexr ON OFF)
-		-DWITH_OPENGL=$(usex opengl ON OFF)
+		-DWITH_IPP=$(usex ipp)
+		-DWITH_JASPER=$(usex jpeg2k)
+		-DWITH_JPEG=$(usex jpeg)
+		-DWITH_WEBP=$(usex webp)
+		-DWITH_OPENEXR=$(usex openexr)
+		-DWITH_OPENGL=$(usex opengl)
 		-DWITH_OPENNI=OFF 		# Not packaged
 		-DWITH_OPENNI2=OFF 		# Not packaged
-		-DWITH_PNG=$(usex png ON OFF)
+		-DWITH_PNG=$(usex png)
 		-DWITH_PVAPI=OFF		# Not packaged
 		-DWITH_GIGEAPI=OFF
 		# Qt in CMakeList.txt here: See below
 		-DWITH_WIN32UI=OFF		# Windows only
 		-DWITH_QUICKTIME=OFF
-		-DWITH_TBB=$(usex threads ON OFF)
-		-DWITH_OPENMP=$(usex openmp ON OFF)
+		-DWITH_TBB=$(usex threads)
+		-DWITH_OPENMP=$(usex openmp)
 		-DWITH_CSTRIPES=OFF
 		-DWITH_PTHREADS_PF=ON
-		-DWITH_TIFF=$(usex tiff ON OFF)
+		-DWITH_TIFF=$(usex tiff)
 		-DWITH_UNICAP=OFF		# Not packaged
-		-DWITH_V4L=$(usex v4l ON OFF)
-		-DWITH_LIBV4L=$(usex v4l ON OFF)
+		-DWITH_V4L=$(usex v4l)
+		-DWITH_LIBV4L=$(usex v4l)
 		-DWITH_DSHOW=ON			# direct show supp
 		-DWITH_MSMF=OFF
 		-DWITH_XIMEA=OFF 		# Windows only
-		-DWITH_XINE=$(usex xine ON OFF)
+		-DWITH_XINE=$(usex xine)
 		-DWITH_CLP=OFF
-		-DWITH_OPENCL=$(usex opencl ON OFF)
+		-DWITH_OPENCL=$(usex opencl)
 		-DWITH_OPENCL_SVM=OFF
-		-DWITH_OPENCLAMDFFT=$(usex opencl ON OFF)
-		-DWITH_OPENCLAMDBLAS=$(usex opencl ON OFF)
+		-DWITH_OPENCLAMDFFT=$(usex opencl)
+		-DWITH_OPENCLAMDBLAS=$(usex opencl)
 		-DWITH_DIRECTX=OFF
 		-DWITH_INTELPERC=OFF
-		-DWITH_JAVA=$(usex java ON OFF) # Ant needed, no compile flag
+		-DWITH_JAVA=$(usex java) # Ant needed, no compile flag
 		-DWITH_IPP_A=OFF
 		-DWITH_MATLAB=ON
-		-DWITH_VA=$(usex vaapi ON OFF)
-		-DWITH_VA_INTEL=$(usex vaapi ON OFF)
-		-DWITH_GDAL=$(usex gdal ON OFF)
-		-DWITH_GPHOTO2=$(usex gphoto2 ON OFF)
+		-DWITH_VA=$(usex vaapi)
+		-DWITH_VA_INTEL=$(usex vaapi)
+		-DWITH_GDAL=$(usex gdal)
+		-DWITH_GPHOTO2=$(usex gphoto2)
+	# ===================================================
+	# CUDA build components: nvidia-cuda-toolkit takes care of GCC version
+	# ===================================================
+		-DWITH_CUDA=$(usex cuda)
+		-DWITH_CUBLAS=$(usex cuda)
+		-DWITH_CUFFT=$(usex cuda)
+		-DCUDA_NPP_LIBRARY_ROOT_DIR=$(usex cuda "${EPREFIX}/opt/cuda" "")
 	# ===================================================
 	# OpenCV build components
 	# ===================================================
 		-DBUILD_SHARED_LIBS=ON
 		-DBUILD_ANDROID_EXAMPLES=OFF
 		-DBUILD_DOCS=OFF # Doesn't install anyways.
-		-DBUILD_EXAMPLES=$(usex examples ON OFF)
+		-DBUILD_EXAMPLES=$(usex examples)
 		-DBUILD_PERF_TESTS=OFF
-		-DBUILD_TESTS=$(usex testprograms ON OFF)
+		-DBUILD_TESTS=$(usex testprograms)
 	# ===================================================
 	# OpenCV installation options
 	# ===================================================
-		-DINSTALL_C_EXAMPLES=$(usex examples ON OFF)
-		-DINSTALL_TESTS=$(usex testprograms ON OFF)
+		-DINSTALL_C_EXAMPLES=$(usex examples)
+		-DINSTALL_TESTS=$(usex testprograms)
 	# ===================================================
 	# OpenCV build options
 	# ===================================================
-		-DENABLE_PRECOMPILED_HEADERS=$(usex pch ON OFF)
+		-DENABLE_PRECOMPILED_HEADERS=$(usex pch)
 		-DHAVE_opencv_java=$(usex java YES NO)
+	# ===================================================
+	# things we want to be hard off or not yet figured out
+	# ===================================================
+		-DBUILD_PACKAGE=OFF
+		-DENABLE_PROFILING=OFF
+	# ===================================================
+	# things we want to be hard enabled not worth useflag
+	# ===================================================
+		-DCMAKE_SKIP_RPATH=ON
+		-DOPENCV_DOC_INSTALL_PATH=
 	)
 
 	if use qt4; then
@@ -209,41 +225,8 @@ src_configure() {
 		GLOBALCMAKEARGS+=( -DWITH_QT=OFF )
 	fi
 
-	if use cuda; then
-		if [[ "$(gcc-version)" > "4.8" ]]; then
-			# bug 577410
-			# #error -- unsupported GNU version! gcc 4.9 and up are not supported!
-			ewarn "CUDA and >=sys-devel/gcc-4.9 do not play well together. Disabling CUDA support."
-			GLOBALCMAKEARGS+=( -DWITH_CUDA=OFF )
-			GLOBALCMAKEARGS+=( -DWITH_CUBLAS=OFF )
-			GLOBALCMAKEARGS+=( -DWITH_CUFFT=OFF )
-
-		else
-			GLOBALCMAKEARGS+=( -DWITH_CUDA=ON )
-			GLOBALCMAKEARGS+=( -DWITH_CUBLAS=ON )
-			GLOBALCMAKEARGS+=( -DWITH_CUFFT=ON )
-			GLOBALCMAKEARGS+=( -DCUDA_NPP_LIBRARY_ROOT_DIR="/opt/cuda" )
-		fi
-	else
-		GLOBALCMAKEARGS+=( -DWITH_CUDA=OFF )
-		GLOBALCMAKEARGS+=( -DWITH_CUBLAS=OFF )
-		GLOBALCMAKEARGS+=( -DWITH_CUFFT=OFF )
-	fi
-
 	use contrib && GLOBALCMAKEARGS+=(
 		-DOPENCV_EXTRA_MODULES_PATH="${WORKDIR}/opencv_contrib-${PV}/modules"
-	)
-
-	# things we want to be hard off or not yet figured out
-	GLOBALCMAKEARGS+=(
-		-DBUILD_PACKAGE=OFF
-		-DENABLE_PROFILING=OFF
-	)
-
-	# things we want to be hard enabled not worth useflag
-	GLOBALCMAKEARGS+=(
-		-DCMAKE_SKIP_RPATH=ON
-		-DOPENCV_DOC_INSTALL_PATH=
 	)
 
 	# workaround for bug 413429
@@ -280,12 +263,17 @@ python_module_compile() {
 
 	# Compile and install all at once because configuration will be wiped
 	# for each impl of Python
-	BUILD_DIR="${WORKDIR}/${P}_build"
-	rm ${BUILD_DIR}/CMakeCache.txt || die "rm failed"
+	BUILD_DIR="${WORKDIR}"/${P}_build
+	cd "${BUILD_DIR}" || die "cd failed"
+
+	# Regenerate cache file. Can't use rebuild_cache as it won't
+	# have the Gentoo specific options.
+	rm -rf CMakeCache.txt || die "rm failed"
 	cmake-utils_src_configure
-	cmake-utils_src_compile
+	cmake-utils_src_compile opencv_${EPYTHON:0:7}
 	cmake-utils_src_install
-	emake -C ${BUILD_DIR}/modules/${EPYTHON:0:7} clean
+	# Remove compiled binary so new version compiles
+	emake modules/${EPYTHON:0:7} clean
 }
 
 src_install() {
