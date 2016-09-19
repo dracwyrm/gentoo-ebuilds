@@ -25,7 +25,7 @@ IUSE="contrib cuda +eigen examples ffmpeg gdal gphoto2 gstreamer gtk \
 	+python qt4 qt5 testprograms threads tiff vaapi v4l vtk webp xine"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )
-	?? ( gtk qt4 qt5 )
+	?? ( qt4 qt5 )
 	opengl? ( || ( gtk qt4 qt5 ) )"
 
 RDEPEND="
@@ -108,6 +108,12 @@ src_prepare() {
 		CMakeLists.txt cmake/*cmake || die
 
 	java-pkg-opt-2_src_prepare
+
+	# Out-of-$S patching
+	if use contrib; then
+		cd "${WORKDIR}"/opencv_contrib-${PV} || die "cd failed"
+		epatch "${FILESDIR}"/${PN}-contrib-find-hdf5-fix.patch
+	fi
 }
 
 src_configure() {
