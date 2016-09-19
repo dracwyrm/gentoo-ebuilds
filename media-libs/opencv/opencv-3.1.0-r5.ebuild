@@ -25,12 +25,12 @@ IUSE="contrib cuda +eigen examples ffmpeg gdal gphoto2 gstreamer gtk \
 	+python qt4 qt5 testprograms threads tiff vaapi v4l vtk webp xine"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )
-	?? ( qt4 qt5 )"
+	?? ( qt4 qt5 )
+	opengl? ( || ( gtk qt4 qt5 ) )"
 
 # The following logic is intrinsic in the build system, but we do not enforce
 # it on the useflags since this just blocks emerging pointlessly:
 #	gtk? ( !qt4 )
-#	opengl? ( || ( gtk qt4 qt5 ) )
 #	openmp? ( !threads )
 
 RDEPEND="
@@ -72,6 +72,7 @@ RDEPEND="
 	)
 	qt5? (
 		dev-qt/qtgui:5
+		dev-qt/qtwidgets:5
 		dev-qt/qttest:5
 		dev-qt/qtconcurrent:5
 		opengl? ( dev-qt/qtopengl:5 )
@@ -99,6 +100,12 @@ PATCHES=(
 
 GLOBALCMAKEARGS=()
 
+pkg_pretend() {
+	if use openmp; then
+		tc-has-openmp || die "Please switch to an openmp compatible compiler"
+	fi
+}
+
 pkg_setup() {
 	java-pkg-opt-2_pkg_setup
 }
@@ -122,10 +129,6 @@ src_prepare() {
 }
 
 src_configure() {
-	if use openmp; then
-		tc-has-openmp || die "Please switch to an openmp compatible compiler"
-	fi
-
 	JAVA_ANT_ENCODING="iso-8859-1"
 	# set encoding so even this cmake build will pick it up.
 	export ANT_OPTS+=" -Dfile.encoding=iso-8859-1"
