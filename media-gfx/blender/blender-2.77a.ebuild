@@ -84,8 +84,7 @@ OPTIONAL_DEPENDS="
 	sdl? ( media-libs/libsdl2[sound,joystick] )
 	sndfile? ( media-libs/libsndfile )
 	tiff? ( media-libs/tiff:0 )
-	valgrind? ( dev-util/valgrind )
-"
+	valgrind? ( dev-util/valgrind )"
 
 RDEPEND="${PYTHON_DEPS}
 	dev-libs/lzo:2
@@ -95,14 +94,12 @@ RDEPEND="${PYTHON_DEPS}
 	media-libs/glew
 	media-libs/libpng:0
 	media-libs/libsamplerate
-	sci-libs/ldl
 	sys-libs/zlib
 	virtual/glu
 	virtual/jpeg:0
 	virtual/libintl
 	virtual/opengl
-	${OPTIONAL_DEPENDS}
-"
+	${OPTIONAL_DEPENDS}"
 
 DEPEND="${RDEPEND}
 	>=dev-cpp/eigen-3.2.8:3
@@ -110,8 +107,7 @@ DEPEND="${RDEPEND}
 		app-doc/doxygen[-nodot(-),dot(+),latex]
 		dev-python/sphinx[latex]
 	)
-	nls? ( sys-devel/gettext )
-"
+	nls? ( sys-devel/gettext )"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.68-doxyfile.patch
