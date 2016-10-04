@@ -4,7 +4,7 @@
 
 EAPI=6
 PYTHON_COMPAT=( python{2_7,3_4,3_5} )
-
+CMAKE_MAKEFILE_GENERATOR="ninja"
 inherit toolchain-funcs cmake-utils python-r1 java-pkg-opt-2 java-ant-2
 
 DESCRIPTION="A collection of algorithms and sample code for
@@ -240,7 +240,7 @@ src_configure() {
 
 	# workaround for bug 413429
 	tc-export CC CXX
-	
+
 	local mycmakeargs=( ${GLOBALCMAKEARGS[@]}
 			    -DWITH_PYTHON=OFF
 			    -DINSTALL_PYTHON_EXAMPLES=OFF
@@ -278,6 +278,7 @@ python_module_compile() {
 	# Regenerate cache file. Can't use rebuild_cache as it won't
 	# have the Gentoo specific options.
 	rm -rf CMakeCache.txt || die "rm failed"
+	CMAKE_MAKEFILE_GENERATOR="ninja"
 	cmake-utils_src_configure
 	cmake-utils_src_compile opencv_${EPYTHON:0:7}
 	cmake-utils_src_install install/fast
@@ -294,4 +295,5 @@ src_install() {
 
 	# Build and install the python modules for all targets
 	use python && python_foreach_impl python_module_compile
+	die
 }

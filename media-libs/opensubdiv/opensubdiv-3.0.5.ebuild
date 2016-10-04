@@ -60,7 +60,7 @@ src_configure() {
 		-DNO_PTEX=$(usex !ptex)
 		-DNO_OMP=$(usex !openmp)
 		-DNO_OPENCL=$(usex !opencl)
-		-DNO_CUDA=$(usex !cuda CUDA)
+		-DNO_CUDA=$(usex !cuda)
 		-DNO_REGRESSION=$(usex !test)
 		-DNO_EXAMPLES=$(usex !examples)
 		-DNO_TUTORIALS=$(usex !tutorials)
