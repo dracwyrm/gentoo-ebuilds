@@ -22,6 +22,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
 RDEPEND="x11-libs/libXrandr
+	 x11-libs/libX11
+	 dev-libs/glib
 	 sys-apps/i2c-tools
 	 virtual/udev
 	 usb-monitor? (
