@@ -44,8 +44,6 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-fix-pdf-install-dir.patch
 )
 
-src_pretend
-
 src_configure() {
 	local cpufeature
 
