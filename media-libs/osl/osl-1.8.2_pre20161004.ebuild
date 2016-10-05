@@ -21,7 +21,7 @@ IUSE="doc test ${CPU_FEATURES[@]%:*}"
 
 RDEPEND="
 	media-libs/openexr
-	media-libs/openimageio
+	>=media-libs/openimageio-1.7
 	dev-libs/pugixml
 	sys-libs/zlib
 "
@@ -29,7 +29,7 @@ RDEPEND="
 #	Boost ebuild supports C++ 11 ABI.
 DEPEND="${RDEPEND}
 	>=dev-libs/boost-1.62:=
-	sys-devel/llvm[clang]
+	>=sys-devel/llvm-3.8[clang]
 	sys-devel/bison
 	sys-devel/flex
 	virtual/pkgconfig
@@ -39,14 +39,13 @@ DEPEND="${RDEPEND}
 # RESTRICT="test"
 
 PATCHES=(
+	"${FILESDIR}"/${PN}-1.8.0-llvm-orcjit.patch
 	"${FILESDIR}"/${PN}-fix-pdf-install-dir.patch
 )
 
 src_configure() {
+	# Build with SIMD support
 	local cpufeature
-
-	# Build with SIMD support (choices: 0, sse2, sse3,"
-	#	ssse3, sse4.1, sse4.2, f16c)"
 	local mysimd=""
 	for cpufeature in "${CPU_FEATURES[@]}"; \
 		do use ${cpufeature%:*} && mysimd+="${cpufeature#*:},"; \
@@ -58,6 +57,7 @@ src_configure() {
 	# LLVM needs CPP11. Do not disable.
 	local mycmakeargs=(
 		-DUSE_EXTERNAL_PUGIXML=ON
+		-DLLVM_STATIC=ON
 		-DUSE_PARTIO=OFF
 		-DUSE_CPP11=OFF
 		-DUSE_CPP14=ON

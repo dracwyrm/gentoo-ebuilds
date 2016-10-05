@@ -1,0 +1,22 @@
+From 22b3ec5d6ed647de6aeada20d750d1562f91477f Mon Sep 17 00:00:00 2001
+From: Larry Gritz <lg@larrygritz.com>
+Date: Sun, 2 Oct 2016 08:43:00 -0700
+Subject: [PATCH] Fix gcc warning about casting for AVX2 (#1511)
+
+---
+ src/include/OpenImageIO/simd.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/include/OpenImageIO/simd.h b/src/include/OpenImageIO/simd.h
+index 205bb2e..eaec2d4 100644
+--- a/src/include/OpenImageIO/simd.h
++++ b/src/include/OpenImageIO/simd.h
+@@ -2325,7 +2325,7 @@ OIIO_FORCEINLINE const bool8 bool8::True () {
+ # if OIIO_SIMD_AVX >= 2 && (OIIO_GNUC_VERSION > 50000)
+     // Fastest way to fill with all 1 bits is to cmp any value to itself.
+     __m256i anyval = _mm256_undefined_si256();
+-    return _mm256_cmpeq_epi8 (anyval, anyval);
++    return _mm256_castsi256_ps (_mm256_cmpeq_epi8 (anyval, anyval));
+ # else
+     return _mm256_castsi256_ps (_mm256_set1_epi32 (-1));
+ # endif

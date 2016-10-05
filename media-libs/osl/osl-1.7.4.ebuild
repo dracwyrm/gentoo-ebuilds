@@ -27,7 +27,7 @@ RDEPEND="
 # TODO: Logic to enable higher versions of Boost when
 #	Boost ebuild supports C++ 11 ABI.
 DEPEND="${RDEPEND}
-	<dev-libs/boost-1.61:=
+	>=dev-libs/boost-1.62:=
 	<sys-devel/llvm-3.6.0[clang]
 	sys-devel/bison
 	sys-devel/flex
@@ -61,12 +61,12 @@ src_configure() {
 	local mycmakeargs=(
 		-DUSE_EXTERNAL_PUGIXML=ON
 		-DUSE_PARTIO=OFF
-		-DOSL_BUILD_CPP11=ON
+		-DOSL_BUILD_CPP14=ON
 		-DENABLERTTI=OFF
 		-DSTOP_ON_WARNING=OFF
 		-DSELF_CONTAINED_INSTALL_TREE=OFF
-		-DOSL_BUILD_TESTS=$(usex test ON OFF)
-		-DINSTALL_DOCS=$(usex doc ON OFF)
+		-DOSL_BUILD_TESTS=$(usex test)
+		-DINSTALL_DOCS=$(usex doc)
 		-DUSE_SIMD=${mysimd%,}
 		-DVERBOSE=ON
 	)
