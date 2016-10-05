@@ -36,9 +36,7 @@ DEPEND="${RDEPEND}
 "
 
 # Restricting tests as Make file handles them differently
-RESTRICT="test"
-
-S=${WORKDIR}/OpenShadingLanguage-Release-${PV}
+# RESTRICT="test"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-fix-pdf-install-dir.patch
