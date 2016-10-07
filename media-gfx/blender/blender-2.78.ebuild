@@ -23,7 +23,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE="+boost +bullet +dds +elbeem +game-engine +openexr collada colorio \
 	cuda cycles debug doc ffmpeg fftw headless jack jemalloc jpeg2k libav \
 	llvm man ndof nls openal opencl openimageio openmp opensubdiv openvdb \
-	openvdb-compression osl player sdl sndfile test tiff valgrind"
+	openvdb-compression player sdl sndfile test tiff valgrind"
 
 # OpenCL and nVidia performance is rubbish with Blender
 # If you have nVidia, use CUDA.
@@ -37,7 +37,6 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	nls? ( boost )
 	openal? ( boost )
 	opencl? ( cycles )
-	osl? ( cycles llvm )
 	game-engine? ( boost )
 	?? ( ffmpeg libav )"
 
@@ -79,7 +78,6 @@ OPTIONAL_DEPENDS="
 		dev-cpp/tbb
 	)
 	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
-	osl? ( media-libs/osl )
 	sdl? ( media-libs/libsdl2[sound,joystick] )
 	sndfile? ( media-libs/libsndfile )
 	tiff? ( media-libs/tiff:0 )
@@ -174,7 +172,7 @@ src_configure() {
 		-DWITH_CUDA=$(usex cuda)
 		-DWITH_CYCLES_DEVICE_CUDA=$(usex cuda TRUE FALSE)
 		-DWITH_CYCLES=$(usex cycles)
-		-DWITH_CYCLES_OSL=$(usex osl)
+		-DWITH_CYCLES_OSL=OFF
 		-DWITH_LLVM=$(usex llvm)
 		-DWITH_FFTW3=$(usex fftw)
 		-DWITH_GAMEENGINE=$(usex game-engine)
