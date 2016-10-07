@@ -107,7 +107,7 @@ DEPEND="${RDEPEND}
 	nls? ( sys-devel/gettext )"
 
 PATCHES=( "${FILESDIR}"/${P}-C++11-build-fix.patch
-	  "${FILESDIR}"/${P}-fix-install-rules.patch )
+	  "${FILESDIR}"/${PN}-fix-install-rules.patch )
 
 pkg_pretend() {
 	if use openmp && ! tc-has-openmp; then
