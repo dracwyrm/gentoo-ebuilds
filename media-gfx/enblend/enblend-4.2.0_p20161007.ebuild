@@ -13,12 +13,9 @@ SRC_URI="https://dev.gentoo.org/~soap/distfiles/${P}.tar.xz"
 LICENSE="GPL-2 VIGRA"
 SLOT="0"
 KEYWORDS="~amd64 ~ppc ~x86"
-IUSE="debug doc html openmp pdf tcmalloc cpu_flags_x86_sse2"
+IUSE="debug doc openmp tcmalloc cpu_flags_x86_sse2"
 
-REQUIRED_USE="
-	html? ( doc )
-	pdf? ( doc )
-	tcmalloc? ( !debug )"
+REQUIRED_USE="tcmalloc? ( !debug )"
 
 RDEPEND="
 	>=dev-libs/boost-1.62.0:=
@@ -59,10 +56,10 @@ src_prepare() {
 src_configure() {
 	local mycmakeargs=(
 		-DENABLE_DMALLOC=$(usex debug)
-		-DENABLE_OPENMP=$(usex tcmalloc)
+		-DENABLE_TCMALLOC=$(usex tcmalloc)
 		-DDOC=$(usex doc)
-		-DINSTALL_HTML_DOC=$(usex html)
-		-DINSTALL_PDF_DOC=$(usex pdf)
+		-DINSTALL_HTML_DOC=$(usex doc)
+		-DINSTALL_PDF_DOC=$(usex doc)
 		-DENABLE_OPENMP=$(usex openmp)
 		-DENABLE_SSE2=$(usex cpu_flags_x86_sse2)
 	)

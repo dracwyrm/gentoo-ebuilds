@@ -7,9 +7,7 @@
   </maintainer>
   <use>
     <flag name="gpu">GPU support for Enblend</flag>
-    <flag name="html" restrict="&gt;=media-gfx/enblend-4.2.0">Install HTML documents</flag>
     <flag name="image-cache">allow for processing of large images</flag>
-    <flag name="pdf" restrict="&gt;=media-gfx/enblend-4.2.0">Install PDF documents</flag>
   </use>
   <upstream>
     <remote-id type="sourceforge">enblend</remote-id>
