@@ -18950,7 +18950,7 @@ diff -purN a/configure b/configure
 -${warnings}" >&6; }
 diff -purN a/configure.ac b/configure.ac
 --- a/configure.ac	2016-03-28 10:44:02.000000000 +0100
-+++ b/configure.ac	2016-09-22 13:03:42.413422271 +0100
++++ b/configure.ac	2016-09-24 10:29:40.000000000 +0100
 @@ -316,15 +316,9 @@ fi
  
  can_build_doc=yes
@@ -19040,7 +19040,7 @@ diff -purN a/configure.ac b/configure.ac
  ${warnings}])
 diff -purN a/contrib/enfuse_droplet/enfuse_droplet_360.bat b/contrib/enfuse_droplet/enfuse_droplet_360.bat
 --- a/contrib/enfuse_droplet/enfuse_droplet_360.bat	1970-01-01 01:00:00.000000000 +0100
-+++ b/contrib/enfuse_droplet/enfuse_droplet_360.bat	2016-09-22 13:01:01.192251865 +0100
++++ b/contrib/enfuse_droplet/enfuse_droplet_360.bat	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,116 @@
 +@echo off
 +        rem Specify additional parameters you want to pass to enfuse in the next line 
@@ -19161,7 +19161,7 @@ diff -purN a/contrib/enfuse_droplet/enfuse_droplet_360.bat b/contrib/enfuse_drop
 \ No newline at end of file
 diff -purN a/contrib/enfuse_droplet/enfuse_droplet.bat b/contrib/enfuse_droplet/enfuse_droplet.bat
 --- a/contrib/enfuse_droplet/enfuse_droplet.bat	1970-01-01 01:00:00.000000000 +0100
-+++ b/contrib/enfuse_droplet/enfuse_droplet.bat	2016-09-22 13:01:01.192251865 +0100
++++ b/contrib/enfuse_droplet/enfuse_droplet.bat	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,116 @@
 +@echo off
 +        rem Specify additional parameters you want to pass to enfuse in the next line 
@@ -19282,7 +19282,7 @@ diff -purN a/contrib/enfuse_droplet/enfuse_droplet.bat b/contrib/enfuse_droplet/
 \ No newline at end of file
 diff -purN a/contrib/enfuse_droplet/enfuse_droplet_readme.txt b/contrib/enfuse_droplet/enfuse_droplet_readme.txt
 --- a/contrib/enfuse_droplet/enfuse_droplet_readme.txt	1970-01-01 01:00:00.000000000 +0100
-+++ b/contrib/enfuse_droplet/enfuse_droplet_readme.txt	2016-09-22 13:01:01.193251866 +0100
++++ b/contrib/enfuse_droplet/enfuse_droplet_readme.txt	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,88 @@
 +Goal:
 +-----
@@ -19374,7 +19374,7 @@ diff -purN a/contrib/enfuse_droplet/enfuse_droplet_readme.txt b/contrib/enfuse_d
 +
 diff -purN a/contrib/enfuse_droplet/LICENCE.txt b/contrib/enfuse_droplet/LICENCE.txt
 --- a/contrib/enfuse_droplet/LICENCE.txt	1970-01-01 01:00:00.000000000 +0100
-+++ b/contrib/enfuse_droplet/LICENCE.txt	2016-09-22 13:01:01.192251865 +0100
++++ b/contrib/enfuse_droplet/LICENCE.txt	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,339 @@
 +                    GNU GENERAL PUBLIC LICENSE
 +                       Version 2, June 1991
@@ -20512,7 +20512,7 @@ diff -purN a/depcomp b/depcomp
 -# End:
 diff -purN a/doc/CMakeLists.txt b/doc/CMakeLists.txt
 --- a/doc/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
-+++ b/doc/CMakeLists.txt	2016-09-22 13:01:01.193251866 +0100
++++ b/doc/CMakeLists.txt	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,414 @@
 +
 +project(doc)
@@ -20931,7 +20931,7 @@ diff -purN a/doc/CMakeLists.txt b/doc/CMakeLists.txt
 \ No newline at end of file
 diff -purN a/doc/common-bug-reports.tex b/doc/common-bug-reports.tex
 --- a/doc/common-bug-reports.tex	2016-03-28 10:37:49.000000000 +0100
-+++ b/doc/common-bug-reports.tex	2016-09-22 13:01:01.197251870 +0100
++++ b/doc/common-bug-reports.tex	2016-09-24 10:28:47.000000000 +0100
 @@ -63,31 +63,30 @@ that was missing.
  
  To enable someone to investigate the bug, you should include all these things:
@@ -21010,7 +21010,7 @@ diff -purN a/doc/common-bug-reports.tex b/doc/common-bug-reports.tex
    You can increase the probability that your patch gets applied by basing it on a recent
 diff -purN a/doc/common-color-spaces.tex b/doc/common-color-spaces.tex
 --- a/doc/common-color-spaces.tex	2016-03-28 10:37:53.000000000 +0100
-+++ b/doc/common-color-spaces.tex	2016-09-22 13:03:42.414422272 +0100
++++ b/doc/common-color-spaces.tex	2016-09-24 10:29:40.000000000 +0100
 @@ -283,7 +283,9 @@ are the four available color spaces.
  
    This is the fastest color space to do computations within, i.e.\ it consumes by far the least
@@ -21095,7 +21095,7 @@ diff -purN a/doc/common-color-spaces.tex b/doc/common-color-spaces.tex
  \genidx[\rangeendlocation]{colorspace}
 diff -purN a/doc/common-interaction.tex b/doc/common-interaction.tex
 --- a/doc/common-interaction.tex	2016-03-29 07:59:56.000000000 +0100
-+++ b/doc/common-interaction.tex	2016-09-22 13:03:42.416422274 +0100
++++ b/doc/common-interaction.tex	2016-09-24 10:29:40.000000000 +0100
 @@ -159,7 +159,6 @@ may include more or less of the features
          \app{} 4.2-95f1fed2bf2d \\
          ~ \\
@@ -21106,7 +21106,7 @@ diff -purN a/doc/common-interaction.tex b/doc/common-interaction.tex
          Copyright (C) 2004-2009 Andrew Mihal. \\
 diff -purN a/doc/common-known-limitations.tex b/doc/common-known-limitations.tex
 --- a/doc/common-known-limitations.tex	2016-03-28 10:37:42.000000000 +0100
-+++ b/doc/common-known-limitations.tex	2016-09-22 13:01:01.202251876 +0100
++++ b/doc/common-known-limitations.tex	2016-09-24 10:28:47.000000000 +0100
 @@ -52,12 +52,32 @@ some of the known ones.
      with nearly 1\hyp dimensional overlap regions, something that wreaks havoc on them.
    \end{geeknote}
@@ -21143,7 +21143,7 @@ diff -purN a/doc/common-known-limitations.tex b/doc/common-known-limitations.tex
  \genidx[\rangeendlocation]{known limitations}
 diff -purN a/doc/createdvi.cmake.in b/doc/createdvi.cmake.in
 --- a/doc/createdvi.cmake.in	1970-01-01 01:00:00.000000000 +0100
-+++ b/doc/createdvi.cmake.in	2016-09-22 13:01:01.206251880 +0100
++++ b/doc/createdvi.cmake.in	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,84 @@
 +
 +set(MAKEINDEX_COMPILER "@MAKEINDEX_COMPILER@")
@@ -21231,7 +21231,7 @@ diff -purN a/doc/createdvi.cmake.in b/doc/createdvi.cmake.in
 +endif()
 diff -purN a/doc/examples/enfuse/CMakeLists.txt b/doc/examples/enfuse/CMakeLists.txt
 --- a/doc/examples/enfuse/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
-+++ b/doc/examples/enfuse/CMakeLists.txt	2016-09-22 13:01:01.218251892 +0100
++++ b/doc/examples/enfuse/CMakeLists.txt	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,22 @@
 +
 +set(EXAMPLE_FILES
@@ -21257,7 +21257,7 @@ diff -purN a/doc/examples/enfuse/CMakeLists.txt b/doc/examples/enfuse/CMakeLists
 +# TODO: install Makefile.userweight
 diff -purN a/doc/examples/enfuse/generalized_gaussian.cl b/doc/examples/enfuse/generalized_gaussian.cl
 --- a/doc/examples/enfuse/generalized_gaussian.cl	1970-01-01 01:00:00.000000000 +0100
-+++ b/doc/examples/enfuse/generalized_gaussian.cl	2016-09-22 13:01:01.219251893 +0100
++++ b/doc/examples/enfuse/generalized_gaussian.cl	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,30 @@
 +// Copyright (C) 2015, 2016 Christoph L. Spiel
 +//
@@ -21291,7 +21291,7 @@ diff -purN a/doc/examples/enfuse/generalized_gaussian.cl b/doc/examples/enfuse/g
 +}
 diff -purN a/doc/examples/enfuse/interpolator.cc b/doc/examples/enfuse/interpolator.cc
 --- a/doc/examples/enfuse/interpolator.cc	1970-01-01 01:00:00.000000000 +0100
-+++ b/doc/examples/enfuse/interpolator.cc	2016-09-22 13:01:01.219251893 +0100
++++ b/doc/examples/enfuse/interpolator.cc	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,162 @@
 +// Copyright (C) 2014-2016 Christoph L. Spiel
 +//
@@ -21457,7 +21457,7 @@ diff -purN a/doc/examples/enfuse/interpolator.cc b/doc/examples/enfuse/interpola
 +}
 diff -purN a/doc/examples/enfuse/interpolator.hh b/doc/examples/enfuse/interpolator.hh
 --- a/doc/examples/enfuse/interpolator.hh	1970-01-01 01:00:00.000000000 +0100
-+++ b/doc/examples/enfuse/interpolator.hh	2016-09-22 13:01:01.219251893 +0100
++++ b/doc/examples/enfuse/interpolator.hh	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,58 @@
 +// Copyright (C) 2014-2016 Christoph L. Spiel
 +//
@@ -21519,7 +21519,7 @@ diff -purN a/doc/examples/enfuse/interpolator.hh b/doc/examples/enfuse/interpola
 +#endif // INTERPOLATOR_HH_INCLUDED
 diff -purN a/doc/examples/enfuse/Makefile.am b/doc/examples/enfuse/Makefile.am
 --- a/doc/examples/enfuse/Makefile.am	2015-12-28 15:30:31.000000000 +0000
-+++ b/doc/examples/enfuse/Makefile.am	2016-09-22 13:01:01.218251892 +0100
++++ b/doc/examples/enfuse/Makefile.am	2016-09-24 10:28:47.000000000 +0100
 @@ -1,12 +1,12 @@
  datadir = $(docdir)/examples/enfuse
  
@@ -22135,7 +22135,7 @@ diff -purN a/doc/examples/enfuse/Makefile.userweight b/doc/examples/enfuse/Makef
 -interpolator.cc: interpolator.hh
 diff -purN a/doc/examples/enfuse/variable_power.cl b/doc/examples/enfuse/variable_power.cl
 --- a/doc/examples/enfuse/variable_power.cl	1970-01-01 01:00:00.000000000 +0100
-+++ b/doc/examples/enfuse/variable_power.cl	2016-09-22 13:01:01.221251896 +0100
++++ b/doc/examples/enfuse/variable_power.cl	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,51 @@
 +// Copyright (C) 2015, 2016 Christoph L. Spiel
 +//
@@ -22842,7 +22842,7 @@ diff -purN a/doc/examples/Makefile.in b/doc/examples/Makefile.in
 -.NOEXPORT:
 diff -purN a/doc/Makefile.am b/doc/Makefile.am
 --- a/doc/Makefile.am	2016-03-28 10:37:47.000000000 +0100
-+++ b/doc/Makefile.am	2016-09-22 13:01:01.195251868 +0100
++++ b/doc/Makefile.am	2016-09-24 10:28:47.000000000 +0100
 @@ -567,4 +567,5 @@ EXTRA_DIST = \
          uml-dot.m4 \
          endoc.ist floatstyle-ruledbot.sty  exemplar.hva \
@@ -23957,13 +23957,13 @@ diff -purN a/doc/Makefile.in b/doc/Makefile.in
 -.NOEXPORT:
 diff -purN a/doc/updateDate.cmake b/doc/updateDate.cmake
 --- a/doc/updateDate.cmake	1970-01-01 01:00:00.000000000 +0100
-+++ b/doc/updateDate.cmake	2016-09-22 13:01:01.230251905 +0100
++++ b/doc/updateDate.cmake	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,2 @@
 +file(STRINGS ${INPUT_PATH}/${DATEFILE} UPDATE_DATE)
 +configure_file(${INPUT_PATH}/version.in "${INPUT_PATH}/${FILENAME}")
 diff -purN a/doc/url-def.tex b/doc/url-def.tex
 --- a/doc/url-def.tex	2016-03-28 10:37:49.000000000 +0100
-+++ b/doc/url-def.tex	2016-09-22 13:03:42.419422277 +0100
++++ b/doc/url-def.tex	2016-09-24 10:29:40.000000000 +0100
 @@ -43,6 +43,7 @@
  \urldef{\launchpadnet}{\url}{https://launchpad.net/}
  \urldef{\libpngorg}{\url}{http://www.libpng.org/pub/png/libpng.html}
@@ -23974,7 +23974,7 @@ diff -purN a/doc/url-def.tex b/doc/url-def.tex
  \urldef{\luminouslandscapedigitalblending}{\url}{https://luminous-landscape.com/digital-blending/}
 diff -purN a/doc/version.cmake.in b/doc/version.cmake.in
 --- a/doc/version.cmake.in	1970-01-01 01:00:00.000000000 +0100
-+++ b/doc/version.cmake.in	2016-09-22 13:01:01.231251906 +0100
++++ b/doc/version.cmake.in	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,3 @@
 +\hashinsert{val:UPDATED}{${UPDATE_DATE}}
 +\hashinsert{val:VERSION}{@PACKAGE_VERSION_STRING@}
@@ -24512,7 +24512,7 @@ diff -purN a/install-sh b/install-sh
 -# End:
 diff -purN a/m4/ax_boost_system.m4 b/m4/ax_boost_system.m4
 --- a/m4/ax_boost_system.m4	1970-01-01 01:00:00.000000000 +0100
-+++ b/m4/ax_boost_system.m4	2016-09-22 13:01:01.233251908 +0100
++++ b/m4/ax_boost_system.m4	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,120 @@
 +# ===========================================================================
 +#      http://www.gnu.org/software/autoconf-archive/ax_boost_system.html
@@ -24636,7 +24636,7 @@ diff -purN a/m4/ax_boost_system.m4 b/m4/ax_boost_system.m4
 +])
 diff -purN a/m4/ax_lang_compiler_ms.m4 b/m4/ax_lang_compiler_ms.m4
 --- a/m4/ax_lang_compiler_ms.m4	1970-01-01 01:00:00.000000000 +0100
-+++ b/m4/ax_lang_compiler_ms.m4	2016-09-22 13:01:01.233251908 +0100
++++ b/m4/ax_lang_compiler_ms.m4	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,34 @@
 +# ===========================================================================
 +#       http://www.nongnu.org/autoconf-archive/ax_lang_compiler_ms.html
@@ -24674,7 +24674,7 @@ diff -purN a/m4/ax_lang_compiler_ms.m4 b/m4/ax_lang_compiler_ms.m4
 +])])
 diff -purN a/m4/ax_opencl.m4 b/m4/ax_opencl.m4
 --- a/m4/ax_opencl.m4	1970-01-01 01:00:00.000000000 +0100
-+++ b/m4/ax_opencl.m4	2016-09-22 13:01:01.234251909 +0100
++++ b/m4/ax_opencl.m4	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,118 @@
 +# -*- mode: autoconf -*-
 +#
@@ -24796,7 +24796,7 @@ diff -purN a/m4/ax_opencl.m4 b/m4/ax_opencl.m4
 +
 diff -purN a/m4/ax_pthread.m4 b/m4/ax_pthread.m4
 --- a/m4/ax_pthread.m4	1970-01-01 01:00:00.000000000 +0100
-+++ b/m4/ax_pthread.m4	2016-09-22 13:01:01.234251909 +0100
++++ b/m4/ax_pthread.m4	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,272 @@
 +# ===========================================================================
 +#           http://www.nongnu.org/autoconf-archive/ax_pthread.html
@@ -25920,7 +25920,7 @@ diff -purN a/Makefile.in b/Makefile.in
 -.NOEXPORT:
 diff -purN a/Makefile.scm b/Makefile.scm
 --- a/Makefile.scm	1970-01-01 01:00:00.000000000 +0100
-+++ b/Makefile.scm	2016-09-22 13:01:01.185251858 +0100
++++ b/Makefile.scm	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,24 @@
 +# -*- Makefile -*-
 +#
@@ -26167,7 +26167,7 @@ diff -purN a/missing b/missing
 -# End:
 diff -purN a/NEWS b/NEWS
 --- a/NEWS	2016-03-29 08:55:26.000000000 +0100
-+++ b/NEWS	2016-09-22 13:03:42.411422269 +0100
++++ b/NEWS	2016-09-24 10:29:40.000000000 +0100
 @@ -1,4 +1,17 @@
 -* Version 4.2
 +* Version 4.2.1
@@ -26197,7 +26197,7 @@ diff -purN a/NEWS b/NEWS
  Released on September 8, 2008.
 diff -purN a/src/common.h b/src/common.h
 --- a/src/common.h	2016-01-02 08:36:18.000000000 +0000
-+++ b/src/common.h	2016-09-22 13:03:42.421422279 +0100
++++ b/src/common.h	2016-09-24 10:29:40.000000000 +0100
 @@ -144,14 +144,7 @@ typedef enum
  #define TRANSFORMATION_FLAGS_FOR_BLENDING cmsFLAGS_NOCACHE
  
@@ -26215,7 +26215,7 @@ diff -purN a/src/common.h b/src/common.h
  #ifdef WIN32
 diff -purN a/src/dynamic_loader/CMakeLists.txt b/src/dynamic_loader/CMakeLists.txt
 --- a/src/dynamic_loader/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
-+++ b/src/dynamic_loader/CMakeLists.txt	2016-09-22 13:01:01.242251918 +0100
++++ b/src/dynamic_loader/CMakeLists.txt	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,25 @@
 +set(DYNAMIC_LOADER_FILES
 +    dynamic_loader.h dynamic_loader.cc
@@ -26244,7 +26244,7 @@ diff -purN a/src/dynamic_loader/CMakeLists.txt b/src/dynamic_loader/CMakeLists.t
 +add_library(dynamic_loader STATIC ${DYNAMIC_LOADER_FILES})
 diff -purN a/src/dynamic_loader/Makefile.am b/src/dynamic_loader/Makefile.am
 --- a/src/dynamic_loader/Makefile.am	2015-10-01 15:41:08.000000000 +0100
-+++ b/src/dynamic_loader/Makefile.am	2016-09-22 13:01:01.242251918 +0100
++++ b/src/dynamic_loader/Makefile.am	2016-09-24 10:28:47.000000000 +0100
 @@ -23,3 +23,5 @@ libdynamic_loader_a_CXXFLAGS = \
          $(AM_CXXFLAGS) \
          -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 \
@@ -26969,7 +26969,7 @@ diff -purN a/src/dynamic_loader/Makefile.in b/src/dynamic_loader/Makefile.in
 -.NOEXPORT:
 diff -purN a/src/enblend.cc b/src/enblend.cc
 --- a/src/enblend.cc	2016-03-28 10:37:36.000000000 +0100
-+++ b/src/enblend.cc	2016-09-22 13:03:42.426422284 +0100
++++ b/src/enblend.cc	2016-09-24 10:29:40.000000000 +0100
 @@ -426,16 +426,11 @@ printUsage(const bool error = true)
          "\n" <<
          "Enblend accepts arguments to any option in uppercase as\n" <<
@@ -27000,7 +27000,7 @@ diff -purN a/src/enblend.cc b/src/enblend.cc
      std::cerr << std::endl << command << ": interrupted" << std::endl;
 diff -purN a/src/enfuse.cc b/src/enfuse.cc
 --- a/src/enfuse.cc	2016-03-28 10:37:36.000000000 +0100
-+++ b/src/enfuse.cc	2016-09-22 13:03:42.430422289 +0100
++++ b/src/enfuse.cc	2016-09-24 10:29:40.000000000 +0100
 @@ -462,16 +462,11 @@ printUsage(const bool error = true)
          "\n" <<
          "Enfuse accepts arguments to any option in uppercase as\n" <<
@@ -27031,7 +27031,7 @@ diff -purN a/src/enfuse.cc b/src/enfuse.cc
      std::cerr << std::endl << command << ": interrupted" << std::endl;
 diff -purN a/src/introspection.cc b/src/introspection.cc
 --- a/src/introspection.cc	2016-03-23 08:22:03.000000000 +0000
-+++ b/src/introspection.cc	2016-09-22 13:01:01.266251943 +0100
++++ b/src/introspection.cc	2016-09-24 10:28:47.000000000 +0100
 @@ -70,32 +70,6 @@ namespace introspection
              }
  #endif // ENFUSE_SOURCE
@@ -27067,7 +27067,7 @@ diff -purN a/src/introspection.cc b/src/introspection.cc
              std::cout <<
 diff -purN a/src/layer_selection/CMakeLists.txt b/src/layer_selection/CMakeLists.txt
 --- a/src/layer_selection/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
-+++ b/src/layer_selection/CMakeLists.txt	2016-09-22 13:01:01.267251944 +0100
++++ b/src/layer_selection/CMakeLists.txt	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,5 @@
 +set(LAYER_SELECTION_FILES
 +    info.h info.cc layer_selection.h layer_selection.cc
@@ -27076,7 +27076,7 @@ diff -purN a/src/layer_selection/CMakeLists.txt b/src/layer_selection/CMakeLists
 +add_library(layer_selection STATIC ${LAYER_SELECTION_FILES})
 diff -purN a/src/layer_selection/Makefile.am b/src/layer_selection/Makefile.am
 --- a/src/layer_selection/Makefile.am	2015-06-27 18:38:42.000000000 +0100
-+++ b/src/layer_selection/Makefile.am	2016-09-22 13:01:01.267251944 +0100
++++ b/src/layer_selection/Makefile.am	2016-09-24 10:28:47.000000000 +0100
 @@ -12,3 +12,5 @@ liblayersel_a_SOURCES = info.h info.cc \
  liblayersel_a_CXXFLAGS = $(AM_CXXFLAGS) \
                           -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 \
@@ -29160,7 +29160,7 @@ diff -purN a/src/Makefile.in b/src/Makefile.in
 -.NOEXPORT:
 diff -purN a/src/win32helpers/delayHelper.h b/src/win32helpers/delayHelper.h
 --- a/src/win32helpers/delayHelper.h	1970-01-01 01:00:00.000000000 +0100
-+++ b/src/win32helpers/delayHelper.h	2016-09-22 13:01:01.285251963 +0100
++++ b/src/win32helpers/delayHelper.h	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,84 @@
 +/*
 + * Copyright (C) 2016 T. Modes
@@ -29249,7 +29249,7 @@ diff -purN a/src/win32helpers/delayHelper.h b/src/win32helpers/delayHelper.h
 \ No newline at end of file
 diff -purN a/src/win32helpers/LICENSE b/src/win32helpers/LICENSE
 --- a/src/win32helpers/LICENSE	1970-01-01 01:00:00.000000000 +0100
-+++ b/src/win32helpers/LICENSE	2016-09-22 13:01:01.284251962 +0100
++++ b/src/win32helpers/LICENSE	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,339 @@
 +                    GNU GENERAL PUBLIC LICENSE
 +                       Version 2, June 1991
@@ -30066,7 +30066,7 @@ diff -purN a/src/win32helpers/Makefile.in b/src/win32helpers/Makefile.in
 -.NOEXPORT:
 diff -purN a/src/win32helpers/README.THIS b/src/win32helpers/README.THIS
 --- a/src/win32helpers/README.THIS	1970-01-01 01:00:00.000000000 +0100
-+++ b/src/win32helpers/README.THIS	2016-09-22 13:01:01.285251963 +0100
++++ b/src/win32helpers/README.THIS	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,118 @@
 += getopt port =
 +
@@ -30188,7 +30188,7 @@ diff -purN a/src/win32helpers/README.THIS b/src/win32helpers/README.THIS
 + ~ tiny mistakes causing warnings corrected
 diff -purN a/test/gigapixel_lowerright.cc b/test/gigapixel_lowerright.cc
 --- a/test/gigapixel_lowerright.cc	1970-01-01 01:00:00.000000000 +0100
-+++ b/test/gigapixel_lowerright.cc	2016-09-22 13:01:01.286251964 +0100
++++ b/test/gigapixel_lowerright.cc	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,139 @@
 +#define HAVE_MKSTEMP 1
 +
@@ -30331,7 +30331,7 @@ diff -purN a/test/gigapixel_lowerright.cc b/test/gigapixel_lowerright.cc
 +}
 diff -purN a/test/gigapixel_readback_bounds.cc b/test/gigapixel_readback_bounds.cc
 --- a/test/gigapixel_readback_bounds.cc	1970-01-01 01:00:00.000000000 +0100
-+++ b/test/gigapixel_readback_bounds.cc	2016-09-22 13:01:01.286251964 +0100
++++ b/test/gigapixel_readback_bounds.cc	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,195 @@
 +#define HAVE_MKSTEMP 1
 +
@@ -30530,7 +30530,7 @@ diff -purN a/test/gigapixel_readback_bounds.cc b/test/gigapixel_readback_bounds.
 +}
 diff -purN a/test/gigapixel_upperleft.cc b/test/gigapixel_upperleft.cc
 --- a/test/gigapixel_upperleft.cc	1970-01-01 01:00:00.000000000 +0100
-+++ b/test/gigapixel_upperleft.cc	2016-09-22 13:01:01.286251964 +0100
++++ b/test/gigapixel_upperleft.cc	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,156 @@
 +#define HAVE_MKSTEMP 1
 +
@@ -30690,7 +30690,7 @@ diff -purN a/test/gigapixel_upperleft.cc b/test/gigapixel_upperleft.cc
 +}
 diff -purN a/TODO-3.x b/TODO-3.x
 --- a/TODO-3.x	1970-01-01 01:00:00.000000000 +0100
-+++ b/TODO-3.x	2016-09-22 13:01:01.189251862 +0100
++++ b/TODO-3.x	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,145 @@
 +X Merge new vigra
 +X .cvsignore files
@@ -30839,13 +30839,13 @@ diff -purN a/TODO-3.x b/TODO-3.x
 +        - add striding to arg obj factories with ROI
 diff -purN a/VERSION b/VERSION
 --- a/VERSION	2016-03-29 08:55:57.000000000 +0100
-+++ b/VERSION	2016-09-22 13:03:42.412422270 +0100
++++ b/VERSION	2016-09-24 10:29:40.000000000 +0100
 @@ -1 +1 @@
 -4.2
 +4.2.1-a1fbf734e58a
 diff -purN a/win32/install.cmd b/win32/install.cmd
 --- a/win32/install.cmd	1970-01-01 01:00:00.000000000 +0100
-+++ b/win32/install.cmd	2016-09-22 13:01:01.286251964 +0100
++++ b/win32/install.cmd	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,16 @@
 +@echo off
 +if not exist ..\INSTALLDIR md ..\INSTALLDIR
@@ -30866,7 +30866,7 @@ diff -purN a/win32/install.cmd b/win32/install.cmd
 Binary files a/win32/msi/big-banner.bmp and b/win32/msi/big-banner.bmp differ
 diff -purN a/win32/msi/enblend.warsetup b/win32/msi/enblend.warsetup
 --- a/win32/msi/enblend.warsetup	1970-01-01 01:00:00.000000000 +0100
-+++ b/win32/msi/enblend.warsetup	2016-09-22 13:01:01.288251966 +0100
++++ b/win32/msi/enblend.warsetup	2016-09-24 10:28:47.000000000 +0100
 @@ -0,0 +1,86 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<WarSetup-Project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" nextUniqueId="1615" projectName="Enblend 3.1" projectUuid="a7c3712b-4d9e-47f9-a8c8-4ea2ff48b6e7" projectUpgradeUuid="1cd3f9ab-d868-46f7-8e40-2a7d539eab6e" projectVersion="3.0.9" projectOrganization="Enblend" projectMustBeAdministratorToInstall="false" project64BitTarget="false" projectTargetName="enblend-3.0.9_win32.msi" projectType="0" projectUserInterface="WixUI_FeatureTree">
