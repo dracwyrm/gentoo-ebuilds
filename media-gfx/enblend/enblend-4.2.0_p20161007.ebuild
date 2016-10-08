@@ -37,12 +37,13 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	doc? (
 		media-gfx/transfig
-		sci-visualization/gnuplot[gd]
 		virtual/latex-base
+		dev-tex/hevea
 		dev-lang/perl
+		dev-perl/Readonly
+		sci-visualization/gnuplot[gd]
 		media-gfx/graphviz
 		gnome-base/librsvg
-		dev-tex/hevea
 	)"
 
 PATCHES=( "${FILESDIR}/${PN}-4.2-doc-install-dir-fix.patch" )
