@@ -78,6 +78,7 @@ src_configure() {
 }
 
 src_compile() {
+	export VARTEXFONTS="${T}/fonts"
 	# forcing -j1 as every parallel compilation process needs about 1 GB RAM.
 	cmake-utils_src_compile -j1
 }
