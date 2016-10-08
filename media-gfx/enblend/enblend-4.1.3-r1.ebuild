@@ -2,11 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=6
+EAPI=5
 
 inherit eutils cmake-utils
 
-MY_P="${PN}-enfuse-4.2"
+MY_P="${PN}-enfuse-${PV/_rc/rc}"
 
 DESCRIPTION="Image Blending with Multiresolution Splines"
 HOMEPAGE="http://enblend.sourceforge.net/"
@@ -15,12 +15,9 @@ SRC_URI="mirror://sourceforge/enblend/${MY_P}.tar.gz"
 LICENSE="GPL-2 VIGRA"
 SLOT="0"
 KEYWORDS="amd64 ppc x86"
-IUSE="debug doc html openmp pdf tcmalloc cpu_flags_x86_sse2"
+IUSE="debug doc gpu image-cache openmp"
 
-REQUIRED_USE="
-	html? ( doc )
-	pdf? ( doc )
-	tcmalloc? ( !debug )"
+REQUIRED_USE="openmp? ( !image-cache )"
 
 RDEPEND="
 	>=dev-libs/boost-1.31.0:=
@@ -34,8 +31,7 @@ RDEPEND="
 	sci-libs/gsl:=
 	virtual/jpeg:0=
 	debug? ( dev-libs/dmalloc )
-	tcmalloc? ( dev-util/google-perftools )
-	media-libs/freeglut"
+	gpu? ( media-libs/freeglut )"
 DEPEND="${RDEPEND}
 	media-gfx/imagemagick
 	sys-apps/help2man
@@ -44,41 +40,35 @@ DEPEND="${RDEPEND}
 		media-gfx/transfig
 		sci-visualization/gnuplot[gd]
 		virtual/latex-base
-		dev-lang/perl
-		media-gfx/graphviz
-		gnome-base/librsvg
-		dev-tex/hevea
 	)"
 
 S="${WORKDIR}/${MY_P}"
 
-PATCHES=( "${FILESDIR}/${P}.patch"
-	  "${FILESDIR}/${PN}-4.2-doc-install-dir-fix.patch"
-)
+PATCHES=( "${FILESDIR}/${PN}-4.1.3-vigra_check.patch" )
 
 src_prepare() {
+	sed -i -e "/CXX_FLAGS/s:-O3::g" CMakeLists.txt || die
+	sed -i -e "s:doc/enblend:share/doc/${PF}:" doc/CMakeLists.txt || die
 	cmake-utils_src_prepare
 
-	sed -i -e "s:share/doc/enblend:share/doc/${PF}:" doc/CMakeLists.txt || die
+	epatch "${FILESDIR}"/${P}-texinfo-5-upstream.patch
+	epatch "${FILESDIR}"/${P}-texinfo-5-more.patch
 }
 
 src_configure() {
 	local mycmakeargs=(
 		-DCMAKE_CXX_FLAGS_RELEASE=""
-		-DENABLE_DMALLOC=$(usex debug)
-		-DENABLE_OPENMP=$(usex tcmalloc)
-		-DDOC=$(usex doc)
-		-DINSTALL_HTML_DOC=$(usex html)
-		-DINSTALL_PDF_DOC=$(usex pdf)
-		-DENABLE_OPENMP=$(usex openmp)
-		-DENABLE_SSE2=$(usex cpu_flags_x86_sse2)
+		$(cmake-utils_use_enable debug DMALLOC)
+		$(cmake-utils_use doc DOC)
+		$(cmake-utils_use_enable image-cache IMAGECACHE)
+		$(cmake-utils_use_enable openmp)
+		$(cmake-utils_use_enable gpu)
 	)
 	CMAKE_BUILD_TYPE="Release"
 	cmake-utils_src_configure
 }
 
 src_compile() {
-	export VARTEXFONTS="${T}/fonts"
 	# forcing -j1 as every parallel compilation process needs about 1 GB RAM.
 	cmake-utils_src_compile -j1
 }
