@@ -38,6 +38,9 @@
 			Enable OpenColorIO color management through
 			<pkg>media-libs/opencolorio</pkg>.
 		</flag>
+		<flag name="cuda">
+			Build cycles renderer with nVidia CUDA support.
+		</flag>
 		<flag name="cycles">
 			Build cycles renderer (requires <pkg>media-libs/openimageio</pkg> and
 			<pkg>dev-libs/boost</pkg>).
@@ -69,13 +72,12 @@
 		<flag name="ndof">
 			Enable NDOF input devices (SpaceNavigator and friends).
 		</flag>
+		<flag name="opencl">
+			Build cycles renderer with OpenCL GPU enhancements.
+		</flag>
 		<flag name="openimageio">Enable OpenImageIO Support</flag>
 		<flag name="opennl" restrict="&lt;=media-gfx/blender-2.73">
 			Enable use of Open Numerical Library
-		</flag>
-		<flag name="osl" restrict="&gt;=media-gfx/blender-2.77">
-			Add support for Open Shading Language through
-			<pkg>media-libs/osl</pkg> (requires <pkg>sys-devel/llvm</pkg>).
 		</flag>
 		<flag name="opensubdiv" restrict="&gt;=media-gfx/blender-2.77">
 			Add rendering support form OpenSubdiv from Dreamworks Animation

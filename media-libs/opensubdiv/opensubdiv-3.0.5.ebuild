@@ -18,7 +18,7 @@ SLOT="0"
 IUSE="cuda doc examples opencl openmp ptex tbb test tutorials"
 
 # OpenCL does not work with Open Source drivers.
-RDEPEND="media-libs/glew
+RDEPEND="media-libs/glew:*
 	media-libs/glfw
 	opencl? ( x11-drivers/ati-drivers:* )
 	cuda? ( dev-util/nvidia-cuda-toolkit )

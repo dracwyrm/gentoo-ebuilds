@@ -69,7 +69,7 @@ OPTIONAL_DEPENDS="
 	openimageio? ( >=media-libs/openimageio-1.6.9 )
 	opencl? ( x11-drivers/ati-drivers:* )
 	openexr? (
-		media-libs/ilmbase
+		>=media-libs/ilmbase-2.2.0
 		>=media-libs/openexr-2.2.0
 	)
 	opensubdiv? ( media-libs/opensubdiv[cuda=,opencl=] )
@@ -88,7 +88,7 @@ RDEPEND="${PYTHON_DEPS}
 	>=dev-python/numpy-1.10.1[${PYTHON_USEDEP}]
 	dev-python/requests[${PYTHON_USEDEP}]
 	media-libs/freetype
-	media-libs/glew
+	media-libs/glew:*
 	media-libs/libpng:0
 	media-libs/libsamplerate
 	sys-libs/zlib
@@ -134,7 +134,7 @@ src_prepare() {
 	sed -i \
 		-e '/-DGLEW_STATIC/d' \
 		$(find . -type f -name "CMakeLists.txt") || die
-	
+
 	# Disable MS Windows help generation. The variable doesn't do what it
 	# it sounds like.
 	sed -e "s|GENERATE_HTMLHELP      = YES|GENERATE_HTMLHELP      = NO|" \
@@ -148,7 +148,8 @@ src_configure() {
 	append-lfs-flags
 	# Makefile says not to use --as-needed as it breaks on certain distros.
 	# On Gentoo it causes bug #533514 with certain versions of GLibC
-	append-ldflags $(no-as-needed)
+	# Uncomment if there are breaks.
+	# append-ldflags $(no-as-needed)
 
 	local mycmakeargs=(
 		-DCMAKE_INSTALL_PREFIX=/usr
