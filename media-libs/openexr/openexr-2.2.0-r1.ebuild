@@ -18,7 +18,7 @@ RDEPEND=">=sys-libs/zlib-1.2.8-r1:=[${MULTILIB_USEDEP}]
 	>=media-libs/ilmbase-${PV}:=[${MULTILIB_USEDEP}]"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
-	!!<${P}"
+	!!<media-libs/${P}"
 DOCS=( AUTHORS ChangeLog NEWS README )
 
 src_prepare() {
