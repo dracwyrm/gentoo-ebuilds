@@ -17,7 +17,8 @@ IUSE="examples static-libs"
 RDEPEND=">=sys-libs/zlib-1.2.8-r1:=[${MULTILIB_USEDEP}]
 	>=media-libs/ilmbase-${PV}:=[${MULTILIB_USEDEP}]"
 DEPEND="${RDEPEND}
-	virtual/pkgconfig"
+	virtual/pkgconfig
+	!<media-libs/openexr-${PV}:="
 DOCS=( AUTHORS ChangeLog NEWS README )
 
 src_prepare() {
