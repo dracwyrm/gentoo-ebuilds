@@ -6,13 +6,13 @@ Subject: [PATCH] Use ULL for 64-bit literals
 On a 32-bit architecture, these literals are too big for just a long,
 they need to be ULL, since Int64 is unsigned.
 ---
- OpenEXR/IlmImf/ImfFastHuf.cpp | 10 +++++-----
+ IlmImf/ImfFastHuf.cpp | 10 +++++-----
  1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/OpenEXR/IlmImf/ImfFastHuf.cpp b/OpenEXR/IlmImf/ImfFastHuf.cpp
+diff --git a/IlmImf/ImfFastHuf.cpp b/IlmImf/ImfFastHuf.cpp
 index 86c84dc..01edad4 100644
---- a/OpenEXR/IlmImf/ImfFastHuf.cpp
-+++ b/OpenEXR/IlmImf/ImfFastHuf.cpp
+--- a/IlmImf/ImfFastHuf.cpp
++++ b/IlmImf/ImfFastHuf.cpp
 @@ -107,7 +107,7 @@ FastHufDecoder::FastHufDecoder
      for (int i = 0; i <= MAX_CODE_LEN; ++i)
      {

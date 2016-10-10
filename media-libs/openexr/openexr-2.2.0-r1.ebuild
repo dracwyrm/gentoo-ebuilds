@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
-inherit autotools-multilib
+EAPI=6
+inherit eutils multilib-minimal
 
 DESCRIPTION="ILM's OpenEXR high dynamic-range image file format libraries"
 HOMEPAGE="http://openexr.com/"
@@ -19,29 +19,37 @@ RDEPEND=">=sys-libs/zlib-1.2.8-r1:=[${MULTILIB_USEDEP}]
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	!!<media-libs/${P}"
-DOCS=( AUTHORS ChangeLog NEWS README )
+
+MY_S="${WORKDIR}/${P}"
+DOCS=( ${MY_S}/AUTHORS ${MY_S}/ChangeLog ${MY_S}/NEWS ${MY_S}/README )
+
+PATCHES=( "${FILESDIR}"/${P}-fix-cpuid-on-abi_x86_32.patch
+	  "${FILESDIR}"/${P}-use-ull-for-64-bit-literals.patch )
 
 src_prepare() {
 	# Fix path for testsuite
 	sed -i -e "s:/var/tmp/:${T}:" IlmImfTest/tmpDir.h || die
-	epatch "${FILESDIR}"/${P}-fix-cpuid-on-abi_x86_32.patch
-	epatch "${FILESDIR}"/${P}-use-ull-for-64-bit-literals.patch
-	autotools-multilib_src_prepare
+	default
 }
 
-src_configure() {
-	local myeconfargs=(
+multilib_src_configure() {
+	local docdir="${EPREFIX}"/usr/share/doc/${PF}
+	local myconf=(
 		$(use_enable static-libs static)
 		$(use_enable examples imfexamples)
+		--docdir=${docdir}
+		--pdfdir=${docdir}/pdf
 	)
-	autotools-multilib_src_configure
+	# Enable building out-of-source using sources in ${S}
+	ECONF_SOURCE=${S} \
+	econf "${myconf[@]}"
 }
 
-src_install() {
-	autotools-multilib_src_install \
+multilib_src_install() {
+	emake install DESTDIR="${D}" \
 		docdir="${EPREFIX}"/usr/share/doc/${PF}/pdf \
 		examplesdir="${EPREFIX}"/usr/share/doc/${PF}/examples
-
 	docompress -x /usr/share/doc/${PF}/examples
 	use examples || rm -rf "${ED}"/usr/share/doc/${PF}/examples
+	einstalldocs
 }
