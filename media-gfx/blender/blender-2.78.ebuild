@@ -95,8 +95,7 @@ RDEPEND="${PYTHON_DEPS}
 	virtual/glu
 	virtual/jpeg:0
 	virtual/libintl
-	virtual/opengl
-	${OPTIONAL_DEPENDS}"
+	virtual/opengl"
 
 DEPEND="${RDEPEND}
 	>=dev-cpp/eigen-3.2.8:3
@@ -104,7 +103,8 @@ DEPEND="${RDEPEND}
 		app-doc/doxygen[-nodot(-),dot(+),latex]
 		dev-python/sphinx[latex]
 	)
-	nls? ( sys-devel/gettext )"
+	nls? ( sys-devel/gettext )
+	${OPTIONAL_DEPENDS}"
 
 PATCHES=( "${FILESDIR}"/${P}-C++11-build-fix.patch
 	  "${FILESDIR}"/${PN}-fix-install-rules.patch )
