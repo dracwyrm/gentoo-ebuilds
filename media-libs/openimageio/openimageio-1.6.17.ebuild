@@ -56,8 +56,6 @@ DEPEND="${RDEPEND}"
 
 DOCS=( CHANGES CREDITS README.rst src/doc/${PN}.pdf )
 
-PATCHES=( "${FILESDIR}"/${P}-update-ref-images-for-new-freetype.patch )
-
 pkg_setup() {
 	use python && python-single-r1_pkg_setup
 }
