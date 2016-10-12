@@ -48,20 +48,9 @@ DEPEND="${RDEPEND}
 
 S="${WORKDIR}/${P}/${PN}"
 
-PATCHES=(
-	"${FILESDIR}"/${P}-numpy-fix.patch
-	"${FILESDIR}"/${P}-makefile-fixes.patch
-)
-
-src_prepare() {
-	default
-
-	sed	-e "s|--html -o|--html --html-dir|" \
-		-e "s|vdb_render vdb_test|vdb_render vdb_view vdb_test|" \
-		-i Makefile || die "sed failed"
-
-	sed	-e "s|= png|= svg|" -i doxygen-config || die "sed doxygen failed"
-}
+PATCHES=( "${FILESDIR}"/${P}-numpy-fix.patch
+	  "${FILESDIR}"/${P}-makefile-fixes.patch
+	  "${FILESDIR}"/${P}-build-fixes.patch )
 
 python_module_compile() {
 	mypythonargs=(

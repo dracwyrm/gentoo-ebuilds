@@ -126,11 +126,12 @@ src_prepare() {
 	default
 
 	# we don't want static glew, but it's scattered across
-	# thousand files
+	# multiple files that differ from version to version
 	# !!!CHECK THIS SED ON EVERY VERSION BUMP!!!
-	sed -i \
-		-e '/-DGLEW_STATIC/d' \
-		$(find . -type f -name "CMakeLists.txt") || die
+	local f
+	while read f ; do
+		sed -i -e '/-DGLEW_STATIC/d' ${f}
+	done < <(find . -type f -name "CMakeLists.txt")
 
 	# Disable MS Windows help generation. The variable doesn't do what it
 	# it sounds like.
