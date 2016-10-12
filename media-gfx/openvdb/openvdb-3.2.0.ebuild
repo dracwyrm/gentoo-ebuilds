@@ -5,7 +5,7 @@
 EAPI="6"
 PYTHON_COMPAT=( python{2_7,3_4,3_5} )
 
-inherit eutils multilib python-r1
+inherit eutils python-r1
 
 DESCRIPTION="Libs for the efficient manipulation of volumetric data"
 HOMEPAGE="http://www.openvdb.org"
@@ -20,14 +20,22 @@ IUSE="+openvdb-compression doc pdfdoc python X"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	pdfdoc? ( doc )"
 
-RDEPEND="${PYTHON_DEPS}"
-
-DEPEND="${RDEPEND}
+COMMON_DEPEND="
 	sys-libs/zlib
 	>=dev-libs/boost-1.62:=[${PYTHON_USEDEP}]
 	media-libs/openexr
-	dev-cpp/tbb
 	dev-util/cppunit
+	X? ( media-libs/glfw )
+	dev-libs/jemalloc
+	python? ( dev-python/numpy[${PYTHON_USEDEP}] )
+	openvdb-compression? ( >=dev-libs/c-blosc-1.5.0 )
+	dev-libs/log4cplus"
+
+RDEPEND="python? ( ${PYTHON_DEPS} )
+	 ${COMMON_DEPEND}"
+
+DEPEND="${RDEPEND}
+	dev-cpp/tbb
 	doc? (
 		app-doc/doxygen
 		python? ( dev-python/pdoc[${PYTHON_USEDEP}] )
@@ -36,11 +44,7 @@ DEPEND="${RDEPEND}
 		app-doc/doxygen[dot,latex]
 		app-text/ghostscript-gpl
 	)
-	X? ( media-libs/glfw )
-	dev-libs/jemalloc
-	python? ( dev-python/numpy[${PYTHON_USEDEP}] )
-	openvdb-compression? ( >=dev-libs/c-blosc-1.5.0 )
-	dev-libs/log4cplus"
+	${COMMON_DEPEND}"
 
 S="${WORKDIR}/${P}/${PN}"
 

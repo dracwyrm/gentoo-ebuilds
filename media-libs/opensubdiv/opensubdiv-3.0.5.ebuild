@@ -3,7 +3,7 @@
 # $Id$
 
 EAPI=6
-inherit cmake-utils versionator toolchain-funcs
+inherit cmake-utils toolchain-funcs versionator
 
 DESCRIPTION="An Open-Source subdivision surface library"
 HOMEPAGE="http://graphics.pixar.com/opensubdiv/"
@@ -52,7 +52,7 @@ pkg_setup() {
 }
 
 src_configure() {
-	mycmakeargs=(
+	local mycmakeargs=(
 		-DNO_MAYA=1
 		-DNO_CLEW=1
 		-DNO_DOC=$(usex !doc)
@@ -64,8 +64,8 @@ src_configure() {
 		-DNO_REGRESSION=$(usex !test)
 		-DNO_EXAMPLES=$(usex !examples)
 		-DNO_TUTORIALS=$(usex !tutorials)
-		-DGLEW_LOCATION="/usr/$(get_libdir)"
-		-DGLFW_LOCATION="/usr/$(get_libdir)"
+		-DGLEW_LOCATION="${EPREFIX}/usr/$(get_libdir)"
+		-DGLFW_LOCATION="${EPREFIX}/usr/$(get_libdir)"
 	)
 
 	cmake-utils_src_configure

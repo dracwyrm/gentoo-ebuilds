@@ -5,8 +5,8 @@
 EAPI=6
 PYTHON_COMPAT=( python3_5 )
 
-inherit fdo-mime gnome2-utils cmake-utils python-single-r1 \
-	flag-o-matic toolchain-funcs pax-utils check-reqs versionator
+inherit check-reqs cmake-utils fdo-mime flag-o-matic gnome2-utils \
+	pax-utils python-single-r1 toolchain-funcs versionator
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
 HOMEPAGE="http://www.blender.org"
@@ -43,13 +43,13 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 # Since not using OpenCL with nVidia, depend on ATI binary
 # blobs as Cycles with OpenCL does not work with any open
 # source drivers.
-OPTIONAL_DEPENDS="
+COMMON_DEPEND="
 	boost? ( >=dev-libs/boost-1.62:=[nls?,threads(+)] )
-	collada? ( >=media-libs/opencollada-1.6.18 )
+	collada? ( >=media-libs/opencollada-1.6.18:= )
 	colorio? ( >=media-libs/opencolorio-1.0.9-r2 )
-	cuda? ( dev-util/nvidia-cuda-toolkit )
-	ffmpeg? ( media-video/ffmpeg:0=[x264,mp3,encode,theora,jpeg2k?] )
-	libav? ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
+	cuda? ( dev-util/nvidia-cuda-toolkit:= )
+	ffmpeg? ( media-video/ffmpeg:=[x264,mp3,encode,theora,jpeg2k?] )
+	libav? ( >=media-video/libav-11.3:=[x264,mp3,encode,theora,jpeg2k?] )
 	fftw? ( sci-libs/fftw:3.0= )
 	!headless? (
 		x11-libs/libX11
@@ -89,13 +89,14 @@ RDEPEND="${PYTHON_DEPS}
 	dev-python/requests[${PYTHON_USEDEP}]
 	media-libs/freetype
 	media-libs/glew:*
-	media-libs/libpng:0
+	media-libs/libpng:0=
 	media-libs/libsamplerate
 	sys-libs/zlib
 	virtual/glu
-	virtual/jpeg:0
+	virtual/jpeg:0=
 	virtual/libintl
-	virtual/opengl"
+	virtual/opengl
+	${COMMON_DEPEND}"
 
 DEPEND="${RDEPEND}
 	>=dev-cpp/eigen-3.2.8:3
@@ -104,7 +105,7 @@ DEPEND="${RDEPEND}
 		dev-python/sphinx[latex]
 	)
 	nls? ( sys-devel/gettext )
-	${OPTIONAL_DEPENDS}"
+	${COMMON_DEPEND}"
 
 PATCHES=( "${FILESDIR}"/${P}-C++11-build-fix.patch
 	  "${FILESDIR}"/${PN}-fix-install-rules.patch )
@@ -119,10 +120,6 @@ pkg_pretend() {
 	if use doc; then
 		CHECKREQS_DISK_BUILD="4G" check-reqs_pkg_pretend
 	fi
-}
-
-pkg_setup() {
-	python-single-r1_pkg_setup
 }
 
 src_prepare() {
@@ -148,7 +145,6 @@ src_configure() {
 	append-lfs-flags
 
 	local mycmakeargs=(
-		-DCMAKE_INSTALL_PREFIX=/usr
 		-DPYTHON_VERSION="${EPYTHON/python/}"
 		-DPYTHON_LIBRARY="$(python_get_library_path)"
 		-DPYTHON_INCLUDE_DIR="$(python_get_includedir)"
@@ -211,6 +207,7 @@ src_compile() {
 
 	if use doc; then
 		# Workaround for binary drivers.
+		local card
 		local cards=( /dev/ati/card* /dev/nvidia* )
 		for card in "${cards[@]}"; do addpredict "${card}"; done
 
@@ -232,6 +229,7 @@ src_test() {
 	if use test; then
 		einfo "Running Blender Unit Tests ..."
 		cd "${BUILD_DIR}"/bin/tests || die
+		local f
 		for f in *_test
 		do
 			./$f || die
@@ -245,10 +243,10 @@ src_install() {
 
 	if use doc; then
 		docinto "html/API/python"
-		dodoc -r "${CMAKE_USE_DIR}"/doc/python_api/BPY_API/*
+		dodoc -r "${CMAKE_USE_DIR}"/doc/python_api/BPY_API/.
 
 		docinto "html/API/blender"
-		dodoc -r "${CMAKE_USE_DIR}"/doc/doxygen/html/*
+		dodoc -r "${CMAKE_USE_DIR}"/doc/doxygen/html/.
 	fi
 
 	emake -C "${CMAKE_BUILD_DIR}" DESTDIR="${D}" install/fast
