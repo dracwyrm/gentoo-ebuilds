@@ -130,7 +130,7 @@ src_prepare() {
 	# !!!CHECK THIS SED ON EVERY VERSION BUMP!!!
 	local file
 	while IFS="" read -d $'\0' -r file ; do
-		sed -i -e '/-DGLEW_STATIC/d' ${file} || die
+		sed -i -e '/-DGLEW_STATIC/d' "${file}" || die
 	done < <(find . -type f -name "CMakeLists.txt")
 
 	# Disable MS Windows help generation. The variable doesn't do what it
