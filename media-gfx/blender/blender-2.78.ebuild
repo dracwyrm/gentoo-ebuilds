@@ -57,7 +57,7 @@ COMMON_DEPEND="
 		x11-libs/libXxf86vm
 	)
 	jack? ( media-sound/jack-audio-connection-kit )
-	jemalloc? ( dev-libs/jemalloc )
+	jemalloc? ( dev-libs/jemalloc:= )
 	jpeg2k? ( media-libs/openjpeg:0 )
 	llvm? ( sys-devel/llvm )
 	ndof? (
@@ -69,8 +69,8 @@ COMMON_DEPEND="
 	openimageio? ( >=media-libs/openimageio-1.6.9 )
 	opencl? ( x11-drivers/ati-drivers:* )
 	openexr? (
-		>=media-libs/ilmbase-2.2.0
-		>=media-libs/openexr-2.2.0
+		>=media-libs/ilmbase-2.2.0:=
+		>=media-libs/openexr-2.2.0:=
 	)
 	opensubdiv? ( media-libs/opensubdiv[cuda=,opencl=] )
 	openvdb? (
@@ -233,7 +233,7 @@ src_test() {
 		local f
 		for f in *_test
 		do
-			./$f || die
+			./"${f}" || die
 		done
 	fi
 }
