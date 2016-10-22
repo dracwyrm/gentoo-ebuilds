@@ -29,31 +29,31 @@ DEPEND="${RDEPEND}
 
 KEYWORDS="~amd64 ~x86"
 
-S=${WORKDIR}/OpenSubdiv-${MY_PV}
+S="${WORKDIR}"/OpenSubdiv-${MY_PV}
 
 PATCHES=( "${FILESDIR}"/${P}-skip-osd-regression.patch )
 
 pkg_pretend() {
-	use openmp && tc-check-openmp
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
 }
 
 pkg_setup() {
-	use openmp && tc-check-openmp
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
 }
 
 src_configure() {
 	local mycmakeargs=(
 		-DNO_MAYA=1
 		-DNO_CLEW=1
-		-DNO_DOC=$(usex doc 0 1)
-		-DNO_TBB=$(usex tbb 0 1)
-		-DNO_PTEX=$(usex ptex 0 1)
-		-DNO_OMP=$(usex openmp 0 1)
-		-DNO_OPENCL=$(usex opencl 0 1)
-		-DNO_CUDA=$(usex cuda 0 1)
-		-DNO_REGRESSION=$(usex test 0 1)
-		-DNO_EXAMPLES=$(usex examples 0 1)
-		-DNO_TUTORIALS=$(usex tutorials 0 1)
+		-DNO_DOC=$(usex !doc)
+		-DNO_TBB=$(usex !tbb)
+		-DNO_PTEX=$(usex !ptex)
+		-DNO_OMP=$(usex !openmp)
+		-DNO_OPENCL=$(usex !opencl)
+		-DNO_CUDA=$(usex !cuda)
+		-DNO_REGRESSION=$(usex !test)
+		-DNO_EXAMPLES=$(usex !examples)
+		-DNO_TUTORIALS=$(usex !tutorials)
 		-DGLEW_LOCATION="${EPREFIX}/usr/$(get_libdir)"
 		-DGLFW_LOCATION="${EPREFIX}/usr/$(get_libdir)"
 	)

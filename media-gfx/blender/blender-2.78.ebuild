@@ -111,7 +111,7 @@ PATCHES=( "${FILESDIR}"/${P}-C++11-build-fix.patch
 	  "${FILESDIR}"/${PN}-fix-install-rules.patch )
 
 blender_check_requirements() {
-	use openmp && tc-check-openmp
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
 
 	if use doc; then
 		CHECKREQS_DISK_BUILD="4G" check-reqs_pkg_pretend
