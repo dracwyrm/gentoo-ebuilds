@@ -110,13 +110,17 @@ DEPEND="${RDEPEND}
 PATCHES=( "${FILESDIR}"/${P}-C++11-build-fix.patch
 	  "${FILESDIR}"/${PN}-fix-install-rules.patch )
 
-pkg_pretend() {
+blender_check_requirements() {
 	use openmp && tc-check-openmp
 
 	if use doc; then
 		CHECKREQS_DISK_BUILD="4G" check-reqs_pkg_pretend
 	fi
 }
+
+pkg_pretend() { blender_check_requirements }
+
+pkg_setup() { blender_check_requirements }
 
 src_prepare() {
 	default
