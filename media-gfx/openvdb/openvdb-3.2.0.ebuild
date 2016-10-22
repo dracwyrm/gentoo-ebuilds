@@ -15,10 +15,9 @@ SRC_URI="https://github.com/dreamworksanimation/${PN}/archive/v${PV}.tar.gz -> $
 LICENSE="MPL-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="+openvdb-compression doc pdfdoc python X"
+IUSE="+openvdb-compression doc python X"
 
-REQUIRED_USE="${PYTHON_REQUIRED_USE}
-	pdfdoc? ( doc )"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 COMMON_DEPEND="
 	sys-libs/zlib
@@ -39,10 +38,6 @@ DEPEND="${RDEPEND}
 	doc? (
 		app-doc/doxygen
 		python? ( dev-python/pdoc[${PYTHON_USEDEP}] )
-	)
-	pdfdoc? (
-		app-doc/doxygen[dot,latex]
-		app-text/ghostscript-gpl
 	)
 	${COMMON_DEPEND}"
 
@@ -160,6 +155,4 @@ src_install() {
 
 	einfo "Compiling the main components."
 	emake install "${myemakeargs[@]}" "${mypythonargs[@]}"
-	use pdfdoc && einfo "Building the PDF document"
-	use pdfdoc && emake pdfdoc "${myemakeargs[@]}" "${mypythonargs[@]}"
 }

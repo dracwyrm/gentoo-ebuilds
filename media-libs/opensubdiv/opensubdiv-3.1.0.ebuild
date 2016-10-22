@@ -33,7 +33,7 @@ S=${WORKDIR}/OpenSubdiv-${MY_PV}
 
 PATCHES=( "${FILESDIR}"/${P}-skip-osd-regression.patch )
 
-pkg_setup() {
+pkg_pretend() {
 	use openmp && tc-check-openmp
 }
 

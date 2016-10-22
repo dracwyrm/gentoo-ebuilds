@@ -227,8 +227,7 @@ src_test() {
 		einfo "Running Blender Unit Tests ..."
 		cd "${BUILD_DIR}"/bin/tests || die
 		local f
-		for f in *_test
-		do
+		for f in *_test; do
 			./"${f}" || die
 		done
 	fi
