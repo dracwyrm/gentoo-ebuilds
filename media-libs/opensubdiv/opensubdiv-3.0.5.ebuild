@@ -39,16 +39,7 @@ PATCHES=(
 )
 
 pkg_setup() {
-	if use openmp && ! tc-has-openmp; then
-		ewarn "OpenMP is not available in your current selected compiler"
-
-		if tc-is-clang; then
-			ewarn "OpenMP support in sys-devel/clang is provided by sys-libs/libomp,"
-			ewarn "which you will need to build ${CATEGORY}/${PN} with USE=\"openmp\""
-		fi
-
-		die "need openmp capable compiler"
-	fi
+	use openmp && tc-check-openmp
 }
 
 src_configure() {
