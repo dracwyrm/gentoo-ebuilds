@@ -124,6 +124,7 @@ pkg_pretend() {
 
 pkg_setup() {
 	blender_check_requirements
+	python-single-r1_pkg_setup
 }
 
 src_prepare() {

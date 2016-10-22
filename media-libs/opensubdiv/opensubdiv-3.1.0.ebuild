@@ -37,6 +37,10 @@ pkg_pretend() {
 	use openmp && tc-check-openmp
 }
 
+pkg_setup() {
+	use openmp && tc-check-openmp
+}
+
 src_configure() {
 	local mycmakeargs=(
 		-DNO_MAYA=1
