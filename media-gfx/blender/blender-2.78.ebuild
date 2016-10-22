@@ -118,9 +118,13 @@ blender_check_requirements() {
 	fi
 }
 
-pkg_pretend() { blender_check_requirements }
+pkg_pretend() {
+	blender_check_requirements
+}
 
-pkg_setup() { blender_check_requirements }
+pkg_setup() {
+	blender_check_requirements
+}
 
 src_prepare() {
 	default
