@@ -43,7 +43,19 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 # Since not using OpenCL with nVidia, depend on ATI binary
 # blobs as Cycles with OpenCL does not work with any open
 # source drivers.
-COMMON_DEPEND="
+RDEPEND="${PYTHON_DEPS}
+	dev-libs/lzo:2
+	>=dev-python/numpy-1.10.1[${PYTHON_USEDEP}]
+	dev-python/requests[${PYTHON_USEDEP}]
+	media-libs/freetype
+	media-libs/glew:*
+	media-libs/libpng:0=
+	media-libs/libsamplerate
+	sys-libs/zlib
+	virtual/glu
+	virtual/jpeg:0=
+	virtual/libintl
+	virtual/opengl
 	boost? ( >=dev-libs/boost-1.62:=[nls?,threads(+)] )
 	collada? ( >=media-libs/opencollada-1.6.18:= )
 	colorio? ( >=media-libs/opencolorio-1.0.9-r2 )
@@ -83,29 +95,13 @@ COMMON_DEPEND="
 	tiff? ( media-libs/tiff:0 )
 	valgrind? ( dev-util/valgrind )"
 
-RDEPEND="${PYTHON_DEPS}
-	dev-libs/lzo:2
-	>=dev-python/numpy-1.10.1[${PYTHON_USEDEP}]
-	dev-python/requests[${PYTHON_USEDEP}]
-	media-libs/freetype
-	media-libs/glew:*
-	media-libs/libpng:0=
-	media-libs/libsamplerate
-	sys-libs/zlib
-	virtual/glu
-	virtual/jpeg:0=
-	virtual/libintl
-	virtual/opengl
-	${COMMON_DEPEND}"
-
 DEPEND="${RDEPEND}
 	>=dev-cpp/eigen-3.2.8:3
+	nls? ( sys-devel/gettext )
 	doc? (
 		app-doc/doxygen[-nodot(-),dot(+),latex]
-		dev-python/sphinx[latex]
-	)
-	nls? ( sys-devel/gettext )
-	${COMMON_DEPEND}"
+		dev-python/sphinx[latex] 
+	)"
 
 PATCHES=( "${FILESDIR}"/${PN}-fix-install-rules.patch )
 
