@@ -36,5 +36,5 @@ src_configure() {
 src_install() {
 	dobin sam2p
 	einstalldocs
-	use examples dodoc -r examples
+	use examples && dodoc -r examples
 }
