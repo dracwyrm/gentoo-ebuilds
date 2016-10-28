@@ -4,7 +4,7 @@
 
 EAPI=6
 
-inherit gnome.org multilib-minimal
+inherit autotools gnome.org multilib-minimal
 
 DESCRIPTION="An elegant API for accessing audio files"
 HOMEPAGE="http://www.68k.org/~michael/audiofile/"
