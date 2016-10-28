@@ -19,8 +19,6 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	test? ( dev-cpp/gtest[${MULTILIB_USEDEP}] )"
 
-DOCS=( ACKNOWLEDGEMENTS AUTHORS ChangeLog NEWS NOTES README TODO )
-
 PATCHES=( "${FILESDIR}"/${P}-gcc6-build-fixes.patch
 	  "${FILESDIR}"/${P}-system-gtest.patch )
 
@@ -39,12 +37,4 @@ multilib_src_configure() {
 	# Enable building out-of-source using sources in ${S}
 	ECONF_SOURCE=${S} \
 	econf "${myeconfargs[@]}"
-}
-
-multilib_src_install_all() {
-	einstalldocs
-}
-
-multilib_src_test() {
-	emake -C test
 }
