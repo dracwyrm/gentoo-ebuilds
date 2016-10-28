@@ -22,21 +22,19 @@ PATCHES=( "${FILESDIR}"/${P}-build-fixes.patch )
 
 src_prepare() {
 	default
+	# configure.in files are deprecated.
+	mv configure.{in,ac} || die
 	# eautoreconf is still needed or you get bad warnings
 	eautoreconf
-	tc-export CXX
 }
 
 src_configure() {
+	tc-export CXX
 	econf --enable-lzw $(use_enable gif)
 }
 
 src_install() {
 	dobin sam2p
-	dodoc README
-
-	if use examples; then
-		insinto /usr/share/doc/${PF}/examples
-		doins examples/*
-	fi
+	einstalldocs
+	use examples dodoc -r examples
 }
