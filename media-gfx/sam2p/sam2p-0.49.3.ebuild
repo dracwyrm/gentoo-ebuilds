@@ -3,7 +3,7 @@
 # $Id$
 
 EAPI=6
-inherit autotools eutils toolchain-funcs
+inherit autotools toolchain-funcs
 
 DESCRIPTION="Utility to convert raster images to EPS, PDF and many others"
 HOMEPAGE="https://github.com/pts/sam2p"
@@ -36,5 +36,8 @@ src_configure() {
 src_install() {
 	dobin sam2p
 	einstalldocs
-	use examples && dodoc -r examples
+	if use examples; then
+		dodoc -r examples
+		docompress -x /usr/share/doc/${PF}/examples
+	fi
 }
