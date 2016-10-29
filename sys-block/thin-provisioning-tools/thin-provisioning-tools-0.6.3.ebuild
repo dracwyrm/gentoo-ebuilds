@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit autotools eutils flag-o-matic
+inherit autotools flag-o-matic
 
 DESCRIPTION="A suite of tools for thin provisioning on Linux"
 HOMEPAGE="https://github.com/jthornber/thin-provisioning-tools"
@@ -21,7 +21,7 @@ RDEPEND="!static? ( ${LIB_DEPEND//\[static-libs(+)]} )"
 DEPEND="${RDEPEND}
 	static? ( ${LIB_DEPEND} )
 	test? (
-		|| ( dev-lang/ruby:2.9 dev-lang/ruby:2.8 dev-lang/ruby:2.7 dev-lang/ruby:2.6 dev-lang/ruby:2.5 dev-lang/ruby:2.4 dev-lang/ruby:2.3 dev-lang/ruby:2.2 dev-lang/ruby:2.1 dev-lang/ruby:2.0 dev-lang/ruby:1.9 )
+		|| ( dev-lang/ruby:2.9 dev-lang/ruby:2.8 dev-lang/ruby:2.7 dev-lang/ruby:2.6 dev-lang/ruby:2.5 dev-lang/ruby:2.4 dev-lang/ruby:2.3 dev-lang/ruby:2.2 dev-lang/ruby:2.1 dev-lang/ruby:2.0 )
 		>=dev-cpp/gmock-1.6
 		>=dev-cpp/gtest-1.6
 		dev-util/cucumber
@@ -38,8 +38,7 @@ src_prepare() {
 
 src_configure() {
 	use static && append-ldflags -static
-	STRIP=true \
-	econf \
+	STRIP=true econf \
 		--prefix="${EPREFIX}"/ \
 		--bindir="${EPREFIX}"/sbin \
 		--with-optimisation='' \
