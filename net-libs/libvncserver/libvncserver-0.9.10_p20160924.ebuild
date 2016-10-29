@@ -16,16 +16,16 @@ KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86
 IUSE="+24bpp gcrypt gnutls ipv6 +jpeg libressl +png sdl sdl2 ssl systemd test threads +zlib"
 
 RDEPEND="
-	gcrypt? ( >=dev-libs/libgcrypt-1.5.3:0[${MULTILIB_USEDEP}]:0= )
-	gnutls? ( >=net-libs/gnutls-2.12.23-r6[${MULTILIB_USEDEP}]:0= )
+	gcrypt? ( >=dev-libs/libgcrypt-1.5.3:0=[${MULTILIB_USEDEP}] )
+	gnutls? ( >=net-libs/gnutls-2.12.23-r6[${MULTILIB_USEDEP}] )
 	!gnutls? (
 		ssl? (
-			!libressl? ( >=dev-libs/openssl-1.0.1h-r2:0[${MULTILIB_USEDEP}]:0= )
-			libressl? ( dev-libs/libressl[${MULTILIB_USEDEP}]:0= )
+			!libressl? ( >=dev-libs/openssl-1.0.1h-r2:0=[${MULTILIB_USEDEP}] )
+			libressl? ( dev-libs/libressl[${MULTILIB_USEDEP}] )
 		)
 	)
-	jpeg? ( >=virtual/jpeg-0-r2:0[${MULTILIB_USEDEP}] )
-	png? ( >=media-libs/libpng-1.6.10:0[${MULTILIB_USEDEP}]:0= )
+	jpeg? ( >=virtual/jpeg-0-r2:0=[${MULTILIB_USEDEP}] )
+	png? ( >=media-libs/libpng-1.6.10:0=[${MULTILIB_USEDEP}] )
 	sdl? (
 		!sdl2? ( media-libs/libsdl[X] )
 		sdl2? ( media-libs/libsdl2[X] )
@@ -38,20 +38,33 @@ REQUIRED_USE="?? ( gnutls ssl )
 	      gnutls? ( gcrypt )
 	      sdl2? ( sdl )"
 
-PATCHES=( "${FILESDIR}"/${PN}-0.9.10-cmake-fixes.patch )
+src_prepare() {
+	default
+
+	sed -e "s|SYSTEMD_FOUND|WITH_SYSTEMD|" \
+	    -e "s|(LIBGCRYPT_LIBRARIES)|(WITH_GCRYPT)|" \
+	    -i CMakeLists.txt || die
+
+	if ! use test; then
+		sed -e '/foreach(test ${LIBVNCSERVER_TESTS})/,+3d' \
+		    -e '/foreach(test ${LIBVNCCLIENT_TESTS})/,+3d' \
+		    -i CMakeLists.txt || die
+	fi
+}
 
 multilib_src_configure() {
 	local mycmakeargs=(
-		-DWITH_24BPP=$(usex 24bpp)
-		-DWITH_GNUTLS=$(usex gnutls)
-		-DWITH_SSL=$(usex ssl)
-		-DWITH_IPV6=$(usex ipv6)
-		-DWITH_JPEG=$(usex jpeg)
-		-DWITH_PNG=$(usex png)
+		-DLIBVNCSERVER_ALLOW24BPP=$(usex 24bpp)
 		-DWITH_SYSTEMD=$(usex systemd)
-		-DWITH_THREADS=$(usex threads)
-		-DWITH_ZLIB=$(usex zlib)
-		-DWITH_TESTS=$(usex test)
+		-DWITH_GCRYPT=$(usex gcrypt)
+		-DWITH_LIBVNCSERVER_IPv6=$(usex ipv6)
+		$(cmake-utils_use_find_package zlib ZLIB)
+		$(cmake-utils_use_find_package jpeg JPEG)
+		$(cmake-utils_use_find_package png PNG)
+		$(cmake-utils_use_find_package sdl SDL)
+		$(cmake-utils_use_find_package gnutls GnuTLS)
+		$(cmake-utils_use_find_package threads Threads)
+		$(cmake-utils_use_find_package ssl OpenSSL)
 		)
 
 	cmake-utils_src_configure
