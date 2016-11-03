@@ -290,5 +290,4 @@ src_install() {
 
 	# Build and install the python modules for all targets
 	use python && python_foreach_impl python_module_compile
-die
 }
