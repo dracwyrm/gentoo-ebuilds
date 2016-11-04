@@ -16,9 +16,8 @@ BASE_URI="https://github.com/${PN}/${PN}"
 CONTRIB_URI="75b3ea9f72fdb083140fc63855b7677d67748376"
 CONTRIB_P="${P}_contrib-${CONTRIB_URI:0:7}"
 
-SRC_URI="${URI_BASE}/archive/${PV}.tar.gz -> ${P}.tar.gz
-	contrib? ( ${URI_BASE}_contrib/archive/${CONTRIB_URI}.tar.gz -> ${CONTRIB_P}.tar.gz )"
-
+SRC_URI="${BASE_URI}/archive/${PV}.tar.gz -> ${P}.tar.gz
+	contrib? ( ${BASE_URI}_contrib/archive/${CONTRIB_URI}.tar.gz -> ${CONTRIB_P}.tar.gz )"
 LICENSE="BSD"
 SLOT="0/3.1" # subslot = libopencv* soname version
 KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86 ~amd64-linux"
@@ -290,4 +289,5 @@ src_install() {
 
 	# Build and install the python modules for all targets
 	use python && python_foreach_impl python_module_compile
+die
 }
