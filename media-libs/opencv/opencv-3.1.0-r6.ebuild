@@ -24,7 +24,7 @@ KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86 ~amd64-linux"
 IUSE="contrib cuda +eigen examples ffmpeg gdal gflags glog gphoto2 gstreamer gtk \
 	ieee1394 ipp jpeg jpeg2k libav opencl openexr opengl openmp pch png \
 	+python qt5 tesseract testprograms threads tiff vaapi v4l vtk webp xine \
-	ocv_contrib_module_cvv ocv_contrib_module_hdf ocv_contrib_module_sfm"
+	contrib_cvv contrib_hdf contrib_sfm"
 
 # OpenGL needs gtk or Qt installed to activate, otherwise build system
 # will silently disable it without the user knowing, which defeats the
@@ -33,9 +33,9 @@ REQUIRED_USE="
 	cuda? ( tesseract? ( opencl ) )
 	gflags? ( contrib )
 	glog? ( contrib )
-	ocv_contrib_module_cvv? ( contrib qt5 )
-	ocv_contrib_module_hdf? ( contrib )
-	ocv_contrib_module_sfm? ( contrib eigen gflags glog )
+	contrib_cvv? ( contrib qt5 )
+	contrib_hdf? ( contrib )
+	contrib_sfm? ( contrib eigen gflags glog )
 	opengl? ( || ( gtk qt5 ) )
 	python? ( ${PYTHON_REQUIRED_USE} )
 	tesseract? ( contrib )"
@@ -74,7 +74,7 @@ RDEPEND="
 		sys-libs/libraw1394
 	)
 	ipp? ( sci-libs/ipp )
-	ocv_contrib_module_hdf? ( sci-libs/hdf5 )
+	contrib_hdf? ( sci-libs/hdf5 )
 	opencl? ( virtual/opencl )
 	openexr? ( media-libs/openexr )
 	opengl? ( virtual/opengl virtual/glu )
@@ -236,9 +236,9 @@ src_configure() {
 		GLOBALCMAKEARGS+=(
 			-DBUILD_opencv_dnn=OFF
 			-DBUILD_opencv_dnns_easily_fooled=OFF
-			-DBUILD_opencv_cvv=$(usex ocv_contrib_module_cvv ON OFF)
-			-DBUILD_opencv_hdf=$(usex ocv_contrib_module_hdf ON OFF)
-			-DBUILD_opencv_sfm=$(usex ocv_contrib_module_sfm ON OFF)
+			-DBUILD_opencv_cvv=$(usex contrib_cvv ON OFF)
+			-DBUILD_opencv_hdf=$(usex contrib_hdf ON OFF)
+			-DBUILD_opencv_sfm=$(usex contrib_sfm ON OFF)
 		)
 	fi
 

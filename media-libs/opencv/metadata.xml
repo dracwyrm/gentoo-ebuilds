@@ -27,9 +27,9 @@ Face Recognition; Gesture Recognition; Motion Tracking, Ego Motion, Motion Under
 		<flag restrict="&gt;=media-libs/opencv-3.1.0" name="gflags">Use Google's C++ argument parsing library</flag>
 		<flag restrict="&gt;=media-libs/opencv-3.1.0" name="glog">Use Google's C++ loggin library</flag>
 		<flag name="ipp">Enable Intel Integrated Primitive support</flag>
-		<flag restrict="&gt;=media-libs/opencv-3.1.0" name="ocv_contrib_module_cvv">CVV module requires Qt5</flag>
-		<flag restrict="&gt;=media-libs/opencv-3.1.0" name="ocv_contrib_module_hdf">HDF module requires <pkg>sci-libs/hdf5</pkg></flag>
-		<flag restrict="&gt;=media-libs/opencv-3.1.0" name="ocv_contrib_module_sfm">SFM module requires eigen, gflags, and glog</flag>
+		<flag restrict="&gt;=media-libs/opencv-3.1.0" name="contrib_cvv">CVV module requires Qt5</flag>
+		<flag restrict="&gt;=media-libs/opencv-3.1.0" name="contrib_hdf">HDF module requires <pkg>sci-libs/hdf5</pkg></flag>
+		<flag restrict="&gt;=media-libs/opencv-3.1.0" name="contrib_sfm">SFM module requires eigen, gflags, and glog</flag>
 		<flag name="opencl">Add support for OpenCL</flag>
 		<flag restrict="&gt;=media-libs/opencv-3.1.0" name="tesseract">Use Google's OCR Engine</flag>
 		<flag name="testprograms">Build and install programs for testing OpenCV (performance)</flag>
