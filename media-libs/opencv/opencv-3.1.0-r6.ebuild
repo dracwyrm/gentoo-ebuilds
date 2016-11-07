@@ -106,6 +106,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-java-magic.patch
 	"${FILESDIR}"/${P}-gentooify-python.patch
 	"${FILESDIR}"/${P}-remove-graphcut-for-cuda-8.patch
+	"${FILESDIR}"/${P}-find-libraries-fix.patch
 )
 
 GLOBALCMAKEARGS=()
@@ -235,9 +236,9 @@ src_configure() {
 		GLOBALCMAKEARGS+=(
 			-DBUILD_opencv_dnn=OFF
 			-DBUILD_opencv_dnns_easily_fooled=OFF
-			-DBUILD_opencv_cvv=$(usex ocv_contrib_module_cvv)
-			-DBUILD_opencv_hdf=$(usex ocv_contrib_module_hdf)
-			-DBUILD_opencv_sfm=$(usex ocv_contrib_module_sfm)
+			-DBUILD_opencv_cvv=$(usex ocv_contrib_module_cvv ON OFF)
+			-DBUILD_opencv_hdf=$(usex ocv_contrib_module_hdf ON OFF)
+			-DBUILD_opencv_sfm=$(usex ocv_contrib_module_sfm ON OFF)
 		)
 	fi
 
