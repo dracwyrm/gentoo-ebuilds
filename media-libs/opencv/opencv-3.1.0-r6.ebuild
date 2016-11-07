@@ -24,18 +24,18 @@ KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86 ~amd64-linux"
 IUSE="contrib cuda +eigen examples ffmpeg gdal gflags glog gphoto2 gstreamer gtk \
 	ieee1394 ipp jpeg jpeg2k libav opencl openexr opengl openmp pch png \
 	+python qt5 tesseract testprograms threads tiff vaapi v4l vtk webp xine \
-	ocv_contrib_modules_cvv ocv_contrib_modules_hdf ocv_contrib_modules_sfm"
+	ocv_contrib_module_cvv ocv_contrib_module_hdf ocv_contrib_module_sfm"
 
 # OpenGL needs gtk or Qt installed to activate, otherwise build system
 # will silently disable it without the user knowing, which defeats the
 # purpose of the opengl use flag.
 REQUIRED_USE="
-	cuda? ( opencl )
+	cuda? ( tesseract? ( opencl ) )
 	gflags? ( contrib )
 	glog? ( contrib )
-	ocv_contrib_modules_cvv? ( contrib qt5 )
-	ocv_contrib_modules_hdf? ( contrib )
-	ocv_contrib_modules_sfm? ( contrib eigen gflags glog )
+	ocv_contrib_module_cvv? ( contrib qt5 )
+	ocv_contrib_module_hdf? ( contrib )
+	ocv_contrib_module_sfm? ( contrib eigen gflags glog )
 	opengl? ( || ( gtk qt5 ) )
 	python? ( ${PYTHON_REQUIRED_USE} )
 	tesseract? ( contrib )"
@@ -74,7 +74,7 @@ RDEPEND="
 		sys-libs/libraw1394
 	)
 	ipp? ( sci-libs/ipp )
-	ocv_contrib_modules_hdf? ( sci-libs/hdf5 )
+	ocv_contrib_module_hdf? ( sci-libs/hdf5 )
 	opencl? ( virtual/opencl )
 	openexr? ( media-libs/openexr )
 	opengl? ( virtual/opengl virtual/glu )
@@ -227,14 +227,17 @@ src_configure() {
 		-DCMAKE_SKIP_RPATH=ON
 		-DOPENCV_DOC_INSTALL_PATH=
 	)
-	
+
+	# ===================================================
+	# OpenCV Contrib Modules
+	# ===================================================
 	if use contrib; then
 		GLOBALCMAKEARGS+=(
 			-DBUILD_opencv_dnn=OFF
 			-DBUILD_opencv_dnns_easily_fooled=OFF
-			-DBUILD_opencv_cvv=$(usex ocv_contrib_modules_cvv)
-			-DBUILD_opencv_hdf=$(usex ocv_contrib_modules_hdf)
-			-DBUILD_opencv_sfm=$(usex ocv_contrib_modules_sfm)
+			-DBUILD_opencv_cvv=$(usex ocv_contrib_module_cvv)
+			-DBUILD_opencv_hdf=$(usex ocv_contrib_module_hdf)
+			-DBUILD_opencv_sfm=$(usex ocv_contrib_module_sfm)
 		)
 	fi
 
@@ -289,5 +292,4 @@ src_install() {
 
 	# Build and install the python modules for all targets
 	use python && python_foreach_impl python_module_compile
-die
 }
