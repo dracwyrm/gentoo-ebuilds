@@ -22,6 +22,10 @@ RDEPEND="=media-gfx/blender-${PV}*
 
 DEPEND="${RDEPEND}"
 
+PATCHES=(${FILESDIR}/PRMan-for-Blender-2.78-fix-integrator-widget-flag.patch
+	${FILESDIR}/PRMan-for-Blender-2.78-remove-trailing-full-stop-from-descriptions.patch)
+
+
 S="${WORKDIR}/PRMan-for-Blender-21_2"
 
 src_install() {
