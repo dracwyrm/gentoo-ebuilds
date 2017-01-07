@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -23,7 +23,7 @@ KEYWORDS="~amd64 ~x86"
 
 RDEPEND="x11-libs/libXrandr
 	 x11-libs/libX11
-	 dev-libs/glib
+	 dev-libs/glib:2
 	 sys-apps/i2c-tools
 	 virtual/udev
 	 usb-monitor? (
