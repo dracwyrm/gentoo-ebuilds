@@ -4,7 +4,7 @@
 
 EAPI=6
 
-inherit eutils cmake-utils
+inherit eutils cmake-utils versionator
 
 DESCRIPTION="Stream based read/write library for COLLADA files"
 HOMEPAGE="http://www.opencollada.org/"
@@ -18,7 +18,7 @@ KEYWORDS="~amd64 ~ppc64 ~x86"
 IUSE="expat static-libs"
 
 # This is still needed to have so version numbers
-MY_SOVERSION="1.6"
+MY_SOVERSION="$(get_version_component_range 1-2)"
 
 RDEPEND="dev-libs/libpcre
 	dev-libs/zziplib
@@ -30,20 +30,13 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 S="${WORKDIR}"/OpenCOLLADA-${PV}
-# This is needed or you get an error on install
-BUILD_DIR="${S}"/build
 
-PATCHES=(
-	"${FILESDIR}"/${PN}-0_p864-expat.patch
-	"${FILESDIR}"/${PN}-1.2.2-soversion.patch
-	"${FILESDIR}"/${PN}-1.2.2-no-undefined.patch
-	"${FILESDIR}"/${PN}-1.2.2-libdir.patch
-)
+PATCHES=( "${FILESDIR}"/${PN}-build-fixes-v1.patch )
 
 src_prepare() {
 	edos2unix CMakeLists.txt
 
-	default
+	cmake-utils_src_prepare
 
 	# Remove bundled depends that have portage equivalents
 	rm -rv Externals/{expat,lib3ds,LibXML,pcre,zlib,zziplib} || die
@@ -56,9 +49,9 @@ src_prepare() {
 src_configure() {
 	local mycmakeargs=(
 		-DUSE_SHARED=ON
-		-DUSE_STATIC=$(usex static-libs ON OFF)
-		-DUSE_EXPAT=$(usex expat ON OFF)
-		-DUSE_LIBXML=$(usex !expat ON OFF)
+		-DUSE_STATIC=$(usex static-libs)
+		-DUSE_EXPAT=$(usex expat)
+		-DUSE_LIBXML=$(usex !expat)
 		-Dsoversion=${MY_SOVERSION}
 	)
 
