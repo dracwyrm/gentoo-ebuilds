@@ -23,7 +23,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE="+boost +bullet +dds +elbeem +game-engine +openexr collada colorio \
 	cuda cycles debug doc ffmpeg fftw headless jack jemalloc jpeg2k libav \
 	llvm man ndof nls openal opencl openimageio openmp opensubdiv openvdb \
-	openvdb-compression player sdl sndfile test tiff valgrind"
+	player sdl sndfile test tiff valgrind"
 
 # OpenCL and nVidia performance is rubbish with Blender
 # If you have nVidia, use CUDA.
@@ -59,7 +59,7 @@ RDEPEND="${PYTHON_DEPS}
 	boost? ( >=dev-libs/boost-1.62:=[nls?,threads(+)] )
 	collada? ( >=media-libs/opencollada-1.6.18:= )
 	colorio? ( >=media-libs/opencolorio-1.0.9-r2 )
-	cuda? ( =dev-util/nvidia-cuda-toolkit-8.0*:= )
+	cuda? ( dev-util/nvidia-cuda-toolkit:= )
 	ffmpeg? ( media-video/ffmpeg:=[x264,mp3,encode,theora,jpeg2k?] )
 	libav? ( >=media-video/libav-11.3:=[x264,mp3,encode,theora,jpeg2k?] )
 	fftw? ( sci-libs/fftw:3.0= )
@@ -86,10 +86,10 @@ RDEPEND="${PYTHON_DEPS}
 	)
 	opensubdiv? ( media-libs/opensubdiv[cuda=,opencl=] )
 	openvdb? (
-		media-gfx/openvdb[${PYTHON_USEDEP},openvdb-compression=]
+		media-gfx/openvdb[${PYTHON_USEDEP},abi3-compat(+),openvdb-compression(+)]
 		dev-cpp/tbb
+		>=dev-libs/c-blosc-1.5.2
 	)
-	openvdb-compression? ( >=dev-libs/c-blosc-1.5.2 )
 	sdl? ( media-libs/libsdl2[sound,joystick] )
 	sndfile? ( media-libs/libsndfile )
 	tiff? ( media-libs/tiff:0 )
@@ -104,7 +104,8 @@ DEPEND="${RDEPEND}
 	)"
 
 PATCHES=( "${FILESDIR}"/${P}-C++11-build-fix.patch
-	  "${FILESDIR}"/${PN}-fix-install-rules.patch )
+	  "${FILESDIR}"/${PN}-fix-install-rules.patch
+	  "${FILESDIR}"/${P}-eigen-3.3.1.patch )
 
 blender_check_requirements() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
@@ -145,6 +146,7 @@ src_configure() {
 	# shadows, see bug #276338 for reference
 	append-flags -funsigned-char
 	append-lfs-flags
+	append-cxxflags -DOPENVDB_3_ABI_COMPATIBLE
 
 	local mycmakeargs=(
 		-DPYTHON_VERSION="${EPYTHON/python/}"
@@ -191,7 +193,7 @@ src_configure() {
 		-DWITH_OPENMP=$(usex openmp)
 		-DWITH_OPENSUBDIV=$(usex opensubdiv)
 		-DWITH_OPENVDB=$(usex openvdb)
-		-DWITH_OPENVDB_BLOSC=$(usex openvdb-compression)
+		-DWITH_OPENVDB_BLOSC=$(usex openvdb)
 		-DWITH_PLAYER=$(usex player)
 		-DWITH_SDL=$(usex sdl)
 		-DWITH_CXX_GUARDEDALLOC=$(usex debug)
