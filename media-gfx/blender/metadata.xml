@@ -90,6 +90,10 @@
 			Support optional compression used by OpenVDB (requires
 			<pkg>media-gfx/openvdb</pkg>).
 		</flag>
+		<flag name="osl" restrict="&gt;=media-gfx/blender-2.77">
+			Add support for Open Shading Language through
+			<pkg>media-libs/osl</pkg> (requires <pkg>sys-devel/llvm</pkg>).
+		</flag>
 		<flag name="player">
 			Build the Blender Player. THis requires the Game engine.
 		</flag>
