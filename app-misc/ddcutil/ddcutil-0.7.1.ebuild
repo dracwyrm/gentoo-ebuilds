@@ -19,8 +19,6 @@ SRC_URI="https://github.com/rockowitz/ddcutil/archive/v${PV}.tar.gz -> ${P}.tar.
 # Will most likely need to set this for AMDGPU when in portage.
 IUSE="enable-api-libs usb-monitor user-permissions video_cards_nvidia"
 
-REQUIRED_USE="usb-monitor? ( user-permissions )"
-
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
