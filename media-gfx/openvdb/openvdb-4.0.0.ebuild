@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $id$
 
@@ -17,11 +17,12 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="+abi3-compat doc python"
 
-REQUIRED_USE="${PYTHON_REQUIRED_USE}"
+REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
-COMMON_DEPEND="
+RDEPEND="python? ( ${PYTHON_DEPS}
+		dev-python/numpy[${PYTHON_USEDEP}] )
 	sys-libs/zlib
-	>=dev-libs/boost-1.62:=[${PYTHON_USEDEP}]
+	>=dev-libs/boost-1.62:=[python?,${PYTHON_USEDEP}]
 	media-libs/openexr:=
 	media-libs/glfw:=
 	x11-libs/libXi
@@ -29,20 +30,15 @@ COMMON_DEPEND="
 	x11-libs/libXinerama
 	x11-libs/libXcursor
 	dev-libs/jemalloc
-	python? ( dev-python/numpy[${PYTHON_USEDEP}] )
 	>=dev-libs/c-blosc-1.5.0
 	dev-libs/log4cplus"
-
-RDEPEND="python? ( ${PYTHON_DEPS} )
-	 ${COMMON_DEPEND}"
 
 DEPEND="${RDEPEND}
 	dev-cpp/tbb
 	doc? (
 		app-doc/doxygen
 		python? ( dev-python/pdoc[${PYTHON_USEDEP}] )
-	)
-	${COMMON_DEPEND}"
+	)"
 
 PATCHES=( "${FILESDIR}"/${P}-make-docs-optional.patch
 	  "${FILESDIR}"/${P}-build-docs-once.patch
@@ -52,6 +48,10 @@ PATCHES=( "${FILESDIR}"/${P}-make-docs-optional.patch
 
 src_configure() {
 	local myprefix="${EPREFIX}"/usr/
+
+	# To stay in sync with Boost
+	append-cxxflags -std=c++14
+
 	# Enable unit tests later in 4.0.1
 	local mycmakeargs=(
 		-DOPENVDB_BUILD_UNITTESTS=OFF
@@ -70,8 +70,6 @@ src_configure() {
 	)
 
 	use python && mycmakeargs+=( -DPYOENVDB_INSTALL_DIRECTORY=$(python_get_sitedir) )
-	
-	append-cxxflags -std=c++14
 
 	cmake-utils_src_configure
 }
