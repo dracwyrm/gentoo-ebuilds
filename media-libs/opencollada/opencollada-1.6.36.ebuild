@@ -4,7 +4,7 @@
 
 EAPI=6
 
-inherit eutils cmake-utils versionator
+inherit cmake-utils versionator
 
 DESCRIPTION="Stream based read/write library for COLLADA files"
 HOMEPAGE="http://www.opencollada.org/"
@@ -64,5 +64,5 @@ src_install() {
 	echo "LDPATH=/usr/$(get_libdir)/opencollada" > "${T}"/99${PN} || die "echo failed"
 	doenvd "${T}"/99${PN}
 
-	dobin build/bin/OpenCOLLADAValidator
+	dobin ${BUILD_DIR}/bin/OpenCOLLADAValidator
 }
