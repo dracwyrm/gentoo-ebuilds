@@ -30,6 +30,8 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 S="${WORKDIR}"/OpenCOLLADA-${PV}
+# This is needed or you get an error on install
+BUILD_DIR="${S}"/build
 
 PATCHES=( "${FILESDIR}"/${PN}-build-fixes-v1.patch )
 
