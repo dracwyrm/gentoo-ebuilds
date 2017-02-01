@@ -210,6 +210,7 @@ src_compile() {
 	if use doc; then
 		# Workaround for binary drivers.
 		addpredict /dev/ati
+		addpredict /dev/dri
 		addpredict /dev/nvidiactl
 
 		einfo "Generating Blender C/C++ API docs ..."

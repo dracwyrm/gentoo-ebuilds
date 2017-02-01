@@ -214,8 +214,9 @@ src_compile() {
 
 	if use doc; then
 		# Workaround for binary drivers.
-		cards=( /dev/ati/card* /dev/nvidia* )
-		for card in "${cards[@]}"; do addpredict "${card}"; done
+		addpredict /dev/ati
+		addpredict /dev/dri
+		addpredict /dev/nvidiactl
 
 		einfo "Generating Blender C/C++ API docs ..."
 		cd "${CMAKE_USE_DIR}"/doc/doxygen || die
@@ -248,7 +249,8 @@ src_install() {
 	fi
 
 	# fucked up cmake will relink binary for no reason
-	emake -C "${CMAKE_BUILD_DIR}" DESTDIR="${D}" install/fast
+	#emake -C "${CMAKE_BUILD_DIR}" DESTDIR="${D}" install/fast
+	cmake-utils_src_install
 
 	# fix doc installdir
 	docinto "html"
