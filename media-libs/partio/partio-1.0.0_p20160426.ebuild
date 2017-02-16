@@ -20,7 +20,7 @@ KEYWORDS="~amd64 ~x86"
 RDEPEND="media-libs/freeglut
 	virtual/opengl
 	sys-libs/zlib
-	media-libs/seexpr
+	media-libs/SeExpr
 "
 
 DEPEND="${RDEPEND}
