@@ -1,0 +1,38 @@
+From caa09c1b361e2b152786d9e8b2b90261c9d9a3aa Mon Sep 17 00:00:00 2001
+From: Wenzel Jakob <wenzel@inf.ethz.ch>
+Date: Mon, 2 Feb 2015 23:05:33 +0100
+Subject: [PATCH] Fix a linker error when compiling OpenEXR statically on Linux
+
+Linking OpenEXR and IlmBase statically on Linux failed due to
+interdependencies between Iex and IlmThread. Simply reversing their
+order in CMakeLists.txt fixes the issue (which only arises on Linux
+since the GNU linker is particularly sensitive to the order of static
+libraries)
+---
+ IlmImf/CMakeLists.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
+index 18d90ed..9b2fb11 100644
+--- a/IlmImf/CMakeLists.txt
++++ b/IlmImf/CMakeLists.txt
+@@ -8,8 +8,8 @@ ADD_EXECUTABLE ( b44ExpLogTable
+ 
+ TARGET_LINK_LIBRARIES ( b44ExpLogTable
+   Half
+-  Iex${ILMBASE_LIBSUFFIX}
+   IlmThread${ILMBASE_LIBSUFFIX}
++  Iex${ILMBASE_LIBSUFFIX}
+   ${PTHREAD_LIB}
+ )
+ 
+@@ -25,8 +25,8 @@ ADD_EXECUTABLE ( dwaLookups
+ 
+ TARGET_LINK_LIBRARIES ( dwaLookups
+   Half
+-  Iex${ILMBASE_LIBSUFFIX}
+   IlmThread${ILMBASE_LIBSUFFIX}
++  Iex${ILMBASE_LIBSUFFIX}
+   ${PTHREAD_LIB}
+ )
+ 
