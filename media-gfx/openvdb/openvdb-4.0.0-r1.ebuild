@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $id$
 
-EAPI=6
+EAPI="6"
 PYTHON_COMPAT=( python{2_7,3_4,3_5} )
 
 inherit eutils flag-o-matic cmake-utils python-single-r1
@@ -15,26 +15,25 @@ SRC_URI="https://github.com/dreamworksanimation/${PN}/archive/v${PV}.tar.gz -> $
 LICENSE="MPL-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="+abi3-compat doc python"
+IUSE="+abi3-compat doc namespace-versioning python"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
-RDEPEND="
-	>=dev-libs/boost-1.62:=[python?,${PYTHON_USEDEP}]
-	>=dev-libs/c-blosc-1.5.0
-	dev-libs/jemalloc
-	dev-libs/log4cplus
-	media-libs/glfw:=
-	media-libs/openexr:=
+RDEPEND="python? ( ${PYTHON_DEPS}
+		dev-python/numpy[${PYTHON_USEDEP}] )
 	sys-libs/zlib
+	>=dev-libs/boost-1.62:=[python?,${PYTHON_USEDEP}]
+	>=media-libs/ilmbase-2.2.0-r1:=[namespace-versioning=]
+	>=media-libs/openexr-2.2.0-r2:=[namespace-versioning=]
+	media-libs/glfw:=
 	x11-libs/libXi
 	x11-libs/libXrandr
 	x11-libs/libXinerama
 	x11-libs/libXcursor
-	python? (
-		${PYTHON_DEPS}
-		dev-python/numpy[${PYTHON_USEDEP}]
-	)"
+	dev-libs/jemalloc
+	>=dev-libs/c-blosc-1.5.0
+	dev-libs/log4cplus"
+
 DEPEND="${RDEPEND}
 	dev-cpp/tbb
 	doc? (
@@ -42,11 +41,10 @@ DEPEND="${RDEPEND}
 		python? ( dev-python/pdoc[${PYTHON_USEDEP}] )
 	)"
 
-PATCHES=(
-	"${FILESDIR}"/${P}-make-docs-optional.patch
-	"${FILESDIR}"/${P}-build-docs-once.patch
-	"${FILESDIR}"/${P}-namespace-fixes.patch
-	"${FILESDIR}"/${P}-python-module-install-dir-fix.patch
+PATCHES=( "${FILESDIR}/${P}-make-docs-optional.patch"
+	  "${FILESDIR}/${P}-build-docs-once.patch"
+	  "${FILESDIR}/${P}-namespace-fixes.patch"
+	  "${FILESDIR}/${P}-python-module-install-dir-fix.patch"
 )
 
 src_configure() {
@@ -66,9 +64,9 @@ src_configure() {
 		-DUSE_GLFW3=ON
 		-DGLFW3_LOCATION="${myprefix}"
 		-DILMBASE_LOCATION="${myprefix}"
-		-DILMBASE_NAMESPACE_VERSIONING=OFF
+		-DILMBASE_NAMESPACE_VERSIONING=$(usex namespace-versioning)
 		-DOPENEXR_LOCATION="${myprefix}"
-		-DOPENEXR_NAMESPACE_VERSIONING=OFF
+		-DOPENEXR_NAMESPACE_VERSIONING=$(usex namespace-versioning)
 		-DTBB_LOCATION="${myprefix}"
 	)
 
