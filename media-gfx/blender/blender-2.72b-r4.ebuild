@@ -248,8 +248,6 @@ src_install() {
 		dodoc -r "${CMAKE_USE_DIR}"/doc/doxygen/html/*
 	fi
 
-	# fucked up cmake will relink binary for no reason
-	#emake -C "${CMAKE_BUILD_DIR}" DESTDIR="${D}" install/fast
 	cmake-utils_src_install
 
 	# fix doc installdir
