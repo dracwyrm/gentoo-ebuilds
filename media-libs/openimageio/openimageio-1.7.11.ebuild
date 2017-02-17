@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -21,7 +21,7 @@ X86_CPU_FEATURES=(
 	avx:avx avx2:avx2 avx512f:avx512f f16c:f16c
 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
-IUSE="colorio ffmpeg gif jpeg2k opencv opengl python qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
+IUSE="colorio docs ffmpeg field3d gif jpeg opencv opengl ptex python qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
 
 RESTRICT="test" #431412
 
@@ -35,9 +35,11 @@ RDEPEND=">=dev-libs/boost-1.62:=[python?]
 	sys-libs/zlib:=
 	virtual/jpeg:0
 	colorio? ( >=media-libs/opencolorio-1.0.7:= )
+	docs? ( app-doc/doxygen[latex] )
 	ffmpeg? ( media-video/ffmpeg:= )
+	field3d? ( media-libs/Field3D )
 	gif? ( media-libs/giflib )
-	jpeg2k? ( >=media-libs/openjpeg-1.5:0= )
+	jpeg? ( virtual/jpeg:= )
 	opencv? (
 		>=media-libs/opencv-2.3:=
 		python? ( >=media-libs/opencv-2.4.8[python,${PYTHON_USEDEP}] )
@@ -46,6 +48,7 @@ RDEPEND=">=dev-libs/boost-1.62:=[python?]
 		virtual/glu
 		virtual/opengl
 	)
+	ptex? ( media-libs/ptex:= )
 	python? ( ${PYTHON_DEPS} )
 	qt4? (
 		dev-qt/qtcore:4
@@ -87,23 +90,24 @@ src_configure() {
 
 	local mycmakeargs=(
 		-DLIB_INSTALL_DIR="/usr/$(get_libdir)"
-		-DBUILDSTATIC=OFF
-		-DLINKSTATIC=OFF
-		-DINSTALL_DOCS=OFF
 		-DOIIO_BUILD_TESTS=OFF # as they are RESTRICTed
 		$(use python && echo -DPYLIB_INSTALL_DIR="$(python_get_sitedir)")
 		-DSTOP_ON_WARNING=OFF
+		-DUSE_NUKE=OFF
 		-DUSE_EXTERNAL_PUGIXML=ON
 		-DUSE_CPP14=ON
-		-DUSE_FIELD3D=OFF # missing in Portage
+		-DUSE_FIELD3D=$(usex field3d)
+		-DINSTALL_DOCS=$(usex docs)
 		-DUSE_FREETYPE=$(usex truetype)
 		-DUSE_FFMPEG=$(usex ffmpeg)
 		-DUSE_GIF=$(usex gif)
 		-DUSE_OCIO=$(usex colorio)
 		-DUSE_OPENCV=$(usex opencv)
 		-DUSE_OPENGL=$(usex opengl)
-		-DUSE_OPENJPEG=$(usex jpeg2k)
+		-DUSE_JPEGTURBO=$(usex jpeg)
+		-DUSE_OPENJPEG=$(usex jpeg)
 		-DUSE_OPENSSL=$(usex ssl)
+		-DUSE_PTEX=$(usex ptex)
 		-DUSE_PYTHON=$(usex python)
 		-DUSE_LIBRAW=$(usex raw)
 		-DUSE_QT=$(usex qt4)
@@ -112,9 +116,9 @@ src_configure() {
 	)
 
 	if [[ ${EPYTHON} == python3* ]]; then
-		mycmakeargs+=( -DUSE_PYTHON3=ON )
+		mycmakeargs+=( -DUSE_PYTHON3=ON -DPYTHON3_VERSION="${EPYTHON/python/}" )
 	else
-		mycmakeargs+=( -DUSE_PYTHON3=OFF )
+		mycmakeargs+=( -DUSE_PYTHON3=OFF -DPYTHON_VERSION="${EPYTHON/python/}" )
 	fi
 
 	cmake-utils_src_configure
