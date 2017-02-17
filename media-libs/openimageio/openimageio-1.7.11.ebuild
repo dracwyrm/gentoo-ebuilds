@@ -61,10 +61,6 @@ RDEPEND=">=dev-libs/boost-1.62:=[python?]
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
 
-#S=${WORKDIR}/${P}/src
-
-#PATCHES=( "${FILESDIR}"/${P}-fix-casting-for-avx2.patch )
-
 DOCS=( src/doc/${PN}.pdf )
 
 pkg_setup() {

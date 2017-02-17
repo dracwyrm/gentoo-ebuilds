@@ -4,7 +4,7 @@
 
 EAPI=6
 
-PYTHON_COMPAT=( python2_7 python3_4 )
+PYTHON_COMPAT=( python{2_7,3_4,3_5} )
 
 inherit cmake-utils python-single-r1 vcs-snapshot
 
@@ -14,7 +14,7 @@ SRC_URI="https://github.com/OpenImageIO/oiio/archive/Release-${PV}.tar.gz -> ${P
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~ppc64 x86"
 IUSE="colorio ffmpeg gif jpeg2k opencv opengl python qt4 raw ssl +truetype"
 
 RESTRICT="test" #431412
@@ -30,7 +30,7 @@ RDEPEND="dev-libs/boost:=[python?]
 	virtual/jpeg:0
 	colorio? ( >=media-libs/opencolorio-1.0.7:= )
 	ffmpeg? ( media-video/ffmpeg:= )
-	gif? ( media-libs/giflib )
+	gif? ( media-libs/giflib:0= )
 	jpeg2k? ( >=media-libs/openjpeg-1.5:0= )
 	opencv? (
 		>=media-libs/opencv-2.3:=
