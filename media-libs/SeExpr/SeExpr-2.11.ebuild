@@ -3,9 +3,8 @@
 # $Id$
 
 EAPI=6
-PYTHON_COMPAT=( python2_7 python3_{3,4,5} )
 
-inherit cmake-utils python-single-r1
+inherit cmake-utils
 
 DESCRIPTION="An embeddable expression evaluation engine"
 HOMEPAGE="http://www.disneyanimation.com/technology/seexpr.html"
@@ -18,33 +17,21 @@ KEYWORDS="~amd64 ~x86"
 IUSE="docs"
 
 RDEPEND="sys-devel/llvm
-	dev-libs/boost[python]
-	dev-cpp/gtest
 	media-libs/libpng:=
-	virtual/opengl
-	dev-qt/qtcore:4=
-	dev-qt/qtgui:4=
-	dev-qt/qtopengl:4=
-"
+	virtual/opengl"
 
 DEPEND="${RDEPEND}
 	docs? ( app-doc/doxygen )
 	sys-devel/bison
 	sys-devel/flex
-"
+	virtual/pkgconfig"
+
+PATCHES=( "${FILESDIR}/${P}-build-fixes.patch" )
 
 S="${WORKDIR}/SeExpr-${PV}"
 
 src_configure() {
-	local mycmakeargs=(
-		-DBOOST_PYTHON_LIBNAME=boost_python-${PYTHON_USEDEP}
-		$(cmake-utils_use_find_package docs Doxygen)
-	)
+	local mycmakeargs=( $(cmake-utils_use_find_package docs Doxygen) )
 
 	cmake-utils_src_configure
-}
-
-src_install() {
-	cmake-utils_src_install
-	die
 }
