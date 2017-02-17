@@ -5,7 +5,7 @@
 EAPI=6
 PYTHON_COMPAT=( python2_7 python3_{3,4,5} )
 
-inherit cmake-utils vcs-snapshot python-r1
+inherit cmake-utils vcs-snapshot python-single-r1
 
 DESCRIPTION="A library for particle IO and manipulation"
 HOMEPAGE="http://www.disneyanimation.com/technology/partio.html"
@@ -17,13 +17,29 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-RDEPEND="media-libs/freeglut
+IUSE="docs"
+
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
+
+RDEPEND="${PYTHON_DEPS}
+	dev-lang/swig
+	media-libs/freeglut
 	virtual/opengl
 	sys-libs/zlib
-	media-libs/SeExpr
-"
+	media-libs/SeExpr"
 
 DEPEND="${RDEPEND}
-	app-doc/doxygen[latex]
-	dev-lang/swig
-"
+	docs? ( app-doc/doxygen[latex] )"
+
+src_prepare() {
+	default
+
+	sed -e '/ADD_SUBDIRECTORY (src\/tests)/d' -i CMakeLists.txt || die
+	sed -e "s|doc/partio|doc/${PF}|" -i src/doc/CMakeLists.txt || die
+}
+
+src_configure() {
+	local mycmakeargs=( $(cmake-utils_use_find_package docs Doxygen) )
+
+	cmake-utils_src_configure
+}
