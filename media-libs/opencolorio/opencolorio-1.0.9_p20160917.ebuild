@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -24,7 +24,7 @@ IUSE="doc opengl pdf python cpu_flags_x86_sse2 test"
 RDEPEND="opengl? (
 		media-libs/lcms:2
 		>=media-libs/openimageio-1.1.0
-		media-libs/glew
+		media-libs/glew:=
 		media-libs/freeglut
 		virtual/opengl
 		)

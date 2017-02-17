@@ -15,21 +15,21 @@ SRC_URI="https://github.com/wdas/partio/archive/${MY_GIT_COMMIT}.tar.gz -> ${P}.
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~ppc64 ~x86"
 
-IUSE="docs"
+IUSE="doc"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 RDEPEND="${PYTHON_DEPS}
-	dev-lang/swig
 	media-libs/freeglut
 	virtual/opengl
 	sys-libs/zlib
 	media-libs/SeExpr"
 
 DEPEND="${RDEPEND}
-	docs? ( app-doc/doxygen[latex] )"
+	doc? ( app-doc/doxygen[latex] )
+	dev-lang/swig:*"
 
 src_prepare() {
 	default
@@ -39,7 +39,7 @@ src_prepare() {
 }
 
 src_configure() {
-	local mycmakeargs=( $(cmake-utils_use_find_package docs Doxygen) )
+	local mycmakeargs=( $(cmake-utils_use_find_package doc Doxygen) )
 
 	cmake-utils_src_configure
 }

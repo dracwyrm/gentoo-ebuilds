@@ -12,16 +12,17 @@ SRC_URI="https://github.com/imageworks/OpenShadingLanguage/archive/Release-${PV/
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~ppc64 ~x86"
 
 X86_CPU_FEATURES=( sse2:sse2 sse3:sse3 sse4_1:sse4.1 sse4_2:sse4.2 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
-IUSE="doc test ${CPU_FEATURES[@]%:*}"
+IUSE="doc partio test ${CPU_FEATURES[@]%:*}"
 
 RDEPEND=">=media-libs/openexr-2.2.0-r2
 	 >=media-libs/openimageio-1.7.0
 	 dev-libs/pugixml
-	 sys-libs/zlib"
+	 sys-libs/zlib
+	 partio? ( media-libs/partio )"
 
 DEPEND="${RDEPEND}
 	>=dev-libs/boost-1.62
@@ -50,7 +51,7 @@ src_configure() {
 	# LLVM needs CPP11. Do not disable.
 	local mycmakeargs=(
 		-DUSE_EXTERNAL_PUGIXML=ON
-		-DUSE_PARTIO=OFF
+		-DUSE_PARTIO=$(usex partio)
 		-DOSL_BUILD_CPP11=ON
 		-DENABLERTTI=OFF
 		-DSTOP_ON_WARNING=OFF

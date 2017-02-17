@@ -14,14 +14,14 @@ SRC_URI="https://github.com/OpenImageIO/oiio/archive/Release-${PV}.tar.gz -> ${P
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~ppc64 ~x86"
 
 X86_CPU_FEATURES=(
 	sse2:sse2 sse3:sse3 ssse3:ssse3 sse4_1:sse4.1 sse4_2:sse4.2
 	avx:avx avx2:avx2 avx512f:avx512f f16c:f16c
 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
-IUSE="colorio docs ffmpeg field3d gif jpeg opencv opengl ptex python qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
+IUSE="colorio doc ffmpeg field3d gif jpeg opencv opengl ptex python qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
 
 RESTRICT="test" #431412
 
@@ -35,7 +35,6 @@ RDEPEND=">=dev-libs/boost-1.62:=[python?]
 	sys-libs/zlib:=
 	virtual/jpeg:0
 	colorio? ( >=media-libs/opencolorio-1.0.7:= )
-	docs? ( app-doc/doxygen[latex] )
 	ffmpeg? ( media-video/ffmpeg:= )
 	field3d? ( media-libs/Field3D )
 	gif? ( media-libs/giflib )
@@ -59,7 +58,8 @@ RDEPEND=">=dev-libs/boost-1.62:=[python?]
 	raw? ( media-libs/libraw:= )
 	ssl? ( dev-libs/openssl:0 )
 	truetype? ( media-libs/freetype:2= )"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	doc? ( app-doc/doxygen[latex] )"
 
 #S=${WORKDIR}/${P}/src
 
@@ -97,7 +97,7 @@ src_configure() {
 		-DUSE_EXTERNAL_PUGIXML=ON
 		-DUSE_CPP14=ON
 		-DUSE_FIELD3D=$(usex field3d)
-		-DINSTALL_DOCS=$(usex docs)
+		-DINSTALL_DOCS=$(usex doc)
 		-DUSE_FREETYPE=$(usex truetype)
 		-DUSE_FFMPEG=$(usex ffmpeg)
 		-DUSE_GIF=$(usex gif)

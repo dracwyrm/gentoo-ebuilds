@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -16,10 +16,7 @@ KEYWORDS="~amd64 ~ppc64 ~x86"
 
 X86_CPU_FEATURES=( sse2:sse2 sse3:sse3 ssse3:ssse3 sse4_1:sse4.1 sse4_2:sse4.2 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
-IUSE="colorio ffmpeg gif jpeg2k opencv opengl ptex qt4 raw ssl +truetype viewer ${CPU_FEATURES[@]%:*}"
-
-REQUIRED_USE="
-	viewer? ( opengl qt4 )"
+IUSE="colorio ffmpeg gif jpeg2k opencv opengl ptex qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
 
 RESTRICT="test" #431412
 

@@ -22,7 +22,7 @@ RDEPEND="~media-libs/ilmbase-${PV}:=[namespace-versioning=]
 	virtual/opengl
 	x11-libs/fltk:1[opengl]
 	cg? ( media-gfx/nvidia-cg-toolkit
-	      virtual/glut )"
+	      || ( media-libs/freeglut media-libs/mesa[glut] ) )"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"

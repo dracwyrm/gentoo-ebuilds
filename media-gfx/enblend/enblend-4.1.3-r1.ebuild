@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -21,7 +21,7 @@ REQUIRED_USE="openmp? ( !image-cache )"
 
 RDEPEND="
 	>=dev-libs/boost-1.31.0:=
-	media-libs/glew
+	media-libs/glew:=
 	>=media-libs/lcms-2.5:2
 	>=media-libs/libpng-1.2.43:0=
 	>=media-libs/openexr-1.0:=

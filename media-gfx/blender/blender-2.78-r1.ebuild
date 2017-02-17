@@ -70,7 +70,7 @@ RDEPEND="${PYTHON_DEPS}
 	jack? ( media-sound/jack-audio-connection-kit )
 	jemalloc? ( dev-libs/jemalloc:= )
 	jpeg2k? ( media-libs/openjpeg:0 )
-	llvm? ( sys-devel/llvm )
+	llvm? ( sys-devel/llvm:= )
 	ndof? (
 		app-misc/spacenavd
 		dev-libs/libspnav
