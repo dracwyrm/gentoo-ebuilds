@@ -21,11 +21,13 @@ X86_CPU_FEATURES=(
 	avx:avx avx2:avx2 avx512f:avx512f f16c:f16c
 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
+
 IUSE="colorio doc ffmpeg field3d gif jpeg opencv opengl ptex python qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 RESTRICT="test" #431412
 
-RDEPEND=">=dev-libs/boost-1.62:=[python?]
+RDEPEND=">=dev-libs/boost-1.62:=[python?,${PYTHON_USEDEP}]
 	dev-libs/pugixml:=
 	media-libs/ilmbase:=
 	media-libs/libpng:0=
@@ -56,7 +58,7 @@ RDEPEND=">=dev-libs/boost-1.62:=[python?]
 		media-libs/glew:=
 	)
 	raw? ( media-libs/libraw:= )
-	ssl? ( dev-libs/openssl:0 )
+	ssl? ( dev-libs/openssl:0= )
 	truetype? ( media-libs/freetype:2= )"
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
@@ -68,7 +70,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	default
+	cmake-utils_src_prepare
 
 	use python && python_fix_shebang .
 }
@@ -77,9 +79,9 @@ src_configure() {
 	# Build with SIMD support
 	local cpufeature
 	local mysimd=""
-	for cpufeature in "${CPU_FEATURES[@]}"; \
-		do use ${cpufeature%:*} && mysimd+="${cpufeature#*:},"; \
-		done
+	for cpufeature in "${CPU_FEATURES[@]}"; do
+		use ${cpufeature%:*} && mysimd+="${cpufeature#*:},"
+	done
 
 	# If no CPU SIMDs were used, completely disable them
 	[[ -z $mysimd ]] && mysimd="0"

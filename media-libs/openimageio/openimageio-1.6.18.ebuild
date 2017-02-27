@@ -20,12 +20,12 @@ IUSE="colorio ffmpeg gif jpeg2k opencv opengl ptex qt4 raw ssl +truetype ${CPU_F
 
 RESTRICT="test" #431412
 
-RDEPEND="dev-libs/boost:0=
+RDEPEND="dev-libs/boost:=
 	dev-libs/pugixml:0=
-	media-libs/ilmbase:0=
+	media-libs/ilmbase:=
 	media-libs/libpng:0=
 	>=media-libs/libwebp-0.2.1:=
-	media-libs/openexr:0=
+	media-libs/openexr:=
 	media-libs/tiff:0=
 	sys-libs/zlib:0=
 	virtual/jpeg:0=
@@ -33,7 +33,7 @@ RDEPEND="dev-libs/boost:0=
 	ffmpeg? ( media-video/ffmpeg:0= )
 	gif? ( media-libs/giflib:0= )
 	jpeg2k? ( >=media-libs/openjpeg-1.5:0= )
-	opencv? ( media-libs/opencv:0= )
+	opencv? ( media-libs/opencv:= )
 	opengl? (
 		virtual/glu
 		virtual/opengl
@@ -43,17 +43,17 @@ RDEPEND="dev-libs/boost:0=
 		dev-qt/qtcore:4=
 		dev-qt/qtgui:4=
 		dev-qt/qtopengl:4=
-		media-libs/glew:0=
+		media-libs/glew:=
 	)
 	raw? ( media-libs/libraw:0= )
-	ssl? ( dev-libs/openssl:0 )
+	ssl? ( dev-libs/openssl:0= )
 	truetype? ( media-libs/freetype:2= )"
 DEPEND="${RDEPEND}"
 
 DOCS=( CHANGES CREDITS README.rst src/doc/${PN}.pdf )
 
 src_prepare() {
-	default
+	cmake-utils_src_prepare
 
 	# Add more Boost versions.
 	sed -e 's|"1.60"|"1.63" "1.62" "1.61" "1.60"|' \
@@ -65,8 +65,8 @@ src_configure() {
 	#	ssse3, sse4.1, sse4.2)"
 	local mysimd=""
 	local cpufeature
-	for cpufeature in "${CPU_FEATURES[@]}"; \
-		do use ${cpufeature%:*} && mysimd+="${cpufeature#*:},"; \
+	for cpufeature in "${CPU_FEATURES[@]}"; do
+		use ${cpufeature%:*} && mysimd+="${cpufeature#*:},"
 	done
 	# If no CPU SIMDs were used, completely disable them
 	[[ -z $mysimd ]] && mysimd="0"
