@@ -32,7 +32,7 @@ DEPEND="${RDEPEND}
 	dev-lang/swig:*"
 
 src_prepare() {
-	default
+	cmake-utils_src_prepare
 
 	sed -e '/ADD_SUBDIRECTORY (src\/tests)/d' -i CMakeLists.txt || die
 	sed -e "s|doc/partio|doc/${PF}|" -i src/doc/CMakeLists.txt || die
