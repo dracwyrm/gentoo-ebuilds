@@ -15,12 +15,12 @@ SRC_URI="https://github.com/openexr/openexr/archive/v${PV}.tar.gz -> openexr-${P
 LICENSE="BSD"
 SLOT="0/22" # based on SONAME
 KEYWORDS="~amd64 -arm ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~x86-solaris"
-IUSE="examples namespace-versioning static-libs"
+IUSE="examples namespace-versioning"
 
 # Only need hard blocker for 2.2.0 series. Can remove on version bump.
 RDEPEND="sys-libs/zlib[${MULTILIB_USEDEP}]
 	 ~media-libs/ilmbase-${PV}:=[${MULTILIB_USEDEP},namespace-versioning=]
-	 !!=media-libs/ilmase-2.2.0"
+	 !!=media-libs/ilmbase-2.2.0"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	>=sys-devel/autoconf-archive-2016.09.16"
@@ -37,7 +37,8 @@ PATCHES=(
 S="${WORKDIR}/openexr-${PV}/OpenEXR"
 
 src_prepare() {
-	default
+	cmake-utils_src_prepare
+
 	# Fix path for testsuite
 	sed -i -e "s:/var/tmp/:${T}:" IlmImfTest/tmpDir.h || die
 
@@ -48,7 +49,6 @@ src_prepare() {
 multilib_src_configure() {
 	local mycmakeargs=(
 		-DNAMESPACE_VERSIONING=$(usex namespace-versioning)
-		-DBUILD_SHARED_LIBS=$(usex !static-libs)
 		-DILMBASE_PACKAGE_PREFIX="/usr"
 	)
 
@@ -62,7 +62,4 @@ multilib_src_install_all() {
 	if ! use examples; then
 		rm -rf "${ED%/}"/usr/share/doc/${PF}/examples || die
 	fi
-
-	# package provides .pc files
-	find "${D}" -name '*.la' -delete || die
 }
