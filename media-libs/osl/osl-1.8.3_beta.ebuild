@@ -12,7 +12,7 @@ SRC_URI="https://github.com/imageworks/OpenShadingLanguage/archive/Release-${PV/
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc64 ~x86"
+KEYWORDS="~amd64 ~x86"
 
 X86_CPU_FEATURES=( sse2:sse2 sse3:sse3 sse4_1:sse4.1 sse4_2:sse4.2 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
@@ -41,9 +41,9 @@ S="${WORKDIR}/OpenShadingLanguage-Release-${PV//_}"
 src_configure() {
 	local cpufeature
 	local mysimd=""
-	for cpufeature in "${CPU_FEATURES[@]}"; \
-		do use ${cpufeature%:*} && mysimd+="${cpufeature#*:},"; \
-		done
+	for cpufeature in "${CPU_FEATURES[@]}"; do
+		use ${cpufeature%:*} && mysimd+="${cpufeature#*:},"
+	done
 
 	# If no CPU SIMDs were used, completely disable them
 	[[ -z $mysimd ]] && mysimd="0"
