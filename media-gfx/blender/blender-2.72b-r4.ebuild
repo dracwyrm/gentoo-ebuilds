@@ -82,7 +82,7 @@ RDEPEND="
 	cycles? (
 		media-libs/openimageio
 	)
-	ffmpeg? ( media-video/ffmpeg:0=[x264,mp3,encode,theora,jpeg2k?] )
+	ffmpeg? ( <media-video/ffmpeg-3:0=[x264,mp3,encode,theora,jpeg2k?] )
 	libav? ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
 	fftw? ( sci-libs/fftw:3.0 )
 	jack? ( media-sound/jack-audio-connection-kit )
@@ -131,7 +131,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	default
+	cmake-utils_src_prepare
 
 	# we don't want static glew, but it's scattered across
 	# thousand files

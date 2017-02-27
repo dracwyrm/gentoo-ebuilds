@@ -124,7 +124,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	default
+	cmake-utils_src_prepare
 
 	# we don't want static glew, but it's scattered across
 	# multiple files that differ from version to version
