@@ -5,7 +5,7 @@
 EAPI="6"
 PYTHON_COMPAT=( python{2_7,3_4,3_5} )
 
-inherit eutils flag-o-matic cmake-utils python-single-r1
+inherit eutils flag-o-matic cmake-utils python-single-r1 versionator
 
 DESCRIPTION="Libs for the efficient manipulation of volumetric data"
 HOMEPAGE="http://www.openvdb.org"
@@ -53,6 +53,12 @@ src_configure() {
 	# To stay in sync with Boost
 	append-cxxflags -std=c++14
 
+	# Hack so OpenVDB can find the right versions
+	local ilmbase_version=$(best_version media-libs/ilmbase)
+	ilmbase_version=${ilmbase_version/media-libs\/ilmbase-/}
+	local openexr_version=$(best_version media-libs/openexr)
+	openexr_version=${openexr_version/media-libs\/openexr-/}
+
 	# Enable unit tests later in 4.0.1
 	local mycmakeargs=(
 		-DOPENVDB_BUILD_UNITTESTS=OFF
@@ -65,8 +71,12 @@ src_configure() {
 		-DGLFW3_LOCATION="${myprefix}"
 		-DILMBASE_LOCATION="${myprefix}"
 		-DILMBASE_NAMESPACE_VERSIONING=$(usex namespace-versioning)
+		-DILMBASE_VERSION_MAJOR=$(get_version_component_range 1 ${ilmbase_version})
+		-DILMBASE_VERSION_MINOR=$(get_version_component_range 2 ${ilmbase_version})
 		-DOPENEXR_LOCATION="${myprefix}"
 		-DOPENEXR_NAMESPACE_VERSIONING=$(usex namespace-versioning)
+		-DOPENEXR_VERSION_MAJOR=$(get_version_component_range 1 ${openexr_version})
+		-DOPENEXR_VERSION_MINOR=$(get_version_component_range 2 ${openexr_version})
 		-DTBB_LOCATION="${myprefix}"
 	)
 
