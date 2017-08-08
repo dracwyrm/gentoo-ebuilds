@@ -6,8 +6,5 @@
 	</maintainer>
 	<use>
 		<flag name="cg">Add support for nvidia's cg shaders</flag>
-		<flag name="namespace-versioning" restrict="&gt;=media-gfx/openexr_viewers-2.2.0-r1">
-			Use version number in the name of the libraries.
-		</flag>
 	</use>
 </pkgmetadata>

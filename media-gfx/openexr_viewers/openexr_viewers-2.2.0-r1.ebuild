@@ -14,10 +14,10 @@ SRC_URI="https://github.com/openexr/openexr/archive/v${PV}.tar.gz -> openexr-${P
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~x86-fbsd"
-IUSE="cg namespace-versioning"
+IUSE="cg"
 
-RDEPEND="~media-libs/ilmbase-${PV}:=[namespace-versioning=]
-	~media-libs/openexr-${PV}:=[namespace-versioning=]
+RDEPEND="~media-libs/ilmbase-${PV}:=
+	~media-libs/openexr-${PV}:=
 	>=media-libs/ctl-1.5.2:=
 	virtual/opengl
 	x11-libs/fltk:1[opengl]
@@ -40,8 +40,8 @@ src_configure() {
 	local mycmakeargs=(
 		$(cmake-utils_use_find_package cg GLUT)
 		$(cmake-utils_use_find_package cg Cg)
-		-DNAMESPACE_VERSIONING=$(usex namespace-versioning)
 		-DOPENEXR_PACKAGE_PREFIX="${EPREFIX}/usr"
+		-DNAMESPACE_VERSIONING=ON
 	)
 
 	use cg && append-flags "$(no-as-needed)" # binary-only libCg is not properly linked
