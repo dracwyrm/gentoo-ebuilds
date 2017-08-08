@@ -13,14 +13,16 @@ LICENSE="AMPAS"
 SLOT="0"
 KEYWORDS="~amd64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~x86-fbsd"
 
-RDEPEND=">=media-libs/ilmbase-2.2.0:=
-	 >=media-libs/openexr-2.2.0:=
+RDEPEND="media-libs/ilmbase:=
+	 media-libs/openexr:=
 	 media-libs/tiff:=
 	 !!media-libs/openexr_ctl"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 S="${WORKDIR}/CTL-ctl-${PV}"
+
+PATCHES=( "${FILESDIR}/ctl-1.5.2-openexr2-fixes.patch" )
 
 src_prepare() {
 	cmake-utils_src_prepare
