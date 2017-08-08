@@ -1,0 +1,1051 @@
+diff -purN a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/CMakeLists.txt	2017-08-08 19:26:01.008143427 +0100
+@@ -57,8 +57,10 @@ IF (NOT WIN32)
+   SET ( PTHREAD_LIB pthread )
+ ENDIF()
+ 
++include(GNUInstallDirs)
++
+ INCLUDE_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/include/OpenEXR )
+-LINK_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/lib )
++LINK_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/${CMAKE_INSTALL_LIBDIR} )
+ MESSAGE ( "ILMBASE_PACKAGE_PREFIX = " ${ILMBASE_PACKAGE_PREFIX})
+ 
+ SET (LIB_TYPE STATIC)
+@@ -258,3 +260,23 @@ INSTALL ( FILES
+   DESTINATION
+   ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}/examples
+   )
++
++# OpenEXR.pc
++FILE ( WRITE ${CMAKE_BINARY_DIR}/OpenEXR.pc "prefix=${CMAKE_INSTALL_PREFIX}\n" )
++FILE ( APPEND ${CMAKE_BINARY_DIR}/OpenEXR.pc "exec_prefix=\${prefix}
++libdir=\${exec_prefix}/lib
++includedir=\${prefix}/include
++OpenEXR_includedir=\${prefix}/include/OpenEXR
++
++Name: OpenEXR
++Description: OpenEXR library
++Version: ${OPENEXR_VERSION}
++Libs: -L\${libdir} -lIlmImfUtil${OPENEXR_LIBSUFFIX} -lIlmImf${OPENEXR_LIBSUFFIX} -pthread
++Cflags: -pthread -I\${OpenEXR_includedir}
++")
++
++INSTALL ( FILES
++  ${CMAKE_BINARY_DIR}/OpenEXR.pc
++  DESTINATION
++  ${CMAKE_INSTALL_LIBDIR}/pkgconfig
++)
+diff -purN a/CMakeLists.txt.orig b/CMakeLists.txt.orig
+--- a/CMakeLists.txt.orig	1970-01-01 01:00:00.000000000 +0100
++++ b/CMakeLists.txt.orig	2017-08-08 17:37:45.000000000 +0100
+@@ -0,0 +1,262 @@
++CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
++
++PROJECT (openexr)
++
++SET(OPENEXR_VERSION_MAJOR "2")
++SET(OPENEXR_VERSION_MINOR "2")
++SET(OPENEXR_VERSION_PATCH "0")
++
++SET(OPENEXR_VERSION ${OPENEXR_VERSION_MAJOR}.${OPENEXR_VERSION_MINOR}.${OPENEXR_VERSION_PATCH})
++SET(OPENEXR_VERSION_API ${OPENEXR_VERSION_MAJOR}_${OPENEXR_VERSION_MINOR})
++
++
++# enable the tests
++ENABLE_TESTING()
++
++
++# distro building 
++SET(CPACK_PACKAGE_VERSION_MAJOR "${OPENEXR_VERSION_MAJOR}")
++SET(CPACK_PACKAGE_VERSION_MINOR "${OPENEXR_VERSION_MINOR}")
++SET(CPACK_PACKAGE_VERSION_PATCH "${OPENEXR_VERSION_PATCH}")
++SET(CPACK_SOURCE_GENERATOR "TGZ")
++set(CPACK_SOURCE_PACKAGE_FILE_NAME
++    "${CMAKE_PROJECT_NAME}-${OPENEXR_VERSION}"
++  )
++set(CPACK_SOURCE_IGNORE_FILES
++  "/.git*;/.cvs*;${CPACK_SOURCE_IGNORE_FILES}")
++INCLUDE ( CPack )
++
++
++
++# Allow the developer to select if Dynamic or Static libraries are built
++OPTION (BUILD_SHARED_LIBS    "Build Shared Libraries" ON)
++OPTION (USE_ZLIB_WINAPI      "Use ZLib Win API"       OFF)
++OPTION (NAMESPACE_VERSIONING "Use Namespace Versioning" ON)
++
++# Setup osx rpathing
++SET (CMAKE_MACOSX_RPATH 1)
++SET (BUILD_WITH_INSTALL_RPATH 1)
++
++ADD_DEFINITIONS ( -DHAVE_CONFIG_H -DILM_IMF_TEST_IMAGEDIR="${CMAKE_SOURCE_DIR}/IlmImfTest/" )
++
++INCLUDE_DIRECTORIES (
++  ${CMAKE_CURRENT_BINARY_DIR}/config
++  IlmImf
++  IlmImfUtil
++  exrmaketiled
++  exrenvmap
++  exrmakepreview
++  exrmultiview
++  IlmImfFuzzTest
++)
++
++FIND_PACKAGE(ZLIB REQUIRED)
++INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
++
++IF (NOT WIN32)
++  SET ( PTHREAD_LIB pthread )
++ENDIF()
++
++include(GNUInstallDirs)
++
++INCLUDE_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/include/OpenEXR )
++LINK_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/${CMAKE_INSTALL_LIBDIR} )
++MESSAGE ( "ILMBASE_PACKAGE_PREFIX = " ${ILMBASE_PACKAGE_PREFIX})
++
++SET (LIB_TYPE STATIC)
++IF (BUILD_SHARED_LIBS)
++  # User wants to build Dynamic Libraries, so change the LIB_TYPE variable to CMake keyword 'SHARED'
++  SET (LIB_TYPE SHARED)
++    IF (WIN32)
++    ADD_DEFINITIONS(-DOPENEXR_DLL)
++  ENDIF ()
++ENDIF ()
++
++IF (USE_ZLIB_WINAPI)
++  ADD_DEFINITIONS(-DZLIB_WINAPI)
++ENDIF ()
++
++# Test for GCC-style inline asm support with AVX instructions
++INCLUDE (CheckCXXSourceCompiles)
++CHECK_CXX_SOURCE_COMPILES (
++	"
++	int main()
++	{
++	 #if defined(__GNUC__) && defined(__SSE2__) 
++		 int n   = 0;
++		 int eax = 0;
++		 int edx = 0;
++		 __asm__(
++			 \"xgetbv     ;\"
++			 \"vzeroupper  \"
++			 : \"=a\"(eax), \"=d\"(edx) : \"c\"(n) : );
++	 #else
++		 #error No GCC style inline asm supported for AVX instructions
++	 #endif
++	}
++	" HAVE_GCC_INLINE_ASM_AVX)
++
++# Check if sysconf(_SC_NPROCESSORS_ONLN) can be used for CPU count
++CHECK_CXX_SOURCE_COMPILES (
++    "
++    #include <unistd.h>
++    int main()
++    {
++        sysconf(_SC_NPROCESSORS_ONLN);
++    }
++    " HAVE_SYSCONF_NPROCESSORS_ONLN)
++
++
++##########################
++# OpenEXRConfig.h generation
++##########################
++IF (WIN32)
++  FILE ( WRITE ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
++ELSEIF (APPLE)
++  FILE ( WRITE ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_DARWIN 1\n" )
++  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
++  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#include <string.h>\n" )
++ELSE ()
++  # Linux
++  FILE ( WRITE ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_LINUX_PROCFS 1\n" )
++  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
++  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_LARGE_STACK 1\n" )
++ENDIF()
++  
++IF (NAMESPACE_VERSIONING)
++    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE_CUSTOM 1\n")
++    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_NAMESPACE Imf\n" )
++    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf_${OPENEXR_VERSION_API}\n\n" )
++ELSE ()
++    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE_CUSTOM 0\n")
++    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_NAMESPACE Imf\n" )
++    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf\n\n" )
++ENDIF ()
++
++FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_VERSION_STRING \"${OPENEXR_VERSION}\"\n" )
++FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_PACKAGE_STRING \"OpenEXR ${OPENEXR_VERSION}\"\n" )
++
++
++FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "
++#define OPENEXR_VERSION_MAJOR ${OPENEXR_VERSION_MAJOR}
++#define OPENEXR_VERSION_MINOR ${OPENEXR_VERSION_MINOR}
++#define OPENEXR_VERSION_PATCH ${OPENEXR_VERSION_PATCH}
++")
++
++
++  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "
++// Version as a single hex number, e.g. 0x01000300 == 1.0.3
++#define OPENEXR_VERSION_HEX ((OPENEXR_VERSION_MAJOR << 24) | \\
++                             (OPENEXR_VERSION_MINOR << 16) | \\
++                             (OPENEXR_VERSION_PATCH <<  8))\n
++")
++
++IF (HAVE_GCC_INLINE_ASM_AVX)
++  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_GCC_INLINE_ASM_AVX 1\n" )
++ENDIF()
++  
++IF (HAVE_SYSCONF_NPROCESSORS_ONLN)
++  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN 1\n" )
++ENDIF()
++  
++SET (OPENEXR_LIBSUFFIX "")
++SET (ILMBASE_LIBSUFFIX "")
++IF (NAMESPACE_VERSIONING)
++  SET ( OPENEXR_LIBSUFFIX "-${OPENEXR_VERSION_API}" )
++  # assume same NAMESPACE_VERSION setting for IlmBase for now
++  SET ( ILMBASE_LIBSUFFIX "-${OPENEXR_VERSION_API}" )
++ENDIF ()
++
++##########################
++# IlmImf library
++##########################
++ADD_SUBDIRECTORY ( IlmImf )
++
++SET_TARGET_PROPERTIES ( IlmImf
++  PROPERTIES
++  VERSION 22.0.0
++  SOVERSION 22
++  OUTPUT_NAME "IlmImf${OPENEXR_LIBSUFFIX}"
++  )
++  
++##########################
++# IlmImfUtil library
++##########################
++ADD_SUBDIRECTORY ( IlmImfUtil )
++
++SET_TARGET_PROPERTIES ( IlmImfUtil
++  PROPERTIES
++  VERSION 22.0.0
++  SOVERSION 22
++  OUTPUT_NAME "IlmImfUtil${OPENEXR_LIBSUFFIX}"
++  )
++  
++##########################
++# Example Code
++##########################
++ADD_SUBDIRECTORY ( IlmImfExamples )
++
++  
++##########################
++# Tests
++##########################
++ADD_SUBDIRECTORY ( IlmImfTest )
++ADD_SUBDIRECTORY ( IlmImfUtilTest )
++ADD_SUBDIRECTORY ( IlmImfFuzzTest )
++
++
++##########################
++# Binaries / Utilities
++##########################
++ADD_SUBDIRECTORY ( exrheader )
++ADD_SUBDIRECTORY ( exrmaketiled )
++ADD_SUBDIRECTORY ( exrstdattr )
++ADD_SUBDIRECTORY ( exrmakepreview )
++ADD_SUBDIRECTORY ( exrenvmap )
++ADD_SUBDIRECTORY ( exrmultiview )
++ADD_SUBDIRECTORY ( exrmultipart )
++
++
++##########################
++# Installation
++##########################
++
++INSTALL ( FILES
++  ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h
++  DESTINATION
++  ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
++  )
++
++# Documentation
++INSTALL ( FILES
++  doc/TechnicalIntroduction.pdf
++  doc/ReadingAndWritingImageFiles.pdf
++  doc/OpenEXRFileLayout.pdf
++  doc/MultiViewOpenEXR.pdf
++  doc/InterpretingDeepPixels.pdf
++  doc/TheoryDeepPixels.pdf
++  DESTINATION
++  ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}
++  )
++
++# Examples
++INSTALL ( FILES
++  IlmImfExamples/main.cpp
++  IlmImfExamples/drawImage.cpp
++  IlmImfExamples/rgbaInterfaceExamples.cpp
++  IlmImfExamples/rgbaInterfaceTiledExamples.cpp
++  IlmImfExamples/generalInterfaceExamples.cpp
++  IlmImfExamples/lowLevelIoExamples.cpp
++  IlmImfExamples/previewImageExamples.cpp
++  IlmImfExamples/generalInterfaceTiledExamples.cpp
++  IlmImfExamples/generalInterfaceTiledExamples.h
++  IlmImfExamples/drawImage.h
++  IlmImfExamples/rgbaInterfaceExamples.h
++  IlmImfExamples/generalInterfaceExamples.h
++  IlmImfExamples/rgbaInterfaceTiledExamples.h
++  IlmImfExamples/lowLevelIoExamples.h
++  IlmImfExamples/previewImageExamples.h
++  IlmImfExamples/namespaceAlias.h
++  DESTINATION
++  ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}/examples
++  )
+diff -purN a/configure.ac b/configure.ac
+--- a/configure.ac	2014-08-10 05:21:45.000000000 +0100
++++ b/configure.ac	2017-01-09 19:54:21.000000000 +0000
+@@ -188,7 +188,7 @@ AC_COMPILE_IFELSE(
+                  __asm__(
+                      "xgetbv     \n"
+                      "vzeroupper  "
+-                     : "=a"(eax), "=d"(edx) : "c"(n) : );
++                     : "=a"(eax), "=d"(edx) : "c"(n));
+              #else
+                  #error No GCC style inline asm supported for AVX instructions
+              #endif
+diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
+--- a/IlmImf/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/CMakeLists.txt	2017-08-08 17:38:13.000000000 +0100
+@@ -8,8 +8,8 @@ ADD_EXECUTABLE ( b44ExpLogTable
+ 
+ TARGET_LINK_LIBRARIES ( b44ExpLogTable
+   Half
+-  Iex${ILMBASE_LIBSUFFIX}
+   IlmThread${ILMBASE_LIBSUFFIX}
++  Iex${ILMBASE_LIBSUFFIX}
+   ${PTHREAD_LIB}
+ )
+ 
+@@ -25,8 +25,8 @@ ADD_EXECUTABLE ( dwaLookups
+ 
+ TARGET_LINK_LIBRARIES ( dwaLookups
+   Half
+-  Iex${ILMBASE_LIBSUFFIX}
+   IlmThread${ILMBASE_LIBSUFFIX}
++  Iex${ILMBASE_LIBSUFFIX}
+   ${PTHREAD_LIB}
+ )
+ 
+@@ -164,10 +164,12 @@ SET_SOURCE_FILES_PROPERTIES (
+ 
+ # Libraries
+ 
++include(GNUInstallDirs)
++
+ INSTALL ( TARGETS
+   IlmImf
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/lib
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
+ )
+ 
+ # Headers
+@@ -217,6 +219,7 @@ INSTALL ( FILES
+   ImfRationalAttribute.h
+   ImfFramesPerSecond.h
+   ImfStandardAttributes.h
++  ImfStdIO.h
+   ImfEnvmap.h
+   ImfEnvmapAttribute.h
+   ImfInt64.h
+diff -purN a/IlmImf/ImfCRgbaFile.h b/IlmImf/ImfCRgbaFile.h
+--- a/IlmImf/ImfCRgbaFile.h	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfCRgbaFile.h	2017-01-09 19:54:21.000000000 +0000
+@@ -98,7 +98,7 @@ typedef struct ImfRgba ImfRgba;
+ 
+ #define IMF_INCREASING_Y	0
+ #define IMF_DECREASING_Y	1
+-#define IMF_RAMDOM_Y		2
++#define IMF_RANDOM_Y		2
+ 
+ 
+ /*
+diff -purN a/IlmImf/ImfDeepTiledInputPart.cpp b/IlmImf/ImfDeepTiledInputPart.cpp
+--- a/IlmImf/ImfDeepTiledInputPart.cpp	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfDeepTiledInputPart.cpp	2017-01-09 19:54:21.000000000 +0000
+@@ -90,7 +90,7 @@ DeepTiledInputPart::isComplete () const
+ unsigned int
+ DeepTiledInputPart::tileXSize () const
+ {
+-    return file->isComplete();
++    return file->tileXSize();
+ }
+ 
+ 
+diff -purN a/IlmImf/ImfDwaCompressor.cpp b/IlmImf/ImfDwaCompressor.cpp
+--- a/IlmImf/ImfDwaCompressor.cpp	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfDwaCompressor.cpp	2017-01-09 19:54:21.000000000 +0000
+@@ -149,6 +149,7 @@
+ #include "ImathBox.h"
+ #include "ImathVec.h"
+ #include "half.h"
++#include "halfLimits.h"
+ 
+ #include "dwaLookups.h"
+ 
+@@ -867,14 +868,14 @@ DwaCompressor::LossyDctDecoderBase::exec
+                     //
+                     // Zig-Zag indices in normal layout are as follows:
+                     //
+-                    // 0   1   3   6   10  15  21  28
+-                    // 2   4   7   11  16  22  29  36
+-                    // 5   8   12  17  23  30  37  43
+-                    // 9   13  18  24  31  38  44  49
+-                    // 14  19  25  32  39  45  50  54
+-                    // 20  26  33  40  46  51  55  58
+-                    // 27  34  41  47  52  56  59  61
+-                    // 35  42  48  53  57  60  62  63
++                    // 0   1   5   6   14  15  27  28
++                    // 2   4   7   13  16  26  29  42
++                    // 3   8   12  17  25  30  41  43
++                    // 9   11  18  24  31  40  44  53
++                    // 10  19  23  32  39  45  52  54
++                    // 20  22  33  38  46  51  55  60
++                    // 21  34  37  47  50  56  59  61
++                    // 35  36  48  49  57  58  62  63
+                     //
+                     // If lastNonZero is less than the first item on
+                     // each row, we know that the whole row is zero and 
+@@ -888,21 +889,21 @@ DwaCompressor::LossyDctDecoderBase::exec
+                     //
+                     // where:
+                     //
+-                    //    const int rowStartIdx[] = {2, 5, 9, 14, 20, 27, 35};
++                    //    const int rowStartIdx[] = {2, 3, 9, 10, 20, 21, 35};
+                     //    const int rowsEmpty[]   = {7, 6, 5,  4,  3,  2,  1};
+                     //
+ 
+                     if (lastNonZero < 2)
+                         dctInverse8x8_7(_dctData[comp]._buffer);
+-                    else if (lastNonZero < 5)
++                    else if (lastNonZero < 3)
+                         dctInverse8x8_6(_dctData[comp]._buffer);
+                     else if (lastNonZero < 9)
+                         dctInverse8x8_5(_dctData[comp]._buffer);
+-                    else if (lastNonZero < 14)
++                    else if (lastNonZero < 10)
+                         dctInverse8x8_4(_dctData[comp]._buffer);
+                     else if (lastNonZero < 20)
+                         dctInverse8x8_3(_dctData[comp]._buffer);
+-                    else if (lastNonZero < 27)
++                    else if (lastNonZero < 21)
+                         dctInverse8x8_2(_dctData[comp]._buffer);
+                     else if (lastNonZero < 35)
+                         dctInverse8x8_1(_dctData[comp]._buffer);
+@@ -947,7 +948,7 @@ DwaCompressor::LossyDctDecoderBase::exec
+                 }
+                 else
+                 {
+-                    #if IMF_HAVE_SSE2
++                    #ifdef IMF_HAVE_SSE2
+ 
+                         __m128i *dst = (__m128i*)&rowBlock[comp][blockx*64];
+ 
+@@ -1408,6 +1409,15 @@ DwaCompressor::LossyDctEncoderBase::exec
+             {
+ 
+                 Xdr::read<CharPtrIO> (srcXdr, src);
++
++                //
++                // Clamp to half ranges, instead of just casting. This
++                // avoids introducing Infs which end up getting zeroed later
++                //
++                src = std::max (
++                    std::min ((float) std::numeric_limits<half>::max(), src),
++                              (float)-std::numeric_limits<half>::max());
++
+                 Xdr::write<CharPtrIO> (dstXdr, ((half)src).bits());
+ 
+                 //
+@@ -1922,7 +1932,7 @@ DwaCompressor::compress
+     if (outBufferSize > _outBufferSize) 
+     {
+         _outBufferSize = outBufferSize;
+-        if (_outBuffer == 0)
++        if (_outBuffer != 0)
+             delete[] _outBuffer;       
+         _outBuffer = new char[outBufferSize];
+     }
+@@ -2163,7 +2173,7 @@ DwaCompressor::compress
+     if (*unknownUncompressedSize > 0)
+     {
+         uLongf inSize  = (uLongf)(*unknownUncompressedSize);
+-        uLongf outSize = (uLongf)(ceil ((float)inSize * 1.01f) + 100);
++        uLongf outSize = compressBound (inSize);
+ 
+         if (Z_OK != ::compress2 ((Bytef *)outDataPtr,
+                                  &outSize,
+@@ -2201,8 +2211,8 @@ DwaCompressor::compress
+           case DEFLATE:
+ 
+             {
+-                uLongf destLen = (uLongf)
+-                    (2 * (*totalAcUncompressedCount) * sizeof (unsigned short));
++                uLongf destLen = compressBound (
++                    (*totalAcUncompressedCount) * sizeof (unsigned short));
+ 
+                 if (Z_OK != ::compress2
+                                 ((Bytef *)outDataPtr,
+@@ -2254,8 +2264,7 @@ DwaCompressor::compress
+              _planarUncBuffer[RLE],
+              (signed char *)_rleBuffer);
+ 
+-        uLongf dstLen =
+-            (uLongf)ceil (1.01f * (float) * rleUncompressedSize) + 24;
++        uLongf dstLen = compressBound ((uLongf)*rleUncompressedSize);
+ 
+         if (Z_OK != ::compress2
+                         ((Bytef *)outDataPtr, 
+@@ -2493,16 +2502,14 @@ DwaCompressor::uncompress
+ 
+     if (unknownCompressedSize > 0)
+     {
+-        uLongf outSize = static_cast<uLongf>(
+-                ceil( (float)unknownUncompressedSize * 1.01) + 100);
+-
+-        if (unknownUncompressedSize < 0 || 
+-            outSize > _planarUncBufferSize[UNKNOWN]) 
++        if (unknownUncompressedSize > _planarUncBufferSize[UNKNOWN]) 
+         {
+             throw Iex::InputExc("Error uncompressing DWA data"
+                                 "(corrupt header).");
+         }
+ 
++        uLongf outSize = (uLongf)unknownUncompressedSize;
++
+         if (Z_OK != ::uncompress
+                         ((Bytef *)_planarUncBuffer[UNKNOWN],
+                          &outSize,
+@@ -2925,10 +2932,13 @@ DwaCompressor::initializeBuffers (size_t
+             //
+             // This is the size of the number of packed
+             // components, plus the requirements for
+-            // maximum Huffman encoding size.
++            // maximum Huffman encoding size (for STATIC_HUFFMAN)
++            // or for zlib compression (for DEFLATE)
+             //
+ 
+-            maxOutBufferSize += 2 * maxLossyDctAcSize + 65536;
++            maxOutBufferSize += std::max(
++                            (int)(2 * maxLossyDctAcSize + 65536),
++                            (int)compressBound (maxLossyDctAcSize) );
+             numLossyDctChans++;
+             break;
+ 
+@@ -2967,13 +2977,13 @@ DwaCompressor::initializeBuffers (size_t
+     // which could take slightly more space
+     //
+ 
+-    maxOutBufferSize += (int)(ceil (1.01f * (float)rleBufferSize) + 100);
++    maxOutBufferSize += (int)compressBound ((uLongf)rleBufferSize);
+     
+     //
+     // And the same goes for the UNKNOWN data
+     //
+ 
+-    maxOutBufferSize += (int)(ceil (1.01f * (float)unknownBufferSize) + 100);
++    maxOutBufferSize += (int)compressBound ((uLongf)unknownBufferSize);
+ 
+     //
+     // Allocate a zip/deflate compressor big enought to hold the DC data
+@@ -3095,8 +3105,8 @@ DwaCompressor::initializeBuffers (size_t
+ 
+     if (planarUncBufferSize[UNKNOWN] > 0)
+     {
+-        planarUncBufferSize[UNKNOWN] =
+-            (int) ceil (1.01f * (float)planarUncBufferSize[UNKNOWN]) + 100;
++        planarUncBufferSize[UNKNOWN] = 
++            compressBound ((uLongf)planarUncBufferSize[UNKNOWN]);
+     }
+ 
+     for (int i = 0; i < NUM_COMPRESSOR_SCHEMES; ++i)
+diff -purN a/IlmImf/ImfDwaCompressorSimd.h b/IlmImf/ImfDwaCompressorSimd.h
+--- a/IlmImf/ImfDwaCompressorSimd.h	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfDwaCompressorSimd.h	2017-01-09 19:54:21.000000000 +0000
+@@ -51,6 +51,8 @@
+ #include <half.h>
+ #include <assert.h>
+ 
++#include <algorithm>
++
+ OPENEXR_IMF_INTERNAL_NAMESPACE_HEADER_ENTER
+ 
+ #define _SSE_ALIGNMENT        32
+@@ -334,34 +336,37 @@ interleaveByte2 (char *dst, char *src0,
+         // use aligned loads
+         //
+     
+-        for (int x = 0; x < 8; ++x)
++        for (int x = 0; x < std::min (numBytes, 8); ++x)
+         {
+             dst[2 * x]     = src0[x];
+             dst[2 * x + 1] = src1[x];
+         }
+ 
+-        dst_epi8  = (__m128i*)&dst[16];
+-        src0_epi8 = (__m128i*)&src0[8];
+-        src1_epi8 = (__m128i*)&src1[8];
+-        sseWidth  =  (numBytes - 8) / 16;
+-
+-        for (int x=0; x<sseWidth; ++x)
++        if (numBytes > 8) 
+         {
+-            _mm_stream_si128 (&dst_epi8[2 * x],
+-                              _mm_unpacklo_epi8 (src0_epi8[x], src1_epi8[x]));
++            dst_epi8  = (__m128i*)&dst[16];
++            src0_epi8 = (__m128i*)&src0[8];
++            src1_epi8 = (__m128i*)&src1[8];
++            sseWidth  =  (numBytes - 8) / 16;
+ 
+-            _mm_stream_si128 (&dst_epi8[2 * x + 1],
+-                              _mm_unpackhi_epi8 (src0_epi8[x], src1_epi8[x]));
+-        }
++            for (int x=0; x<sseWidth; ++x)
++            {
++                _mm_stream_si128 (&dst_epi8[2 * x],
++                                  _mm_unpacklo_epi8 (src0_epi8[x], src1_epi8[x]));
+ 
+-        //
+-        // Then do run the leftovers one at a time
+-        //
++                _mm_stream_si128 (&dst_epi8[2 * x + 1],
++                                  _mm_unpackhi_epi8 (src0_epi8[x], src1_epi8[x]));
++            }
+ 
+-        for (int x = 16 * sseWidth + 8; x < numBytes; ++x)
+-        {
+-            dst[2 * x]     = src0[x];
+-            dst[2 * x + 1] = src1[x];
++            //
++            // Then do run the leftovers one at a time
++            //
++
++            for (int x = 16 * sseWidth + 8; x < numBytes; ++x)
++            {
++                dst[2 * x]     = src0[x];
++                dst[2 * x + 1] = src1[x];
++            }
+         }
+     }
+     else
+diff -purN a/IlmImf/ImfFastHuf.cpp b/IlmImf/ImfFastHuf.cpp
+--- a/IlmImf/ImfFastHuf.cpp	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfFastHuf.cpp	2017-01-09 19:54:21.000000000 +0000
+@@ -107,7 +107,7 @@ FastHufDecoder::FastHufDecoder
+     for (int i = 0; i <= MAX_CODE_LEN; ++i)
+     {
+         codeCount[i] = 0;
+-        base[i]      = 0xffffffffffffffffL;
++        base[i]      = 0xffffffffffffffffULL;
+         offset[i]    = 0;
+     }
+ 
+@@ -352,7 +352,7 @@ FastHufDecoder::buildTables (Int64 *base
+ 
+     for (int i = 0; i <= MAX_CODE_LEN; ++i)
+     {
+-        if (base[i] != 0xffffffffffffffffL)
++        if (base[i] != 0xffffffffffffffffULL)
+         {
+             _ljBase[i] = base[i] << (64 - i);
+         }
+@@ -362,7 +362,7 @@ FastHufDecoder::buildTables (Int64 *base
+             // Unused code length - insert dummy values
+             //
+ 
+-            _ljBase[i] = 0xffffffffffffffffL;
++            _ljBase[i] = 0xffffffffffffffffULL;
+         }
+     }
+ 
+@@ -417,7 +417,7 @@ FastHufDecoder::buildTables (Int64 *base
+ 
+     int minIdx = TABLE_LOOKUP_BITS;
+ 
+-    while (minIdx > 0 && _ljBase[minIdx] == 0xffffffffffffffffL)
++    while (minIdx > 0 && _ljBase[minIdx] == 0xffffffffffffffffULL)
+         minIdx--;
+ 
+     if (minIdx < 0)
+@@ -427,7 +427,7 @@ FastHufDecoder::buildTables (Int64 *base
+         // Set the min value such that the table is never tested.
+         //
+ 
+-        _tableMin = 0xffffffffffffffffL;
++        _tableMin = 0xffffffffffffffffULL;
+     }
+     else
+     {
+diff -purN a/IlmImf/ImfInputFile.cpp b/IlmImf/ImfInputFile.cpp
+--- a/IlmImf/ImfInputFile.cpp	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfInputFile.cpp	2017-01-09 19:54:21.000000000 +0000
+@@ -854,6 +854,39 @@ InputFile::rawPixelData (int firstScanLi
+ }
+ 
+ 
++
++
++void
++InputFile::rawPixelDataToBuffer (int scanLine,
++                                 char *pixelData,
++                                 int &pixelDataSize) const
++{
++    try
++    {
++        if (_data->dsFile)
++        {
++            throw IEX_NAMESPACE::ArgExc ("Tried to read a raw scanline "
++                                         "from a deep image.");
++        }
++        
++        else if (_data->isTiled)
++        {
++            throw IEX_NAMESPACE::ArgExc ("Tried to read a raw scanline "
++                                         "from a tiled image.");
++        }
++        
++        _data->sFile->rawPixelDataToBuffer(scanLine, pixelData, pixelDataSize);
++    }
++    catch (IEX_NAMESPACE::BaseExc &e)
++    {
++        REPLACE_EXC (e, "Error reading pixel data from image "
++                     "file \"" << fileName() << "\". " << e);
++        throw;
++    }
++}
++
++
++
+ void
+ InputFile::rawTileData (int &dx, int &dy,
+ 			int &lx, int &ly,
+diff -purN a/IlmImf/ImfInputFile.h b/IlmImf/ImfInputFile.h
+--- a/IlmImf/ImfInputFile.h	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfInputFile.h	2017-01-09 19:54:21.000000000 +0000
+@@ -201,7 +201,30 @@ class IMF_EXPORT InputFile : public Gene
+     void		rawPixelData (int firstScanLine,
+ 				      const char *&pixelData,
+ 				      int &pixelDataSize);
+-                                     
++
++
++    //----------------------------------------------
++    // Read a scanline's worth of raw pixel data 
++    // from the file, without uncompressing it, and 
++    // store in an external buffer, pixelData. 
++    // pixelData should be pre-allocated with space 
++    // for pixelDataSize chars. 
++    //
++    // This function can be used to separate the 
++    // reading of a raw scan line from the 
++    // decompression of that scan line, for
++    // example to allow multiple scan lines to be
++    // decompressed in parallel by an application's
++    // own threads, where it is not convenient to 
++    // use the threading within the library.
++    //----------------------------------------------
++
++    void		rawPixelDataToBuffer (int scanLine,
++					      char *pixelData,
++					      int &pixelDataSize) const;   
++    
++ 
++
+     //--------------------------------------------------
+     // Read a tile of raw pixel data from the file,
+     // without uncompressing it (this function is
+diff -purN a/IlmImf/ImfInputPart.cpp b/IlmImf/ImfInputPart.cpp
+--- a/IlmImf/ImfInputPart.cpp	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfInputPart.cpp	2017-01-09 19:54:21.000000000 +0000
+@@ -104,6 +104,14 @@ InputPart::rawPixelData (int firstScanLi
+     file->rawPixelData(firstScanLine, pixelData, pixelDataSize);
+ }
+ 
++
++void
++InputPart::rawPixelDataToBuffer (int scanLine, char *pixelData, int &pixelDataSize) const
++{
++    file->rawPixelDataToBuffer(scanLine, pixelData, pixelDataSize);
++}
++
++
+ void
+ InputPart::rawTileData (int &dx, int &dy, int &lx, int &ly,
+              const char *&pixelData, int &pixelDataSize)
+diff -purN a/IlmImf/ImfInputPart.h b/IlmImf/ImfInputPart.h
+--- a/IlmImf/ImfInputPart.h	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfInputPart.h	2017-01-09 19:54:21.000000000 +0000
+@@ -66,7 +66,14 @@ class IMF_EXPORT InputPart
+         void                rawPixelData (int firstScanLine,
+                                           const char *&pixelData,
+                                           int &pixelDataSize);
+-        void                rawTileData (int &dx, int &dy,
++
++ 
++        void                rawPixelDataToBuffer (int scanLine,
++                                                  char *pixelData,
++                                                  int &pixelDataSize) const;
++
++
++       void                 rawTileData (int &dx, int &dy,
+                                          int &lx, int &ly,
+                                          const char *&pixelData,
+                                          int &pixelDataSize);
+diff -purN a/IlmImf/ImfOptimizedPixelReading.h b/IlmImf/ImfOptimizedPixelReading.h
+--- a/IlmImf/ImfOptimizedPixelReading.h	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfOptimizedPixelReading.h	2017-01-09 19:54:21.000000000 +0000
+@@ -60,7 +60,7 @@ public:
+ };
+ 
+ 
+-#if IMF_HAVE_SSE2
++#ifdef IMF_HAVE_SSE2
+ 
+ 
+ //------------------------------------------------------------------------
+diff -purN a/IlmImf/ImfScanLineInputFile.cpp b/IlmImf/ImfScanLineInputFile.cpp
+--- a/IlmImf/ImfScanLineInputFile.cpp	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfScanLineInputFile.cpp	2017-01-09 19:54:21.000000000 +0000
+@@ -1264,7 +1264,7 @@ detectOptimizationMode (const vector<sli
+     OptimizationMode w;
+     
+     // need to be compiled with SSE optimisations: if not, just returns false
+-#if IMF_HAVE_SSE2
++#ifdef IMF_HAVE_SSE2
+     
+     
+     // only handle reading 3,4,6 or 8 channels
+@@ -1699,4 +1699,38 @@ ScanLineInputFile::rawPixelData (int fir
+     }
+ }
+ 
++
++void ScanLineInputFile::rawPixelDataToBuffer(int scanLine,
++                                             char *pixelData,
++                                             int &pixelDataSize) const
++{
++  if (_data->memoryMapped) {
++    throw IEX_NAMESPACE::ArgExc ("Reading raw pixel data to a buffer "
++                                 "is not supported for memory mapped "
++                                 "streams." );
++  }
++
++  try 
++  {
++    Lock lock (*_streamData);
++    
++    if (scanLine < _data->minY || scanLine > _data->maxY) 
++    {
++      throw IEX_NAMESPACE::ArgExc ("Tried to read scan line outside "
++                                   "the image file's data window.");
++    }
++    
++    readPixelData
++      (_streamData, _data, scanLine, pixelData, pixelDataSize);
++    
++  }
++  catch (IEX_NAMESPACE::BaseExc &e) 
++  {
++    REPLACE_EXC (e, "Error reading pixel data from image "
++                   "file \"" << fileName() << "\". " << e);
++    throw;
++  }
++}
++
++
+ OPENEXR_IMF_INTERNAL_NAMESPACE_SOURCE_EXIT
+diff -purN a/IlmImf/ImfScanLineInputFile.h b/IlmImf/ImfScanLineInputFile.h
+--- a/IlmImf/ImfScanLineInputFile.h	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfScanLineInputFile.h	2017-01-09 19:54:21.000000000 +0000
+@@ -184,6 +184,28 @@ class IMF_EXPORT ScanLineInputFile : pub
+ 				      const char *&pixelData,
+ 				      int &pixelDataSize);
+ 
++   
++    //----------------------------------------------
++    // Read a scanline's worth of raw pixel data 
++    // from the file, without uncompressing it, and 
++    // store in an external buffer, pixelData. 
++    // pixelData should be pre-allocated with space 
++    // for pixelDataSize chars. 
++    //
++    // This function can be used to separate the 
++    // reading of a raw scan line from the 
++    // decompression of that scan line, for
++    // example to allow multiple scan lines to be
++    // decompressed in parallel by an application's
++    // own threads, where it is not convenient to 
++    // use the threading within the library.
++    //----------------------------------------------
++
++    void                rawPixelDataToBuffer(int scanLine,
++					     char *pixelData,
++					     int &pixelDataSize) const;
++    
++  
+     struct Data;
+ 
+   private:
+diff -purN a/IlmImf/ImfSimd.h b/IlmImf/ImfSimd.h
+--- a/IlmImf/ImfSimd.h	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfSimd.h	2017-01-09 19:54:21.000000000 +0000
+@@ -50,7 +50,7 @@
+ 
+ extern "C"
+ {
+-#if IMF_HAVE_SSE2
++#ifdef IMF_HAVE_SSE2
+     #include <emmintrin.h>
+     #include <mmintrin.h>
+ #endif
+diff -purN a/IlmImf/ImfVersion.h b/IlmImf/ImfVersion.h
+--- a/IlmImf/ImfVersion.h	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfVersion.h	2017-01-09 19:54:21.000000000 +0000
+@@ -109,8 +109,8 @@ const int ALL_FLAGS		= TILED_FLAG | LONG
+ //
+ 
+ inline bool  isTiled (int version)	{return !!(version & TILED_FLAG);}
+-inline bool  isMultiPart (int version)  {return version & MULTI_PART_FILE_FLAG; }
+-inline bool  isNonImage(int version)    {return version & NON_IMAGE_FLAG; }
++inline bool  isMultiPart (int version)  {return !!(version & MULTI_PART_FILE_FLAG); }
++inline bool  isNonImage(int version)    {return !!(version & NON_IMAGE_FLAG); }
+ inline int   makeTiled (int version)	{return version | TILED_FLAG;}
+ inline int   makeNotTiled (int version) {return version & ~TILED_FLAG;}
+ inline int   getVersion (int version)	{return version & VERSION_NUMBER_FIELD;}
+diff -purN a/IlmImf/Makefile.am b/IlmImf/Makefile.am
+--- a/IlmImf/Makefile.am	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/Makefile.am	2017-01-09 19:54:21.000000000 +0000
+@@ -127,6 +127,7 @@ libIlmImfinclude_HEADERS = ImfForward.h
+ 			   ImfRational.h ImfRationalAttribute.h \
+ 			   ImfFramesPerSecond.h \
+ 			   ImfStandardAttributes.h \
++			   ImfStdIO.h \
+ 			   ImfEnvmap.h \
+ 			   ImfEnvmapAttribute.h \
+ 			   ImfInt64.h ImfRgba.h \
+diff -purN a/IlmImfTest/Makefile.am b/IlmImfTest/Makefile.am
+--- a/IlmImfTest/Makefile.am	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImfTest/Makefile.am	2017-01-09 19:54:21.000000000 +0000
+@@ -74,6 +74,8 @@ EXTRA_DIST = comp_none.exr comp_piz.exr
+ 	     comp_zips.exr lineOrder_decreasing.exr lineOrder_increasing.exr \
+ 	     test_native1.exr test_native2.exr invalid.exr \
+ 	     tiled.exr comp_b44.exr comp_b44_piz.exr \
++	     comp_dwaa_piz.exr comp_dwaa_v1.exr comp_dwaa_v2.exr \
++	     comp_dwab_piz.exr comp_dwab_v1.exr comp_dwab_v2.exr \
+              v1.7.test.planar.exr  v1.7.test.tiled.exr v1.7.test.1.exr v1.7.test.interleaved.exr \
+              invalid_shared_attrs_multipart.exr \
+ 	     tiled_with_scanlineimage_type.exr scanline_with_tiledimage_type.exr \
+diff -purN a/IlmImfTest/testDwaCompressorSimd.cpp b/IlmImfTest/testDwaCompressorSimd.cpp
+--- a/IlmImfTest/testDwaCompressorSimd.cpp	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImfTest/testDwaCompressorSimd.cpp	2017-01-09 19:54:21.000000000 +0000
+@@ -171,8 +171,9 @@ testCsc()
+ void
+ testInterleave()
+ {
+-    const int bufferLen = 100000;
+-    const int numIter   = 10000;
++    const int bufferLen     = 100000;
++    const int randomNumIter = 10000;
++    const int lengthNumIter = 128;
+     Rand48    rand48(0);
+     char     *srcA    = new char[bufferLen];
+     char     *srcB    = new char[bufferLen];
+@@ -189,7 +190,7 @@ testInterleave()
+         dst[2*i+1] = srcB[i];
+     }
+ 
+-    for (int iter=0; iter<numIter; ++iter)
++    for (int iter=0; iter<randomNumIter; ++iter)
+     {
+         memset(test, 0, 2*bufferLen);
+ 
+@@ -203,6 +204,46 @@ testInterleave()
+         }
+     }
+ 
++    //
++    // Test increasing length buffers, with varying alignment
++    // on all the buffers.
++    //
++    for (int len=1; len<lengthNumIter; ++len) 
++    {
++        for (int offset=0; offset<16*16*16; ++offset) 
++        {
++            int offsetA    =  offset        % 16;
++            int offsetB    = (offset /  16) % 16;
++            int offsetTest = (offset / 256) % 16;
++
++            memset(srcA, 255, bufferLen);
++            memset(srcB, 255, bufferLen);
++            memset(dst,  0,   2*bufferLen);
++            memset(test, 0,   2*bufferLen);
++
++            char *a   = srcA + offsetA;
++            char *b   = srcB + offsetB;
++            char *out = test + offsetTest;
++            
++            for (int i=0; i<len; ++i) 
++            {
++                a[i] = (char)rand48.nextf(0.0, 255.0);
++                b[i] = (char)rand48.nextf(0.0, 255.0);
++
++                dst[2*i]   = a[i];
++                dst[2*i+1] = b[i];
++            }
++
++            interleaveByte2(out, a, b, len);
++            
++            for (int i=0; i<2*len+8; ++i) 
++            {
++                assert( dst[2*i]   == out[2*i] );
++                assert( dst[2*i+1] == out[2*i+1] );
++            }
++        }
++    }
++
+     delete[] srcA;
+     delete[] srcB;
+     delete[] dst;
+diff -purN a/IlmImfUtil/CMakeLists.txt b/IlmImfUtil/CMakeLists.txt
+--- a/IlmImfUtil/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImfUtil/CMakeLists.txt	2017-08-08 17:39:35.000000000 +0100
+@@ -35,13 +35,14 @@ TARGET_LINK_LIBRARIES ( IlmImfUtil
+   ${PTHREAD_LIB} ${ZLIB_LIBRARIES}
+ )
+ 
++include(GNUInstallDirs)
+ 
+ # Libraries
+ 
+ INSTALL ( TARGETS
+   IlmImfUtil
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/lib
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
+ )
+ 
+ # Headers
+diff -purN a/Makefile.am b/Makefile.am
+--- a/Makefile.am	2014-08-10 05:21:45.000000000 +0100
++++ b/Makefile.am	2017-01-09 19:54:21.000000000 +0000
+@@ -13,7 +13,7 @@ DIST_SUBDIRS = \
+ 
+ EXTRA_DIST = \
+ 	AUTHORS COPYING ChangeLog INSTALL LICENSE NEWS PATENTS \
+-        README README.CVS README.OSX README.win32 \
++        README README.CVS README.OSX \
+ 	README.git README.namespacing README.cmake.txt \
+ 	bootstrap openexr.m4 \
+ 	config.windows/OpenEXRConfig.h \

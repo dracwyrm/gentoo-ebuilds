@@ -16,7 +16,7 @@
 +Name: OpenEXR
 +Description: OpenEXR library
 +Version: ${OPENEXR_VERSION}
-+Libs: -L\${libdir} -lIlmImfUtil${OPENEXR_LIBSUFFIX} -lIlmImf${OPENEXR_LIBSUFFIX} -lImath${ILMBASE_LIBSUFFIX} -lIexMath${ILMBASE_LIBSUFFIX} -lHalf -lIex${ILMBASE_LIBSUFFIX} -lIlmThread${ILMBASE_LIBSUFFIX} -pthread
++Libs: -L\${libdir} -lIlmImfUtil${OPENEXR_LIBSUFFIX} -lIlmImf${OPENEXR_LIBSUFFIX} -pthread
 +Cflags: -pthread -I\${OpenEXR_includedir}
 +")
 +

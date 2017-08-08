@@ -15,26 +15,26 @@ SRC_URI="https://github.com/openexr/openexr/archive/v${PV}.tar.gz -> openexr-${P
 LICENSE="BSD"
 SLOT="0/22" # based on SONAME
 KEYWORDS="~amd64 -arm ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~x86-solaris"
-IUSE="examples namespace-versioning"
+IUSE="examples"
 
 # Only need hard blocker for 2.2.0 series. Can remove on version bump.
 RDEPEND="sys-libs/zlib[${MULTILIB_USEDEP}]
-	 ~media-libs/ilmbase-${PV}:=[${MULTILIB_USEDEP},namespace-versioning=]
+	 ~media-libs/ilmbase-${PV}:=[${MULTILIB_USEDEP}]
 	 !!=media-libs/ilmbase-2.2.0"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	>=sys-devel/autoconf-archive-2016.09.16"
 
+S="${WORKDIR}/openexr-${PV}/OpenEXR"
+
 PATCHES=(
+	"${FILESDIR}/${P}-post-release-fixes.patch"
 	"${FILESDIR}/${P}-fix-cpuid-on-abi_x86_32.patch"
-	"${FILESDIR}/${P}-use-ull-for-64-bit-literals.patch"
-	"${FILESDIR}/${P}-fix-build-system.patch"
 	"${FILESDIR}/${P}-fix-config.h-collision.patch"
-	"${FILESDIR}/${P}-fix-linker-error.patch"
-	"${FILESDIR}/${P}-add-pkgconfig-file.patch"
 )
 
-S="${WORKDIR}/openexr-${PV}/OpenEXR"
+mycmakeargs=( -DNAMESPACE_VERSIONING=ON
+			-DILMBASE_PACKAGE_PREFIX="/usr" )
 
 src_prepare() {
 	cmake-utils_src_prepare
@@ -44,15 +44,6 @@ src_prepare() {
 
 	sed -e 's|doc/OpenEXR-${OPENEXR_VERSION}|doc/'${PF}'|' \
 	    -i CMakeLists.txt || die
-}
-
-multilib_src_configure() {
-	local mycmakeargs=(
-		-DNAMESPACE_VERSIONING=$(usex namespace-versioning)
-		-DILMBASE_PACKAGE_PREFIX="/usr"
-	)
-
-	cmake-utils_src_configure
 }
 
 multilib_src_install_all() {
