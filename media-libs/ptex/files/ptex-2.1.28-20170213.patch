@@ -1,0 +1,173 @@
+diff -purN a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2016-04-04 18:14:05.000000000 +0100
++++ b/CMakeLists.txt	2017-02-13 22:59:10.000000000 +0000
+@@ -16,7 +16,7 @@ else ()
+ endif ()
+ 
+ if (NOT WIN32)
+-    set(CMAKE_CXX_FLAGS "-std=c++98 -Wall -Wextra -pedantic")
++    set(CMAKE_CXX_FLAGS "-std=c++98 -Wall -Wextra -pedantic ${CMAKE_CXX_FLAGS}")
+ endif ()
+ 
+ if(MSVC)
+diff -purN a/Makefile b/Makefile
+--- a/Makefile	2016-04-04 18:14:05.000000000 +0100
++++ b/Makefile	2017-02-13 22:59:10.000000000 +0000
+@@ -17,6 +17,10 @@ ifdef PRMAN_15_COMPATIBLE_PTEX
+     CMAKE_FLAGS += -DPRMAN_15_COMPATIBLE_PTEX:BOOL=TRUE
+ endif
+ 
++ifdef TOOLCHAIN
++    CMAKE_FLAGS += -DCMAKE_TOOLCHAIN_FILE=$(TOOLCHAIN)
++endif
++
+ # make V=1 shortcut for VERBOSE=1
+ ifdef V
+     VERBOSE=1
+diff -purN a/Ptex.spec.in b/Ptex.spec.in
+--- a/Ptex.spec.in	1970-01-01 01:00:00.000000000 +0100
++++ b/Ptex.spec.in	2017-02-13 22:59:10.000000000 +0000
+@@ -0,0 +1,97 @@
++Name:           Ptex
++Version:        @@VERSION@@
++Release:        @@RELEASE@@%{?dist}
++Summary:        Per-Face Texture Mapping for Production Rendering
++
++Group:          System Environment/Libraries
++License:        Apache License v2.0
++URL:            https://github.com/wdas/ptex
++Source0:        %{name}-%{version}.tar.gz
++
++Requires:       zlib
++BuildRequires:  gcc
++BuildRequires:  gcc-c++
++BuildRequires:  make
++BuildRequires:  cmake
++BuildRequires:  zlib-devel
++BuildRequires:  zlib-static
++
++prefix:         %{_prefix}
++BuildRoot:      %{_topdir}/BUILDROOT/%{name}-%{version}
++
++%description
++Ptex is a texture mapping system developed by
++Walt Disney Animation Studios for production-quality rendering.
++
++%package all
++Summary:        Meta-package for all Ptex components
++Group:          System Environment/Libraries
++Requires:       Ptex = %{version}
++Requires:       Ptex-docs = %{version}
++Requires:       Ptex-devel = %{version}
++
++%description all
++Meta-package for Ptex
++
++%package docs
++Summary:        Ptex documentation
++Requires:       Ptex = %{version}
++
++%description docs
++Documentation for Ptex
++
++%package devel
++Summary:        Ptex headers and libraries
++Requires:       Ptex = %{version}
++
++%description devel
++Development headers and static libraries for Ptex
++
++%prep
++%setup -q
++
++%build
++
++%install
++%{__make} prefix=%{_prefix}
++%{__make} prefix=%{_prefix} DESTDIR=%{buildroot} install
++
++# Create a pkgconfig file
++%{__mkdir_p} %{buildroot}%{_datadir}/pkgconfig
++cat >%{buildroot}%{_datadir}/pkgconfig/Ptex.pc << \-EOF
++# pkg-config configuration for Ptex
++prefix=%{_prefix}
++libdir=${prefix}/%{_lib}
++includedir=${prefix}/include
++
++Name: Ptex
++Description: Per-Face Texture Mapping for Production Rendering
++Version: %{version}
++Cflags: -I${includedir}
++Libs: -L${libdir} -l:libPtex.a -lz
++-EOF
++
++%clean
++rm -rf %{buildroot}
++
++%post
++
++%postun
++
++%files
++%defattr(-,root,root,-)
++%{_bindir}/*
++
++%files docs
++%defattr(-,root,root,-)
++%{_defaultdocdir}/ptex
++
++%files devel
++%defattr(-,root,root,-)
++%{_includedir}/*.h
++%{_libdir}/libPtex.a
++%{_libdir}/libPtex.so
++%{_datadir}/pkgconfig/Ptex.pc
++
++%files all
++# This is a virtual package and contains no files
+diff -purN a/src/ptex/PtexHashMap.h b/src/ptex/PtexHashMap.h
+--- a/src/ptex/PtexHashMap.h	2016-04-04 18:14:05.000000000 +0100
++++ b/src/ptex/PtexHashMap.h	2017-02-13 22:59:10.000000000 +0000
+@@ -284,14 +284,11 @@ private:
+ 
+     Entry* lockEntriesAndGrowIfNeeded(size_t& newMemUsed)
+     {
+-        while (_size*2 >= _numEntries) {
+-            Entry* entries = lockEntries();
+-            if (_size*2 >= _numEntries) {
+-                entries = grow(entries, newMemUsed);
+-            }
+-            return entries;
++        Entry* entries = lockEntries();
++        if (_size*2 >= _numEntries) {
++            entries = grow(entries, newMemUsed);
+         }
+-        return lockEntries();
++        return entries;
+     }
+ 
+     Entry* grow(Entry* oldEntries, size_t& newMemUsed)
+diff -purN a/src/ptex/PtexIO.h b/src/ptex/PtexIO.h
+--- a/src/ptex/PtexIO.h	2016-04-04 18:14:05.000000000 +0100
++++ b/src/ptex/PtexIO.h	2017-02-13 22:59:10.000000000 +0000
+@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ 
+ PTEX_NAMESPACE_BEGIN
+ 
++#pragma pack(push, 1)
+ struct Header {
+     uint32_t magic;
+     uint32_t version;
+@@ -98,6 +99,7 @@ struct EditMetaDataHeader {
+     uint32_t metadatazipsize;
+     uint32_t metadatamemsize;
+ };
++#pragma pack(pop)
+ 
+ const uint32_t Magic = 'P' | ('t'<<8) | ('e'<<16) | ('x'<<24);
+ const int HeaderSize = sizeof(Header);
+diff -purN a/.workonrc.products b/.workonrc.products
+--- a/.workonrc.products	1970-01-01 01:00:00.000000000 +0100
++++ b/.workonrc.products	2017-02-13 22:59:10.000000000 +0000
+@@ -0,0 +1 @@
++Ptex
