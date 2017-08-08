@@ -22,5 +22,7 @@ RDEPEND=">=dev-libs/boost-1.62:=
 
 DEPEND="${RDEPEND}"
 
+PATCHES=( "${FILESDIR}/Field3D-1.7.2-openexr-fixes.patch" )
+
 # Docs are not finished yet.
 mycmakeargs=( -DINSTALL_DOCS=OFF )
