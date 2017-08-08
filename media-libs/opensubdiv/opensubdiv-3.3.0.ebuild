@@ -31,6 +31,8 @@ KEYWORDS="~amd64 ~x86"
 
 S="${WORKDIR}"/OpenSubdiv-${MY_PV}
 
+PATCHES=( ${FILESDIR}/${P}-fix-quotes.patch )
+
 pkg_pretend() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
 }
