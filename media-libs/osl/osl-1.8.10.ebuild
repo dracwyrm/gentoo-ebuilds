@@ -8,7 +8,10 @@ inherit cmake-utils
 DESCRIPTION="Advanced shading language for production GI renderers"
 HOMEPAGE="http://opensource.imageworks.com/?p=osl"
 
-SRC_URI="https://github.com/imageworks/OpenShadingLanguage/archive/Release-${PV//_}.tar.gz -> ${P}.tar.gz"
+MY_PV=${PV//_} # Remove underscore if any.
+[[ "${PV}" = *_rc* ]] && MY_PV=${MY_PV^^} # They use capitals for RC.
+
+SRC_URI="https://github.com/imageworks/OpenShadingLanguage/archive/Release-${MY_PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
@@ -18,7 +21,7 @@ X86_CPU_FEATURES=( sse2:sse2 sse3:sse3 sse4_1:sse4.1 sse4_2:sse4.2 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
 IUSE="doc partio test ${CPU_FEATURES[@]%:*}"
 
-RDEPEND=">=media-libs/openexr-2.2.0-r2
+RDEPEND=">=media-libs/openexr-2.2.0
 	 >=media-libs/openimageio-1.7.0
 	 dev-libs/pugixml
 	 sys-libs/zlib
@@ -36,7 +39,7 @@ RESTRICT="test"
 
 PATCHES=( "${FILESDIR}/${PN}-fix-pdf-install-dir.patch" )
 
-S="${WORKDIR}/OpenShadingLanguage-Release-${PV//_}"
+S="${WORKDIR}/OpenShadingLanguage-Release-${MY_PV}"
 
 src_configure() {
 	local cpufeature
@@ -60,7 +63,7 @@ src_configure() {
 		-DINSTALL_DOCS=$(usex doc)
 		-DUSE_SIMD=${mysimd%,}
 		-DLLVM_STATIC=ON
-		-DVERBOSE=ON
+		-DVERBOSE=OFF
 	)
 
 	cmake-utils_src_configure
