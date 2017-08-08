@@ -3,7 +3,7 @@
 # $id$
 
 EAPI=6
-PYTHON_COMPAT=( python{2_7,3_4,3_5} )
+PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} )
 
 inherit eutils flag-o-matic cmake-utils python-single-r1 versionator
 
