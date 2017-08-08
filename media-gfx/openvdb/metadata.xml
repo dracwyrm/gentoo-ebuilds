@@ -28,8 +28,5 @@
 			<pkg>dev-libs/c-blosc</pkg>. Very useful so
 			enabled by dfault.
 		</flag>
-		<flag restrict="&gt;=media-gfx/openvdb-4.0.0-r1" name="namespace-versioning">
-			Use version number in the name of the libraries.
-		</flag>
 	</use>
 </pkgmetadata>

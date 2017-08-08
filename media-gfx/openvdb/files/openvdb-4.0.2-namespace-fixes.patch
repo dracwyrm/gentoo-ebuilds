@@ -1,0 +1,84 @@
+diff -purN a/cmake/FindILMBase.cmake b/cmake/FindILMBase.cmake
+--- a/cmake/FindILMBase.cmake	2017-07-31 19:16:32.000000000 +0100
++++ b/cmake/FindILMBase.cmake	2017-08-08 17:06:11.053190862 +0100
+@@ -43,6 +43,8 @@
+ 
+ FIND_PACKAGE ( PackageHandleStandardArgs )
+ 
++include(GNUInstallDirs)
++
+ FIND_PATH ( ILMBASE_LOCATION include/OpenEXR/IlmBaseConfig.h
+   "$ENV{ILMBASE_ROOT}"
+   NO_DEFAULT_PATH
+@@ -57,14 +59,6 @@ OPTION ( ILMBASE_NAMESPACE_VERSIONING "N
+ 
+ IF ( ILMBASE_FOUND )
+ 
+-  FILE ( STRINGS "${ILMBASE_LOCATION}/include/OpenEXR/IlmBaseConfig.h" _ilmbase_version_major_string REGEX "#define ILMBASE_VERSION_MAJOR ")
+-  STRING ( REGEX REPLACE "#define ILMBASE_VERSION_MAJOR" "" _ilmbase_version_major_unstrip "${_ilmbase_version_major_string}")
+-  STRING ( STRIP "${_ilmbase_version_major_unstrip}" ILMBASE_VERSION_MAJOR )
+-
+-  FILE ( STRINGS "${ILMBASE_LOCATION}/include/OpenEXR/IlmBaseConfig.h" _ilmbase_version_minor_string REGEX "#define ILMBASE_VERSION_MINOR ")
+-  STRING ( REGEX REPLACE "#define ILMBASE_VERSION_MINOR" "" _ilmbase_version_minor_unstrip "${_ilmbase_version_minor_string}")
+-  STRING ( STRIP "${_ilmbase_version_minor_unstrip}" ILMBASE_VERSION_MINOR )
+-
+   IF ( ILMBASE_NAMESPACE_VERSIONING )
+ 	SET ( IEX_LIBRARY_NAME       Iex-${ILMBASE_VERSION_MAJOR}_${ILMBASE_VERSION_MINOR}       )
+ 	SET ( IEXMATH_LIBRARY_NAME   IexMath-${ILMBASE_VERSION_MAJOR}_${ILMBASE_VERSION_MINOR}   )
+@@ -78,10 +72,10 @@ IF ( ILMBASE_FOUND )
+   ENDIF ( ILMBASE_NAMESPACE_VERSIONING )
+ 
+   SET ( ILMBASE_INCLUDE_DIRS
+-    ${ILMBASE_LOCATION}/include
+-    ${ILMBASE_LOCATION}/include/OpenEXR
++    ${CMAKE_INSTALL_FULL_INCLUDEDIR}
++    ${CMAKE_INSTALL_FULL_INCLUDEDIR}/OpenEXR
+     CACHE STRING "ILMBase include directories")
+-  SET ( ILMBASE_LIBRARYDIR ${ILMBASE_LOCATION}/lib
++  SET ( ILMBASE_LIBRARYDIR ${CMAKE_INSTALL_FULL_LIBDIR}
+     CACHE STRING "ILMBase library directories")
+   SET ( ILMBASE_FOUND TRUE )
+   
+diff -purN a/cmake/FindOpenEXR.cmake b/cmake/FindOpenEXR.cmake
+--- a/cmake/FindOpenEXR.cmake	2017-07-31 19:16:32.000000000 +0100
++++ b/cmake/FindOpenEXR.cmake	2017-08-08 16:45:01.688853999 +0100
+@@ -38,6 +38,8 @@
+ 
+ FIND_PACKAGE ( PackageHandleStandardArgs )
+ 
++include(GNUInstallDirs)
++
+ FIND_PATH ( OPENEXR_LOCATION include/OpenEXR/OpenEXRConfig.h
+   ENV OPENEXR_ROOT
+   NO_DEFAULT_PATH
+@@ -52,16 +54,6 @@ OPTION ( OPENEXR_NAMESPACE_VERSIONING "N
+ 
+ IF ( OPENEXR_FOUND )
+ 
+-  FILE ( STRINGS "${OPENEXR_LOCATION}/include/OpenEXR/OpenEXRConfig.h" _openexr_version_major_string REGEX "#define OPENEXR_VERSION_MAJOR ")
+-  STRING ( REGEX REPLACE "#define OPENEXR_VERSION_MAJOR" "" _openexr_version_major_unstrip "${_openexr_version_major_string}")
+-  STRING ( STRIP "${_openexr_version_major_unstrip}" OPENEXR_VERSION_MAJOR )
+-
+-  FILE ( STRINGS "${OPENEXR_LOCATION}/include/OpenEXR/OpenEXRConfig.h" _openexr_version_minor_string REGEX "#define OPENEXR_VERSION_MINOR ")
+-  STRING ( REGEX REPLACE "#define OPENEXR_VERSION_MINOR" "" _openexr_version_minor_unstrip "${_openexr_version_minor_string}")
+-  STRING ( STRIP "${_openexr_version_minor_unstrip}" OPENEXR_VERSION_MINOR )
+-  
+-  MESSAGE ( STATUS "Found OpenEXR v${OPENEXR_VERSION_MAJOR}.${OPENEXR_VERSION_MINOR} at ${OPENEXR_LOCATION}" )
+-
+   IF ( OPENEXR_NAMESPACE_VERSIONING )
+ 	SET ( ILMIMF_LIBRARY_NAME IlmImf-${OPENEXR_VERSION_MAJOR}_${OPENEXR_VERSION_MINOR} )
+   ELSE ( OPENEXR_NAMESPACE_VERSIONING )
+@@ -69,10 +61,10 @@ IF ( OPENEXR_FOUND )
+   ENDIF ( OPENEXR_NAMESPACE_VERSIONING )
+ 	
+   SET ( OPENEXR_INCLUDE_DIRS
+-    ${OPENEXR_LOCATION}/include
+-    ${OPENEXR_LOCATION}/include/OpenEXR
++    ${CMAKE_INSTALL_FULL_INCLUDEDIR}
++    ${CMAKE_INSTALL_FULL_INCLUDEDIR}/OpenEXR
+     CACHE STRING "Openexr include directories")
+-  SET ( OPENEXR_LIBRARYDIR ${OPENEXR_LOCATION}/lib
++  SET ( OPENEXR_LIBRARYDIR ${CMAKE_INSTALL_FULL_LIBDIR}
+     CACHE STRING "Openexr library directories")
+   SET ( OPENEXR_FOUND TRUE )
+ 
