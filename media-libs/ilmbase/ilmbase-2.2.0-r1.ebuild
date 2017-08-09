@@ -22,5 +22,3 @@ MULTILIB_WRAPPED_HEADERS=( /usr/include/OpenEXR/IlmBaseConfig.h )
 S="${WORKDIR}/openexr-${PV}/IlmBase"
 
 PATCHES=( "${FILESDIR}/${P}-post-release-fixes.patch" )
-
-mycmakeargs=( -DNAMESPACE_VERSIONING=ON )

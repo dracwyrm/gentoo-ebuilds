@@ -33,8 +33,7 @@ PATCHES=(
 	"${FILESDIR}/${P}-fix-config.h-collision.patch"
 )
 
-mycmakeargs=( -DNAMESPACE_VERSIONING=ON
-			-DILMBASE_PACKAGE_PREFIX="/usr" )
+mycmakeargs=( -DILMBASE_PACKAGE_PREFIX="${EPREFIX}/usr" )
 
 src_prepare() {
 	cmake-utils_src_prepare

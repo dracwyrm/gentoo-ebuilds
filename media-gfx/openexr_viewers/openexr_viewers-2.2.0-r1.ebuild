@@ -29,6 +29,8 @@ DEPEND="${RDEPEND}
 
 S="${WORKDIR}/openexr-${PV}/OpenEXR_Viewers"
 
+PATCHES=( "${FILESDIR}/${P}-post-release-fixes.patch" )
+
 src_prepare() {
 	cmake-utils_src_prepare
 
@@ -41,7 +43,7 @@ src_configure() {
 		$(cmake-utils_use_find_package cg GLUT)
 		$(cmake-utils_use_find_package cg Cg)
 		-DOPENEXR_PACKAGE_PREFIX="${EPREFIX}/usr"
-		-DNAMESPACE_VERSIONING=ON
+		-DILMBASE_PACKAGE_PREFIX="${EPREFIX}/usr"
 	)
 
 	use cg && append-flags "$(no-as-needed)" # binary-only libCg is not properly linked

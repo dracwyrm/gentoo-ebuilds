@@ -17,7 +17,7 @@ DEPEND="${RDEPEND}
 
 KEYWORDS="~amd64 ~x86"
 
-PATCHES=( ${FILESDIR}/${P}-20170213.patch
-	${FILESDIR}/${P}-allow-custom-build-type.patch )
+PATCHES=( "${FILESDIR}/${P}-20170213.patch"
+	"${FILESDIR}/${P}-allow-custom-build-type.patch" )
 
-mycmakeargs=( -DCMAKE_INSTALL_DOCDIR="${EPREFIX}"/usr/share/doc/${PF}/html )
+mycmakeargs=( -DCMAKE_INSTALL_DOCDIR="${EPREFIX}/usr/share/doc/${PF}/html" )

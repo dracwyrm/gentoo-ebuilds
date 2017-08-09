@@ -31,7 +31,7 @@ DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )
 	dev-lang/swig:*"
 
-PATCHES=( ${FILESDIR}/${P}-cmake-fixes.patch )
+PATCHES=( "${FILESDIR}/${PN}-1.1.0-cmake-fixes.patch" )
 
 src_prepare() {
 	cmake-utils_src_prepare

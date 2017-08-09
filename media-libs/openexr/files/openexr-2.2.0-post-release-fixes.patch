@@ -1,19 +1,36 @@
 diff -purN a/CMakeLists.txt b/CMakeLists.txt
 --- a/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
-+++ b/CMakeLists.txt	2017-08-08 19:26:01.008143427 +0100
-@@ -57,8 +57,10 @@ IF (NOT WIN32)
++++ b/CMakeLists.txt	2017-08-09 11:55:19.000000000 +0100
+@@ -25,7 +25,7 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME
+ set(CPACK_SOURCE_IGNORE_FILES
+   "/.git*;/.cvs*;${CPACK_SOURCE_IGNORE_FILES}")
+ INCLUDE ( CPack )
+-
++INCLUDE ( GNUInstallDirs )
+ 
+ 
+ # Allow the developer to select if Dynamic or Static libraries are built
+@@ -57,8 +57,8 @@ IF (NOT WIN32)
    SET ( PTHREAD_LIB pthread )
  ENDIF()
  
-+include(GNUInstallDirs)
-+
- INCLUDE_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/include/OpenEXR )
+-INCLUDE_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/include/OpenEXR )
 -LINK_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/lib )
++INCLUDE_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR )
 +LINK_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/${CMAKE_INSTALL_LIBDIR} )
  MESSAGE ( "ILMBASE_PACKAGE_PREFIX = " ${ILMBASE_PACKAGE_PREFIX})
  
  SET (LIB_TYPE STATIC)
-@@ -258,3 +260,23 @@ INSTALL ( FILES
+@@ -222,7 +222,7 @@ ADD_SUBDIRECTORY ( exrmultipart )
+ INSTALL ( FILES
+   ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/OpenEXR
+   )
+ 
+ # Documentation
+@@ -258,3 +258,23 @@ INSTALL ( FILES
    DESTINATION
    ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}/examples
    )
@@ -21,9 +38,9 @@ diff -purN a/CMakeLists.txt b/CMakeLists.txt
 +# OpenEXR.pc
 +FILE ( WRITE ${CMAKE_BINARY_DIR}/OpenEXR.pc "prefix=${CMAKE_INSTALL_PREFIX}\n" )
 +FILE ( APPEND ${CMAKE_BINARY_DIR}/OpenEXR.pc "exec_prefix=\${prefix}
-+libdir=\${exec_prefix}/lib
-+includedir=\${prefix}/include
-+OpenEXR_includedir=\${prefix}/include/OpenEXR
++libdir=\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}
++includedir=\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}
++OpenEXR_includedir=\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
 +
 +Name: OpenEXR
 +Description: OpenEXR library
@@ -37,272 +54,6 @@ diff -purN a/CMakeLists.txt b/CMakeLists.txt
 +  DESTINATION
 +  ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 +)
-diff -purN a/CMakeLists.txt.orig b/CMakeLists.txt.orig
---- a/CMakeLists.txt.orig	1970-01-01 01:00:00.000000000 +0100
-+++ b/CMakeLists.txt.orig	2017-08-08 17:37:45.000000000 +0100
-@@ -0,0 +1,262 @@
-+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-+
-+PROJECT (openexr)
-+
-+SET(OPENEXR_VERSION_MAJOR "2")
-+SET(OPENEXR_VERSION_MINOR "2")
-+SET(OPENEXR_VERSION_PATCH "0")
-+
-+SET(OPENEXR_VERSION ${OPENEXR_VERSION_MAJOR}.${OPENEXR_VERSION_MINOR}.${OPENEXR_VERSION_PATCH})
-+SET(OPENEXR_VERSION_API ${OPENEXR_VERSION_MAJOR}_${OPENEXR_VERSION_MINOR})
-+
-+
-+# enable the tests
-+ENABLE_TESTING()
-+
-+
-+# distro building 
-+SET(CPACK_PACKAGE_VERSION_MAJOR "${OPENEXR_VERSION_MAJOR}")
-+SET(CPACK_PACKAGE_VERSION_MINOR "${OPENEXR_VERSION_MINOR}")
-+SET(CPACK_PACKAGE_VERSION_PATCH "${OPENEXR_VERSION_PATCH}")
-+SET(CPACK_SOURCE_GENERATOR "TGZ")
-+set(CPACK_SOURCE_PACKAGE_FILE_NAME
-+    "${CMAKE_PROJECT_NAME}-${OPENEXR_VERSION}"
-+  )
-+set(CPACK_SOURCE_IGNORE_FILES
-+  "/.git*;/.cvs*;${CPACK_SOURCE_IGNORE_FILES}")
-+INCLUDE ( CPack )
-+
-+
-+
-+# Allow the developer to select if Dynamic or Static libraries are built
-+OPTION (BUILD_SHARED_LIBS    "Build Shared Libraries" ON)
-+OPTION (USE_ZLIB_WINAPI      "Use ZLib Win API"       OFF)
-+OPTION (NAMESPACE_VERSIONING "Use Namespace Versioning" ON)
-+
-+# Setup osx rpathing
-+SET (CMAKE_MACOSX_RPATH 1)
-+SET (BUILD_WITH_INSTALL_RPATH 1)
-+
-+ADD_DEFINITIONS ( -DHAVE_CONFIG_H -DILM_IMF_TEST_IMAGEDIR="${CMAKE_SOURCE_DIR}/IlmImfTest/" )
-+
-+INCLUDE_DIRECTORIES (
-+  ${CMAKE_CURRENT_BINARY_DIR}/config
-+  IlmImf
-+  IlmImfUtil
-+  exrmaketiled
-+  exrenvmap
-+  exrmakepreview
-+  exrmultiview
-+  IlmImfFuzzTest
-+)
-+
-+FIND_PACKAGE(ZLIB REQUIRED)
-+INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
-+
-+IF (NOT WIN32)
-+  SET ( PTHREAD_LIB pthread )
-+ENDIF()
-+
-+include(GNUInstallDirs)
-+
-+INCLUDE_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/include/OpenEXR )
-+LINK_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/${CMAKE_INSTALL_LIBDIR} )
-+MESSAGE ( "ILMBASE_PACKAGE_PREFIX = " ${ILMBASE_PACKAGE_PREFIX})
-+
-+SET (LIB_TYPE STATIC)
-+IF (BUILD_SHARED_LIBS)
-+  # User wants to build Dynamic Libraries, so change the LIB_TYPE variable to CMake keyword 'SHARED'
-+  SET (LIB_TYPE SHARED)
-+    IF (WIN32)
-+    ADD_DEFINITIONS(-DOPENEXR_DLL)
-+  ENDIF ()
-+ENDIF ()
-+
-+IF (USE_ZLIB_WINAPI)
-+  ADD_DEFINITIONS(-DZLIB_WINAPI)
-+ENDIF ()
-+
-+# Test for GCC-style inline asm support with AVX instructions
-+INCLUDE (CheckCXXSourceCompiles)
-+CHECK_CXX_SOURCE_COMPILES (
-+	"
-+	int main()
-+	{
-+	 #if defined(__GNUC__) && defined(__SSE2__) 
-+		 int n   = 0;
-+		 int eax = 0;
-+		 int edx = 0;
-+		 __asm__(
-+			 \"xgetbv     ;\"
-+			 \"vzeroupper  \"
-+			 : \"=a\"(eax), \"=d\"(edx) : \"c\"(n) : );
-+	 #else
-+		 #error No GCC style inline asm supported for AVX instructions
-+	 #endif
-+	}
-+	" HAVE_GCC_INLINE_ASM_AVX)
-+
-+# Check if sysconf(_SC_NPROCESSORS_ONLN) can be used for CPU count
-+CHECK_CXX_SOURCE_COMPILES (
-+    "
-+    #include <unistd.h>
-+    int main()
-+    {
-+        sysconf(_SC_NPROCESSORS_ONLN);
-+    }
-+    " HAVE_SYSCONF_NPROCESSORS_ONLN)
-+
-+
-+##########################
-+# OpenEXRConfig.h generation
-+##########################
-+IF (WIN32)
-+  FILE ( WRITE ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
-+ELSEIF (APPLE)
-+  FILE ( WRITE ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_DARWIN 1\n" )
-+  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
-+  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#include <string.h>\n" )
-+ELSE ()
-+  # Linux
-+  FILE ( WRITE ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_LINUX_PROCFS 1\n" )
-+  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_COMPLETE_IOMANIP 1\n" )
-+  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_LARGE_STACK 1\n" )
-+ENDIF()
-+  
-+IF (NAMESPACE_VERSIONING)
-+    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE_CUSTOM 1\n")
-+    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_NAMESPACE Imf\n" )
-+    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf_${OPENEXR_VERSION_API}\n\n" )
-+ELSE ()
-+    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE_CUSTOM 0\n")
-+    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_NAMESPACE Imf\n" )
-+    FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf\n\n" )
-+ENDIF ()
-+
-+FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_VERSION_STRING \"${OPENEXR_VERSION}\"\n" )
-+FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_PACKAGE_STRING \"OpenEXR ${OPENEXR_VERSION}\"\n" )
-+
-+
-+FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "
-+#define OPENEXR_VERSION_MAJOR ${OPENEXR_VERSION_MAJOR}
-+#define OPENEXR_VERSION_MINOR ${OPENEXR_VERSION_MINOR}
-+#define OPENEXR_VERSION_PATCH ${OPENEXR_VERSION_PATCH}
-+")
-+
-+
-+  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "
-+// Version as a single hex number, e.g. 0x01000300 == 1.0.3
-+#define OPENEXR_VERSION_HEX ((OPENEXR_VERSION_MAJOR << 24) | \\
-+                             (OPENEXR_VERSION_MINOR << 16) | \\
-+                             (OPENEXR_VERSION_PATCH <<  8))\n
-+")
-+
-+IF (HAVE_GCC_INLINE_ASM_AVX)
-+  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_GCC_INLINE_ASM_AVX 1\n" )
-+ENDIF()
-+  
-+IF (HAVE_SYSCONF_NPROCESSORS_ONLN)
-+  FILE ( APPEND ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h "#define OPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN 1\n" )
-+ENDIF()
-+  
-+SET (OPENEXR_LIBSUFFIX "")
-+SET (ILMBASE_LIBSUFFIX "")
-+IF (NAMESPACE_VERSIONING)
-+  SET ( OPENEXR_LIBSUFFIX "-${OPENEXR_VERSION_API}" )
-+  # assume same NAMESPACE_VERSION setting for IlmBase for now
-+  SET ( ILMBASE_LIBSUFFIX "-${OPENEXR_VERSION_API}" )
-+ENDIF ()
-+
-+##########################
-+# IlmImf library
-+##########################
-+ADD_SUBDIRECTORY ( IlmImf )
-+
-+SET_TARGET_PROPERTIES ( IlmImf
-+  PROPERTIES
-+  VERSION 22.0.0
-+  SOVERSION 22
-+  OUTPUT_NAME "IlmImf${OPENEXR_LIBSUFFIX}"
-+  )
-+  
-+##########################
-+# IlmImfUtil library
-+##########################
-+ADD_SUBDIRECTORY ( IlmImfUtil )
-+
-+SET_TARGET_PROPERTIES ( IlmImfUtil
-+  PROPERTIES
-+  VERSION 22.0.0
-+  SOVERSION 22
-+  OUTPUT_NAME "IlmImfUtil${OPENEXR_LIBSUFFIX}"
-+  )
-+  
-+##########################
-+# Example Code
-+##########################
-+ADD_SUBDIRECTORY ( IlmImfExamples )
-+
-+  
-+##########################
-+# Tests
-+##########################
-+ADD_SUBDIRECTORY ( IlmImfTest )
-+ADD_SUBDIRECTORY ( IlmImfUtilTest )
-+ADD_SUBDIRECTORY ( IlmImfFuzzTest )
-+
-+
-+##########################
-+# Binaries / Utilities
-+##########################
-+ADD_SUBDIRECTORY ( exrheader )
-+ADD_SUBDIRECTORY ( exrmaketiled )
-+ADD_SUBDIRECTORY ( exrstdattr )
-+ADD_SUBDIRECTORY ( exrmakepreview )
-+ADD_SUBDIRECTORY ( exrenvmap )
-+ADD_SUBDIRECTORY ( exrmultiview )
-+ADD_SUBDIRECTORY ( exrmultipart )
-+
-+
-+##########################
-+# Installation
-+##########################
-+
-+INSTALL ( FILES
-+  ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h
-+  DESTINATION
-+  ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
-+  )
-+
-+# Documentation
-+INSTALL ( FILES
-+  doc/TechnicalIntroduction.pdf
-+  doc/ReadingAndWritingImageFiles.pdf
-+  doc/OpenEXRFileLayout.pdf
-+  doc/MultiViewOpenEXR.pdf
-+  doc/InterpretingDeepPixels.pdf
-+  doc/TheoryDeepPixels.pdf
-+  DESTINATION
-+  ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}
-+  )
-+
-+# Examples
-+INSTALL ( FILES
-+  IlmImfExamples/main.cpp
-+  IlmImfExamples/drawImage.cpp
-+  IlmImfExamples/rgbaInterfaceExamples.cpp
-+  IlmImfExamples/rgbaInterfaceTiledExamples.cpp
-+  IlmImfExamples/generalInterfaceExamples.cpp
-+  IlmImfExamples/lowLevelIoExamples.cpp
-+  IlmImfExamples/previewImageExamples.cpp
-+  IlmImfExamples/generalInterfaceTiledExamples.cpp
-+  IlmImfExamples/generalInterfaceTiledExamples.h
-+  IlmImfExamples/drawImage.h
-+  IlmImfExamples/rgbaInterfaceExamples.h
-+  IlmImfExamples/generalInterfaceExamples.h
-+  IlmImfExamples/rgbaInterfaceTiledExamples.h
-+  IlmImfExamples/lowLevelIoExamples.h
-+  IlmImfExamples/previewImageExamples.h
-+  IlmImfExamples/namespaceAlias.h
-+  DESTINATION
-+  ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}/examples
-+  )
 diff -purN a/configure.ac b/configure.ac
 --- a/configure.ac	2014-08-10 05:21:45.000000000 +0100
 +++ b/configure.ac	2017-01-09 19:54:21.000000000 +0000
@@ -315,10 +66,180 @@ diff -purN a/configure.ac b/configure.ac
               #else
                   #error No GCC style inline asm supported for AVX instructions
               #endif
+diff -purN a/exr2aces/CMakeLists.txt b/exr2aces/CMakeLists.txt
+--- a/exr2aces/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/exr2aces/CMakeLists.txt	2017-08-09 11:46:17.000000000 +0100
+@@ -1,5 +1,7 @@
+ # yue.nicholas@gmail.com
+ 
++INCLUDE ( GNUInstallDirs )
++
+ ADD_EXECUTABLE ( exr2aces
+   main.cpp
+ )
+@@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exr2aces
+ INSTALL ( TARGETS
+   exr2aces
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
+ )
+diff -purN a/exrbuild/CMakeLists.txt b/exrbuild/CMakeLists.txt
+--- a/exrbuild/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/exrbuild/CMakeLists.txt	2017-08-09 11:46:45.000000000 +0100
+@@ -1,5 +1,7 @@
+ # yue.nicholas@gmail.com
+ 
++INCLUDE ( GNUInstallDirs )
++
+ ADD_EXECUTABLE ( exrbuild
+   exrbuild.cpp
+ )
+@@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrbuild
+ INSTALL ( TARGETS
+   exrbuild
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
+ )
+diff -purN a/exrenvmap/CMakeLists.txt b/exrenvmap/CMakeLists.txt
+--- a/exrenvmap/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/exrenvmap/CMakeLists.txt	2017-08-09 11:47:15.000000000 +0100
+@@ -1,5 +1,7 @@
+ # yue.nicholas@gmail.com
+ 
++INCLUDE ( GNUInstallDirs )
++
+ ADD_EXECUTABLE ( exrenvmap
+   makeLatLongMap.cpp
+   readInputImage.cpp
+@@ -22,5 +24,5 @@ TARGET_LINK_LIBRARIES ( exrenvmap
+ INSTALL ( TARGETS
+   exrenvmap
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
+ )
+diff -purN a/exrheader/CMakeLists.txt b/exrheader/CMakeLists.txt
+--- a/exrheader/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/exrheader/CMakeLists.txt	2017-08-09 11:47:31.000000000 +0100
+@@ -1,5 +1,7 @@
+ # yue.nicholas@gmail.com
+ 
++INCLUDE ( GNUInstallDirs )
++
+ ADD_EXECUTABLE ( exrheader
+   main.cpp
+ )
+@@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrheader
+ INSTALL ( TARGETS
+   exrheader
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
+ )
+diff -purN a/exrmakepreview/CMakeLists.txt b/exrmakepreview/CMakeLists.txt
+--- a/exrmakepreview/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/exrmakepreview/CMakeLists.txt	2017-08-09 11:47:51.000000000 +0100
+@@ -1,5 +1,7 @@
+ # yue.nicholas@gmail.com
+ 
++INCLUDE ( GNUInstallDirs )
++
+ ADD_EXECUTABLE ( exrmakepreview
+   makePreview.cpp
+   main.cpp
+@@ -17,5 +19,5 @@ TARGET_LINK_LIBRARIES ( exrmakepreview
+ INSTALL ( TARGETS
+   exrmakepreview
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
+ )
+diff -purN a/exrmaketiled/CMakeLists.txt b/exrmaketiled/CMakeLists.txt
+--- a/exrmaketiled/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/exrmaketiled/CMakeLists.txt	2017-08-09 11:48:13.000000000 +0100
+@@ -1,5 +1,7 @@
+ # yue.nicholas@gmail.com
+ 
++INCLUDE ( GNUInstallDirs )
++
+ ADD_EXECUTABLE ( exrmaketiled
+   makeTiled.cpp
+   main.cpp
+@@ -18,5 +20,5 @@ TARGET_LINK_LIBRARIES ( exrmaketiled
+ INSTALL ( TARGETS
+   exrmaketiled
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
+ )
+diff -purN a/exrmultipart/CMakeLists.txt b/exrmultipart/CMakeLists.txt
+--- a/exrmultipart/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/exrmultipart/CMakeLists.txt	2017-08-09 11:49:40.000000000 +0100
+@@ -1,5 +1,7 @@
+ # yue.nicholas@gmail.com
+ 
++INCLUDE ( GNUInstallDirs )
++
+ ADD_EXECUTABLE ( exrmultipart
+   exrmultipart.cpp
+ )
+@@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrmultipart
+ INSTALL ( TARGETS
+   exrmultipart
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
+ )
+diff -purN a/exrmultiview/CMakeLists.txt b/exrmultiview/CMakeLists.txt
+--- a/exrmultiview/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/exrmultiview/CMakeLists.txt	2017-08-09 11:49:37.000000000 +0100
+@@ -1,5 +1,7 @@
+ # yue.nicholas@gmail.com
+ 
++INCLUDE ( GNUInstallDirs )
++
+ ADD_EXECUTABLE ( exrmultiview
+   makeMultiView.cpp
+   main.cpp
+@@ -19,5 +21,5 @@ TARGET_LINK_LIBRARIES ( exrmultiview
+ INSTALL ( TARGETS
+   exrmultiview
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
+ )
+diff -purN a/exrstdattr/CMakeLists.txt b/exrstdattr/CMakeLists.txt
+--- a/exrstdattr/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
++++ b/exrstdattr/CMakeLists.txt	2017-08-09 11:49:36.000000000 +0100
+@@ -1,5 +1,7 @@
+ # yue.nicholas@gmail.com
+ 
++INCLUDE ( GNUInstallDirs )
++
+ ADD_EXECUTABLE ( exrstdattr
+   main.cpp
+ )
+@@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrstdattr
+ INSTALL ( TARGETS
+   exrstdattr
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
+ )
 diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
 --- a/IlmImf/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
-+++ b/IlmImf/CMakeLists.txt	2017-08-08 17:38:13.000000000 +0100
-@@ -8,8 +8,8 @@ ADD_EXECUTABLE ( b44ExpLogTable
++++ b/IlmImf/CMakeLists.txt	2017-08-09 11:51:02.000000000 +0100
+@@ -1,5 +1,7 @@
+ # yue.nicholas@gmail.com
+ 
++INCLUDE ( GNUInstallDirs )
++
+ SET(CMAKE_INCLUDE_CURRENT_DIR 1)
+ 
+ ADD_EXECUTABLE ( b44ExpLogTable
+@@ -8,8 +10,8 @@ ADD_EXECUTABLE ( b44ExpLogTable
  
  TARGET_LINK_LIBRARIES ( b44ExpLogTable
    Half
@@ -328,7 +249,7 @@ diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
    ${PTHREAD_LIB}
  )
  
-@@ -25,8 +25,8 @@ ADD_EXECUTABLE ( dwaLookups
+@@ -25,8 +27,8 @@ ADD_EXECUTABLE ( dwaLookups
  
  TARGET_LINK_LIBRARIES ( dwaLookups
    Half
@@ -338,12 +259,7 @@ diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
    ${PTHREAD_LIB}
  )
  
-@@ -164,10 +164,12 @@ SET_SOURCE_FILES_PROPERTIES (
- 
- # Libraries
- 
-+include(GNUInstallDirs)
-+
+@@ -167,7 +169,7 @@ SET_SOURCE_FILES_PROPERTIES (
  INSTALL ( TARGETS
    IlmImf
    DESTINATION
@@ -360,6 +276,14 @@ diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
    ImfEnvmap.h
    ImfEnvmapAttribute.h
    ImfInt64.h
+@@ -260,6 +263,6 @@ INSTALL ( FILES
+   ImfDeepImageStateAttribute.h
+   ImfFloatVectorAttribute.h
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
+ )
+ 
 diff -purN a/IlmImf/ImfCRgbaFile.h b/IlmImf/ImfCRgbaFile.h
 --- a/IlmImf/ImfCRgbaFile.h	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfCRgbaFile.h	2017-01-09 19:54:21.000000000 +0000
@@ -1020,15 +944,13 @@ diff -purN a/IlmImfTest/testDwaCompressorSimd.cpp b/IlmImfTest/testDwaCompressor
      delete[] dst;
 diff -purN a/IlmImfUtil/CMakeLists.txt b/IlmImfUtil/CMakeLists.txt
 --- a/IlmImfUtil/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
-+++ b/IlmImfUtil/CMakeLists.txt	2017-08-08 17:39:35.000000000 +0100
-@@ -35,13 +35,14 @@ TARGET_LINK_LIBRARIES ( IlmImfUtil
-   ${PTHREAD_LIB} ${ZLIB_LIBRARIES}
- )
++++ b/IlmImfUtil/CMakeLists.txt	2017-08-09 11:52:37.000000000 +0100
+@@ -1,3 +1,4 @@
++INCLUDE ( GNUInstallDirs )
  
-+include(GNUInstallDirs)
- 
- # Libraries
- 
+ SET ( ILMIMFUTIL_SRCS
+   ImfImageChannel.cpp
+@@ -41,7 +42,7 @@ TARGET_LINK_LIBRARIES ( IlmImfUtil
  INSTALL ( TARGETS
    IlmImfUtil
    DESTINATION
@@ -1037,6 +959,14 @@ diff -purN a/IlmImfUtil/CMakeLists.txt b/IlmImfUtil/CMakeLists.txt
  )
  
  # Headers
+@@ -62,6 +63,6 @@ INSTALL ( FILES
+   ImfImageDataWindow.h
+   ImfImageChannelRenaming.h
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
++  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
+   )
+ 
 diff -purN a/Makefile.am b/Makefile.am
 --- a/Makefile.am	2014-08-10 05:21:45.000000000 +0100
 +++ b/Makefile.am	2017-01-09 19:54:21.000000000 +0000

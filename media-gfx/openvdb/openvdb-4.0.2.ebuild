@@ -39,10 +39,10 @@ DEPEND="${RDEPEND}
 	dev-cpp/tbb
 	doc? ( app-doc/doxygen[latex] )"
 
-PATCHES=( ${FILESDIR}/${P}-namespace-fixes.patch )
+PATCHES=( "${FILESDIR}/${P}-namespace-fixes.patch" )
 
 src_configure() {
-	local myprefix="${EPREFIX}"/usr/
+	local myprefix="${EPREFIX}/usr/"
 
 	# To stay in sync with Boost
 	append-cxxflags -std=c++14

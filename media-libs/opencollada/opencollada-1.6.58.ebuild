@@ -28,9 +28,9 @@ RDEPEND="dev-libs/libpcre
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
-S="${WORKDIR}"/OpenCOLLADA-${PV}
+S="${WORKDIR}/OpenCOLLADA-${PV}"
 
-PATCHES=( "${FILESDIR}"/${PN}-build-fixes-v3.patch )
+PATCHES=( "${FILESDIR}/${PN}-build-fixes-v3.patch" )
 
 src_prepare() {
 	edos2unix CMakeLists.txt
