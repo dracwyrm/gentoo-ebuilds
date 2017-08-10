@@ -1,6 +1,5 @@
 # Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI=6
 inherit cmake-multilib
@@ -13,7 +12,7 @@ SRC_URI="https://github.com/openexr/openexr/archive/v${PV}.tar.gz -> openexr-${P
 
 LICENSE="BSD"
 SLOT="0/12" # based on SONAME
-KEYWORDS="~amd64 -arm ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~x64-macos ~x86-solaris"
+KEYWORDS="~amd64 -arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~x64-macos ~x86-solaris"
 
 DOCS=( AUTHORS ChangeLog NEWS README )
 

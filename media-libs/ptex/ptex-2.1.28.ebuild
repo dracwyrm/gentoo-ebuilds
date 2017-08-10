@@ -1,6 +1,5 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI=6
 
@@ -17,4 +16,7 @@ DEPEND="${RDEPEND}
 
 KEYWORDS="~amd64 ~x86"
 
-mycmakeargs=( -DCMAKE_INSTALL_DOCDIR="${EPREFIX}"/usr/share/doc/${PF}/html )
+src_configure() {
+	local mycmakeargs=( -DCMAKE_INSTALL_DOCDIR="${EPREFIX}"/usr/share/doc/${PF}/html )
+	cmake-utils_src_configure
+}
