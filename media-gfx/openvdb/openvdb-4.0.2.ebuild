@@ -39,19 +39,13 @@ DEPEND="${RDEPEND}
 	dev-cpp/tbb
 	doc? ( app-doc/doxygen[latex] )"
 
-PATCHES=( "${FILESDIR}/${P}-namespace-fixes.patch" )
+PATCHES=( "${FILESDIR}/${P}-use-pkg-config.patch" )
 
 src_configure() {
 	local myprefix="${EPREFIX}/usr/"
 
 	# To stay in sync with Boost
 	append-cxxflags -std=c++14
-
-	# Hack so OpenVDB can find the right versions
-	local ilmbase_version=$(best_version media-libs/ilmbase)
-	ilmbase_version=${ilmbase_version/media-libs\/ilmbase-/}
-	local openexr_version=$(best_version media-libs/openexr)
-	openexr_version=${openexr_version/media-libs\/openexr-/}
 
 	local mycmakeargs=(
 		-DOPENVDB_BUILD_UNITTESTS=OFF
@@ -64,12 +58,6 @@ src_configure() {
 		-DGLEW_LOCATION="${myprefix}"
 		-DGLFW3_LOCATION="${myprefix}"
 		-DTBB_LOCATION="${myprefix}"
-		-DILMBASE_LOCATION="${myprefix}"
-		-DOPENEXR_LOCATION="${myprefix}"
-		-DILMBASE_VERSION_MAJOR=$(get_version_component_range 1 ${ilmbase_version})
-		-DILMBASE_VERSION_MINOR=$(get_version_component_range 2 ${ilmbase_version})
-		-DOPENEXR_VERSION_MAJOR=$(get_version_component_range 1 ${openexr_version})
-		-DOPENEXR_VERSION_MINOR=$(get_version_component_range 2 ${openexr_version})
 	)
 
 	use python && mycmakeargs+=( -DPYOENVDB_INSTALL_DIRECTORY=$(python_get_sitedir) )
