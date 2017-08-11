@@ -32,6 +32,7 @@ PATCHES=(
 	"${FILESDIR}/${P}-use-ull-for-64-bit-literals.patch"
 	"${FILESDIR}/${P}-fix-cpuid-on-abi_x86_32.patch"
 	"${FILESDIR}/${P}-fix-config.h-collision.patch"
+	"${FILESDIR}/${P}-add-legacy-symlink.patch"
 )
 
 mycmakeargs=( -DILMBASE_PACKAGE_PREFIX="${EPREFIX}/usr" )
