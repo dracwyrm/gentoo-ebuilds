@@ -1,0 +1,174 @@
+diff -purN a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2017-06-30 19:22:54.000000000 +0100
++++ b/CMakeLists.txt	2017-08-15 15:37:35.353949164 +0100
+@@ -366,25 +366,26 @@ include_directories (
+ ###########################################################################
+ # Paths for install tree customization.  Note that relative paths are relative
+ # to CMAKE_INSTALL_PREFIX.
+-set (DEFAULT_BIN_INSTALL_DIR   "bin")
+-set (DEFAULT_LIB_INSTALL_DIR   "lib")
+-set (DEFAULT_INCLUDE_INSTALL_DIR "include/OSL")
++include(GNUInstallDirs)
++set (DEFAULT_BIN_INSTALL_DIR   "${CMAKE_INSTALL_BINDIR}")
++set (DEFAULT_LIB_INSTALL_DIR   "${CMAKE_INSTALL_LIBDIR}")
++set (DEFAULT_INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
+ if (UNIX AND NOT SELF_CONTAINED_INSTALL_TREE)
+     # Try to be well-behaved and install into reasonable places according to
+     # the "standard" unix directory heirarchy
+     # TODO: Figure out how to get the correct python directory
+-    set (DEFAULT_PYLIB_INSTALL_DIR "lib/python/site-packages")
+-    set (DEFAULT_PYLIB3_INSTALL_DIR "lib/python3/site-packages")
+-    set (DEFAULT_DOC_INSTALL_DIR "share/doc/OSL")
+-    set (DEFAULT_MAN_INSTALL_DIR "share/man/man1")
++    set (DEFAULT_PYLIB_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/python/site-packages")
++    set (DEFAULT_PYLIB3_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/python3/site-packages")
++    set (DEFAULT_DOC_INSTALL_DIR "${CMAKE_INSTALL_DOCDIR}")
++    set (DEFAULT_MAN_INSTALL_DIR "${CMAKE_INSTALL_MANDIR}/man1")
+ else ()
+     # Here is the "self-contained install tree" case: the expectation here is
+     # that everything OSL related will go into its own directory, not into
+     # some standard system heirarchy.
+     set (DEFAULT_PYLIB_INSTALL_DIR "python")
+     set (DEFAULT_PYLIB3_INSTALL_DIR "python3")
+-    set (DEFAULT_DOC_INSTALL_DIR "doc")
+-    set (DEFAULT_MAN_INSTALL_DIR "doc/man")
++    set (DEFAULT_DOC_INSTALL_DIR "${CMAKE_INSTALL_DOCDIR}")
++    set (DEFAULT_MAN_INSTALL_DIR "${CMAKE_INSTALL_MANDIR}")
+ endif ()
+ if (EXEC_INSTALL_PREFIX)
+     # Tack on an extra prefix to support multi-arch builds.
+diff -purN a/src/doc/CMakeLists.txt b/src/doc/CMakeLists.txt
+--- a/src/doc/CMakeLists.txt	2017-06-30 19:22:54.000000000 +0100
++++ b/src/doc/CMakeLists.txt	2017-08-15 15:10:23.789022463 +0100
+@@ -3,15 +3,17 @@ set (public_docs osl-languagespec.pdf
+                  markdeep.min.js
+                  )
+ 
+-install (FILES ${public_docs} DESTINATION doc COMPONENT documentation)
++if (INSTALL_DOCS)
++	install (FILES ${public_docs} DESTINATION ${DOC_INSTALL_DIR} COMPONENT documentation)
+ 
+-install ( FILES "${PROJECT_SOURCE_DIR}/LICENSE"
+-                "${PROJECT_SOURCE_DIR}/INSTALL.md"
+-                "${PROJECT_SOURCE_DIR}/CHANGES.md"
+-                "${PROJECT_SOURCE_DIR}/README.md"
+-          DESTINATION doc )
++	install ( FILES "${PROJECT_SOURCE_DIR}/LICENSE"
++					"${PROJECT_SOURCE_DIR}/INSTALL.md"
++					"${PROJECT_SOURCE_DIR}/CHANGES.md"
++					"${PROJECT_SOURCE_DIR}/README.md"
++			DESTINATION ${DOC_INSTALL_DIR} )
+ 
+ 
+-file (GLOB testshade_figures "Figures/testshade/*.jpg")
+-install (FILES ${testshade_figures}
+-         DESTINATION doc/Figures/testshade )
++	file (GLOB testshade_figures "Figures/testshade/*.jpg")
++	install (FILES ${testshade_figures}
++			DESTINATION ${DOC_INSTALL_DIR}/Figures/testshade )
++endif ()
+diff -purN a/src/include/CMakeLists.txt b/src/include/CMakeLists.txt
+--- a/src/include/CMakeLists.txt	2017-06-30 19:22:54.000000000 +0100
++++ b/src/include/CMakeLists.txt	2017-08-15 15:19:10.461698648 +0100
+@@ -6,4 +6,4 @@ set (OSL_BUILD_CPP14 ${USE_CPP14})
+ configure_file (OSL/oslversion.h.in "${CMAKE_BINARY_DIR}/include/OSL/oslversion.h" @ONLY)
+ list (APPEND public_headers "${CMAKE_BINARY_DIR}/include/OSL/oslversion.h")
+ 
+-INSTALL ( FILES ${public_headers} DESTINATION include/OSL )
++INSTALL ( FILES ${public_headers} DESTINATION ${INCLUDE_INSTALL_DIR}/OSL )
+diff -purN a/src/liboslcomp/CMakeLists.txt b/src/liboslcomp/CMakeLists.txt
+--- a/src/liboslcomp/CMakeLists.txt	2017-06-30 19:22:54.000000000 +0100
++++ b/src/liboslcomp/CMakeLists.txt	2017-08-15 15:20:08.806722766 +0100
+@@ -25,5 +25,5 @@ TARGET_LINK_LIBRARIES ( oslcomp ${OPENIM
+                        ${CLANG_LIBRARIES} ${LLVM_LIBRARIES} ${LLVM_LDFLAGS}
+                        ${LLVM_SYSTEM_LIBRARIES})
+ 
+-INSTALL ( TARGETS oslcomp RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib )
++INSTALL ( TARGETS oslcomp RUNTIME DESTINATION ${BIN_INSTALL_DIR} LIBRARY DESTINATION ${LIB_INSTALL_DIR} ARCHIVE DESTINATION ${LIB_INSTALL_DIR} )
+ 
+diff -purN a/src/liboslexec/CMakeLists.txt b/src/liboslexec/CMakeLists.txt
+--- a/src/liboslexec/CMakeLists.txt	2017-06-30 19:22:54.000000000 +0100
++++ b/src/liboslexec/CMakeLists.txt	2017-08-15 15:21:10.295756797 +0100
+@@ -157,7 +157,7 @@ TARGET_LINK_LIBRARIES ( oslexec
+                         ${LLVM_SYSTEM_LIBRARIES})
+ ADD_DEPENDENCIES (oslexec "${CMAKE_SOURCE_DIR}/src/build-scripts/hidesymbols.map")
+ 
+-INSTALL ( TARGETS oslexec RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib )
++INSTALL ( TARGETS oslexec RUNTIME DESTINATION ${BIN_INSTALL_DIR} LIBRARY DESTINATION ${LIB_INSTALL_DIR} ARCHIVE DESTINATION ${LIB_INSTALL_DIR} )
+ 
+ # Unit tests
+ if (OSL_BUILD_TESTS)
+diff -purN a/src/liboslnoise/CMakeLists.txt b/src/liboslnoise/CMakeLists.txt
+--- a/src/liboslnoise/CMakeLists.txt	2017-06-30 19:22:54.000000000 +0100
++++ b/src/liboslnoise/CMakeLists.txt	2017-08-15 15:21:48.216781759 +0100
+@@ -11,7 +11,7 @@ endif ()
+ 
+ TARGET_LINK_LIBRARIES ( oslnoise ${OPENIMAGEIO_LIBRARY} ${ILMBASE_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} )
+ 
+-INSTALL ( TARGETS oslnoise RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib )
++INSTALL ( TARGETS oslnoise RUNTIME DESTINATION ${BIN_INSTALL_DIR} LIBRARY DESTINATION ${LIB_INSTALL_DIR} ARCHIVE DESTINATION ${LIB_INSTALL_DIR} )
+ 
+ 
+ if (OSL_BUILD_TESTS)
+diff -purN a/src/liboslquery/CMakeLists.txt b/src/liboslquery/CMakeLists.txt
+--- a/src/liboslquery/CMakeLists.txt	2017-06-30 19:22:54.000000000 +0100
++++ b/src/liboslquery/CMakeLists.txt	2017-08-15 15:22:26.036809415 +0100
+@@ -14,4 +14,4 @@ endif ()
+ 
+ TARGET_LINK_LIBRARIES ( oslquery ${OPENIMAGEIO_LIBRARY} ${ILMBASE_LIBRARIES} ${Boost_LIBRARIES} )
+ 
+-INSTALL ( TARGETS oslquery RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib )
++INSTALL ( TARGETS oslquery RUNTIME DESTINATION ${BIN_INSTALL_DIR} LIBRARY DESTINATION ${LIB_INSTALL_DIR} ARCHIVE DESTINATION ${LIB_INSTALL_DIR} )
+diff -purN a/src/oslc/CMakeLists.txt b/src/oslc/CMakeLists.txt
+--- a/src/oslc/CMakeLists.txt	2017-06-30 19:22:54.000000000 +0100
++++ b/src/oslc/CMakeLists.txt	2017-08-15 15:23:11.104845701 +0100
+@@ -9,5 +9,5 @@ endif ()
+ 
+ ADD_EXECUTABLE ( oslc ${oslc_srcs} )
+ TARGET_LINK_LIBRARIES ( oslc oslcomp ${OPENIMAGEIO_LIBRARY} ${Boost_LIBRARIES} ${CMAKE_DL_LIBS})
+-INSTALL ( TARGETS oslc RUNTIME DESTINATION bin )
++INSTALL ( TARGETS oslc RUNTIME DESTINATION ${BIN_INSTALL_DIR} )
+ 
+diff -purN a/src/oslinfo/CMakeLists.txt b/src/oslinfo/CMakeLists.txt
+--- a/src/oslinfo/CMakeLists.txt	2017-06-30 19:22:54.000000000 +0100
++++ b/src/oslinfo/CMakeLists.txt	2017-08-15 15:23:23.170855993 +0100
+@@ -1,4 +1,4 @@
+ SET ( oslinfo_srcs oslinfo.cpp )
+ ADD_EXECUTABLE ( oslinfo ${oslinfo_srcs} )
+ TARGET_LINK_LIBRARIES ( oslinfo oslquery ${OPENIMAGEIO_LIBRARY} ${Boost_LIBRARIES} ${CMAKE_DL_LIBS})
+-INSTALL ( TARGETS oslinfo RUNTIME DESTINATION bin )
++INSTALL ( TARGETS oslinfo RUNTIME DESTINATION ${BIN_INSTALL_DIR} )
+diff -purN a/src/testrender/CMakeLists.txt b/src/testrender/CMakeLists.txt
+--- a/src/testrender/CMakeLists.txt	2017-06-30 19:22:54.000000000 +0100
++++ b/src/testrender/CMakeLists.txt	2017-08-15 15:24:25.011912283 +0100
+@@ -2,4 +2,4 @@
+ FILE(GLOB testrender_src *.cpp)
+ ADD_EXECUTABLE ( testrender ${testrender_src} )
+ TARGET_LINK_LIBRARIES ( testrender oslexec oslquery ${OPENIMAGEIO_LIBRARY} ${Boost_LIBRARIES} ${CMAKE_DL_LIBS})
+-INSTALL ( TARGETS testrender RUNTIME DESTINATION bin )
++INSTALL ( TARGETS testrender RUNTIME DESTINATION ${BIN_INSTALL_DIR} )
+diff -purN a/src/testshade/CMakeLists.txt b/src/testshade/CMakeLists.txt
+--- a/src/testshade/CMakeLists.txt	2017-06-30 19:22:54.000000000 +0100
++++ b/src/testshade/CMakeLists.txt	2017-08-15 15:25:34.029981488 +0100
+@@ -2,7 +2,7 @@
+ SET ( testshade_srcs testshade.cpp simplerend.cpp )
+ ADD_EXECUTABLE ( testshade ${testshade_srcs} testshademain.cpp )
+ TARGET_LINK_LIBRARIES ( testshade oslexec oslquery ${OPENIMAGEIO_LIBRARY} ${OPENEXR_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_DL_LIBS})
+-INSTALL ( TARGETS testshade RUNTIME DESTINATION bin )
++INSTALL ( TARGETS testshade RUNTIME DESTINATION ${BIN_INSTALL_DIR} )
+ 
+ # The 'libtestshade' library
+ if (BUILDSTATIC)
+@@ -14,10 +14,10 @@ endif ()
+ TARGET_LINK_LIBRARIES (libtestshade oslexec oslquery ${OPENIMAGEIO_LIBRARY} ${OPENEXR_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} )
+ SET_TARGET_PROPERTIES (libtestshade PROPERTIES PREFIX "")
+ 
+-INSTALL ( TARGETS libtestshade RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
++INSTALL ( TARGETS libtestshade RUNTIME DESTINATION ${BIN_INSTALL_DIR} LIBRARY DESTINATION ${LIB_INSTALL_DIR} ARCHIVE DESTINATION ${LIB_INSTALL_DIR})
+ 
+ # The 'testshade_dso' executable
+ ADD_EXECUTABLE ( testshade_dso testshade_dso.cpp )
+ TARGET_LINK_LIBRARIES ( testshade_dso ${OPENIMAGEIO_LIBRARY} ${OPENEXR_LIBRARIES} ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} )
+-INSTALL ( TARGETS testshade_dso RUNTIME DESTINATION bin )
++INSTALL ( TARGETS testshade_dso RUNTIME DESTINATION ${BIN_INSTALL_DIR} )
+ 

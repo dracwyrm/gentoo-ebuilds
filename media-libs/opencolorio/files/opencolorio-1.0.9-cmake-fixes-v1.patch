@@ -1,6 +1,32 @@
+diff -purN a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2017-07-19 21:38:48.000000000 +0100
++++ b/CMakeLists.txt	2017-08-15 14:14:02.223744929 +0100
+@@ -59,6 +59,7 @@ endif()
+ include(ParseArguments)
+ include(OCIOMacros)
+ include(ExternalProject)
++include(GNUInstallDirs)
+ 
+ enable_language(CXX)
+ 
+@@ -519,7 +520,7 @@ endif()
+ configure_file(${CMAKE_SOURCE_DIR}/share/ocio/setup_ocio.sh.in
+     ${CMAKE_CURRENT_BINARY_DIR}/share/ocio/setup_ocio.sh @ONLY)
+ 
+-INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/share/ocio/setup_ocio.sh DESTINATION share/ocio/)
++INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/share/ocio/setup_ocio.sh DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ocio/)
+ 
+ ###############################################################################
+ ### CPACK ###
+@@ -634,4 +635,4 @@ file(WRITE "${CMAKE_BINARY_DIR}/OpenColo
+     message(STATUS OPENCOLORIO_FOUND=\${OPENCOLORIO_FOUND})
+     "
+ )
+-install(FILES "${CMAKE_BINARY_DIR}/OpenColorIOConfig.cmake" DESTINATION .)
++install(FILES "${CMAKE_BINARY_DIR}/OpenColorIOConfig.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/CMake)
 diff -purN a/docs/CMakeLists.txt b/docs/CMakeLists.txt
---- a/docs/CMakeLists.txt	2016-09-17 20:11:53.000000000 +0100
-+++ b/docs/CMakeLists.txt	2016-10-07 09:40:23.516878951 +0100
+--- a/docs/CMakeLists.txt	2017-07-19 21:38:48.000000000 +0100
++++ b/docs/CMakeLists.txt	2017-08-15 14:10:29.645282585 +0100
 @@ -1,68 +1,5 @@
  
  ###############################################################################

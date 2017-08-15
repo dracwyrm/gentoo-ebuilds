@@ -28,7 +28,9 @@ KEYWORDS="~amd64 ~x86"
 
 S="${WORKDIR}/OpenSubdiv-${MY_PV}"
 
-PATCHES=( "${FILESDIR}/${P}-fix-quotes.patch" )
+PATCHES=( "${FILESDIR}/${P}-fix-quotes.patch"
+	  "${FILESDIR}/${P}-cmake-fixes.patch"
+)
 
 pkg_pretend() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
@@ -36,13 +38,6 @@ pkg_pretend() {
 
 pkg_setup() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
-}
-
-src_prepare() {
-	cmake-utils_src_prepare
-
-	sed -e 's|"${OSD_SONAME}"|${OSD_SONAME}|' \
-	    -i CMakeLists.txt || die
 }
 
 src_configure() {
@@ -60,6 +55,7 @@ src_configure() {
 		-DNO_TUTORIALS=$(usex !tutorials)
 		-DGLEW_LOCATION="${EPREFIX}/usr/$(get_libdir)"
 		-DGLFW_LOCATION="${EPREFIX}/usr/$(get_libdir)"
+		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
 	)
 
 	cmake-utils_src_configure

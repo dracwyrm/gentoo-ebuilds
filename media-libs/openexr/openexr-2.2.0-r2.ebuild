@@ -35,16 +35,16 @@ PATCHES=(
 	"${FILESDIR}/${P}-add-legacy-symlink.patch"
 )
 
-mycmakeargs=( -DILMBASE_PACKAGE_PREFIX="${EPREFIX}/usr" )
+mycmakeargs=(
+	-DILMBASE_PACKAGE_PREFIX="${EPREFIX}/usr"
+	-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
+)
 
 src_prepare() {
 	cmake-utils_src_prepare
 
 	# Fix path for testsuite
 	sed -i -e "s:/var/tmp/:${T}:" IlmImfTest/tmpDir.h || die
-
-	sed -e 's|doc/OpenEXR-${OPENEXR_VERSION}|doc/'${PF}'|' \
-	    -i CMakeLists.txt || die
 }
 
 multilib_src_install_all() {

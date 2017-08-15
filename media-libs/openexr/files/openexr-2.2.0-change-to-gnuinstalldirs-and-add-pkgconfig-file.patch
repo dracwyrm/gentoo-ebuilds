@@ -1,6 +1,6 @@
 diff -purN a/CMakeLists.txt b/CMakeLists.txt
 --- a/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/CMakeLists.txt	2017-08-09 17:18:36.000000000 +0100
++++ b/CMakeLists.txt	2017-08-15 10:30:44.047334117 +0100
 @@ -25,7 +25,7 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME
  set(CPACK_SOURCE_IGNORE_FILES
    "/.git*;/.cvs*;${CPACK_SOURCE_IGNORE_FILES}")
@@ -26,27 +26,42 @@ diff -purN a/CMakeLists.txt b/CMakeLists.txt
    ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
    )
  
  # Documentation
-@@ -258,3 +258,23 @@ INSTALL ( FILES
+@@ -234,7 +234,7 @@ INSTALL ( FILES
+   doc/InterpretingDeepPixels.pdf
+   doc/TheoryDeepPixels.pdf
    DESTINATION
-   ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}/examples
+-  ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}
++  ${CMAKE_INSTALL_DOCDIR}
+   )
+ 
+ # Examples
+@@ -256,5 +256,28 @@ INSTALL ( FILES
+   IlmImfExamples/previewImageExamples.h
+   IlmImfExamples/namespaceAlias.h
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}/examples
++  ${CMAKE_INSTALL_DOCDIR}/examples
    )
 +
 +# OpenEXR.pc
 +FILE ( WRITE ${CMAKE_BINARY_DIR}/OpenEXR.pc "prefix=${CMAKE_INSTALL_PREFIX}\n" )
 +FILE ( APPEND ${CMAKE_BINARY_DIR}/OpenEXR.pc "exec_prefix=\${prefix}
-+libdir=\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}
-+includedir=\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}
-+OpenEXR_includedir=\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
++libdir=${CMAKE_INSTALL_FULL_LIBDIR}
++includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}
++OpenEXR_includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}/OpenEXR
 +
 +Name: OpenEXR
 +Description: OpenEXR library
 +Version: ${OPENEXR_VERSION}
-+Libs: -L\${libdir} -lIlmImfUtil${OPENEXR_LIBSUFFIX} -lIlmImf${OPENEXR_LIBSUFFIX} -pthread
-+Cflags: -pthread -I\${OpenEXR_includedir}
++
++Libs: -L\${libdir} -lIlmImfUtil${OPENEXR_LIBSUFFIX} -lIlmImf${OPENEXR_LIBSUFFIX}
++Cflags: -I\${OpenEXR_includedir}
++Requires: IlmBase
++Libs.private: -lz
 +")
 +
 +INSTALL ( FILES
@@ -56,7 +71,7 @@ diff -purN a/CMakeLists.txt b/CMakeLists.txt
 +)
 diff -purN a/exr2aces/CMakeLists.txt b/exr2aces/CMakeLists.txt
 --- a/exr2aces/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exr2aces/CMakeLists.txt	2017-08-09 11:46:17.000000000 +0100
++++ b/exr2aces/CMakeLists.txt	2017-08-15 10:31:30.365569555 +0100
 @@ -1,5 +1,7 @@
  # yue.nicholas@gmail.com
  
@@ -70,11 +85,11 @@ diff -purN a/exr2aces/CMakeLists.txt b/exr2aces/CMakeLists.txt
    exr2aces
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/bin
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
++  ${CMAKE_INSTALL_BINDIR}
  )
 diff -purN a/exrbuild/CMakeLists.txt b/exrbuild/CMakeLists.txt
 --- a/exrbuild/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrbuild/CMakeLists.txt	2017-08-09 11:46:45.000000000 +0100
++++ b/exrbuild/CMakeLists.txt	2017-08-15 10:31:41.225647766 +0100
 @@ -1,5 +1,7 @@
  # yue.nicholas@gmail.com
  
@@ -88,11 +103,11 @@ diff -purN a/exrbuild/CMakeLists.txt b/exrbuild/CMakeLists.txt
    exrbuild
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/bin
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
++  ${CMAKE_INSTALL_BINDIR}
  )
 diff -purN a/exrenvmap/CMakeLists.txt b/exrenvmap/CMakeLists.txt
 --- a/exrenvmap/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrenvmap/CMakeLists.txt	2017-08-09 11:47:15.000000000 +0100
++++ b/exrenvmap/CMakeLists.txt	2017-08-15 10:31:50.754722988 +0100
 @@ -1,5 +1,7 @@
  # yue.nicholas@gmail.com
  
@@ -106,11 +121,11 @@ diff -purN a/exrenvmap/CMakeLists.txt b/exrenvmap/CMakeLists.txt
    exrenvmap
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/bin
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
++  ${CMAKE_INSTALL_BINDIR}
  )
 diff -purN a/exrheader/CMakeLists.txt b/exrheader/CMakeLists.txt
 --- a/exrheader/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrheader/CMakeLists.txt	2017-08-09 11:47:31.000000000 +0100
++++ b/exrheader/CMakeLists.txt	2017-08-15 10:32:01.476814704 +0100
 @@ -1,5 +1,7 @@
  # yue.nicholas@gmail.com
  
@@ -124,11 +139,11 @@ diff -purN a/exrheader/CMakeLists.txt b/exrheader/CMakeLists.txt
    exrheader
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/bin
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
++  ${CMAKE_INSTALL_BINDIR}
  )
 diff -purN a/exrmakepreview/CMakeLists.txt b/exrmakepreview/CMakeLists.txt
 --- a/exrmakepreview/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrmakepreview/CMakeLists.txt	2017-08-09 11:47:51.000000000 +0100
++++ b/exrmakepreview/CMakeLists.txt	2017-08-15 10:32:10.344896008 +0100
 @@ -1,5 +1,7 @@
  # yue.nicholas@gmail.com
  
@@ -142,11 +157,11 @@ diff -purN a/exrmakepreview/CMakeLists.txt b/exrmakepreview/CMakeLists.txt
    exrmakepreview
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/bin
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
++  ${CMAKE_INSTALL_BINDIR}
  )
 diff -purN a/exrmaketiled/CMakeLists.txt b/exrmaketiled/CMakeLists.txt
 --- a/exrmaketiled/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrmaketiled/CMakeLists.txt	2017-08-09 11:48:13.000000000 +0100
++++ b/exrmaketiled/CMakeLists.txt	2017-08-15 10:32:19.059980538 +0100
 @@ -1,5 +1,7 @@
  # yue.nicholas@gmail.com
  
@@ -160,11 +175,11 @@ diff -purN a/exrmaketiled/CMakeLists.txt b/exrmaketiled/CMakeLists.txt
    exrmaketiled
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/bin
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
++  ${CMAKE_INSTALL_BINDIR}
  )
 diff -purN a/exrmultipart/CMakeLists.txt b/exrmultipart/CMakeLists.txt
 --- a/exrmultipart/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrmultipart/CMakeLists.txt	2017-08-09 11:49:40.000000000 +0100
++++ b/exrmultipart/CMakeLists.txt	2017-08-15 10:32:29.027082648 +0100
 @@ -1,5 +1,7 @@
  # yue.nicholas@gmail.com
  
@@ -178,11 +193,11 @@ diff -purN a/exrmultipart/CMakeLists.txt b/exrmultipart/CMakeLists.txt
    exrmultipart
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/bin
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
++  ${CMAKE_INSTALL_BINDIR}
  )
 diff -purN a/exrmultiview/CMakeLists.txt b/exrmultiview/CMakeLists.txt
 --- a/exrmultiview/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrmultiview/CMakeLists.txt	2017-08-09 11:49:37.000000000 +0100
++++ b/exrmultiview/CMakeLists.txt	2017-08-15 10:32:36.983168174 +0100
 @@ -1,5 +1,7 @@
  # yue.nicholas@gmail.com
  
@@ -196,11 +211,11 @@ diff -purN a/exrmultiview/CMakeLists.txt b/exrmultiview/CMakeLists.txt
    exrmultiview
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/bin
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
++  ${CMAKE_INSTALL_BINDIR}
  )
 diff -purN a/exrstdattr/CMakeLists.txt b/exrstdattr/CMakeLists.txt
 --- a/exrstdattr/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrstdattr/CMakeLists.txt	2017-08-09 11:49:36.000000000 +0100
++++ b/exrstdattr/CMakeLists.txt	2017-08-15 10:32:44.302249904 +0100
 @@ -1,5 +1,7 @@
  # yue.nicholas@gmail.com
  
@@ -214,11 +229,11 @@ diff -purN a/exrstdattr/CMakeLists.txt b/exrstdattr/CMakeLists.txt
    exrstdattr
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/bin
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
++  ${CMAKE_INSTALL_BINDIR}
  )
 diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
 --- a/IlmImf/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/IlmImf/CMakeLists.txt	2017-08-09 11:51:02.000000000 +0100
++++ b/IlmImf/CMakeLists.txt	2017-08-15 10:33:24.005740626 +0100
 @@ -1,5 +1,7 @@
  # yue.nicholas@gmail.com
  
@@ -232,7 +247,7 @@ diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
    IlmImf
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/lib
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
++  ${CMAKE_INSTALL_LIBDIR}
  )
  
  # Headers
@@ -241,12 +256,12 @@ diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
    ImfFloatVectorAttribute.h
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
  )
  
 diff -purN a/IlmImfUtil/CMakeLists.txt b/IlmImfUtil/CMakeLists.txt
 --- a/IlmImfUtil/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/IlmImfUtil/CMakeLists.txt	2017-08-09 11:52:37.000000000 +0100
++++ b/IlmImfUtil/CMakeLists.txt	2017-08-15 10:33:58.541226060 +0100
 @@ -1,3 +1,4 @@
 +INCLUDE ( GNUInstallDirs )
  
@@ -257,7 +272,7 @@ diff -purN a/IlmImfUtil/CMakeLists.txt b/IlmImfUtil/CMakeLists.txt
    IlmImfUtil
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/lib
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
++  ${CMAKE_INSTALL_LIBDIR}
  )
  
  # Headers
@@ -266,6 +281,6 @@ diff -purN a/IlmImfUtil/CMakeLists.txt b/IlmImfUtil/CMakeLists.txt
    ImfImageChannelRenaming.h
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
-+  ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
    )
  

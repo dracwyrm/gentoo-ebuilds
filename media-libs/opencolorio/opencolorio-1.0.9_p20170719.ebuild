@@ -44,7 +44,7 @@ REQUIRED_USE="doc? ( python )"
 # Restricting tests, bugs #439790 and #447908
 RESTRICT="test"
 
-PATCHES=( "${FILESDIR}/${PN}-1.0.9-doc-fixes.patch" )
+PATCHES=( "${FILESDIR}/${PN}-1.0.9-cmake-fixes-v1.patch" )
 
 pkg_setup() {
 	use python && python-single-r1_pkg_setup

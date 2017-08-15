@@ -38,7 +38,9 @@ DEPEND="${RDEPEND}
 	dev-cpp/tbb
 	doc? ( app-doc/doxygen[latex] )"
 
-PATCHES=( "${FILESDIR}/${P}-use-pkg-config.patch" )
+PATCHES=( "${FILESDIR}/${P}-use-pkg-config.patch"
+	  "${FILESDIR}/${P}-use-gnuinstalldirs.patch"
+)
 
 src_configure() {
 	local myprefix="${EPREFIX}/usr/"
@@ -49,6 +51,7 @@ src_configure() {
 	local mycmakeargs=(
 		-DOPENVDB_BUILD_UNITTESTS=OFF
 		-DOPENVDB_BUILD_DOCS=$(usex doc)
+		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
 		-DOPENVDB_BUILD_PYTHON_MODULE=$(usex python)
 		-DOPENVDB_ENABLE_3_ABI_COMPATIBLE=$(usex abi3-compat)
 		-DOPENVDB_ENABLE_RPATH=OFF

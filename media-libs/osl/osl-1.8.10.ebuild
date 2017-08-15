@@ -36,7 +36,7 @@ DEPEND="${RDEPEND}
 # Restricting tests as Make file handles them differently
 RESTRICT="test"
 
-PATCHES=( "${FILESDIR}/${PN}-fix-pdf-install-dir.patch" )
+PATCHES=( "${FILESDIR}/${P}-cmake-fixes.patch" )
 
 S="${WORKDIR}/OpenShadingLanguage-Release-${MY_PV}"
 
@@ -60,6 +60,7 @@ src_configure() {
 		-DSELF_CONTAINED_INSTALL_TREE=OFF
 		-DOSL_BUILD_TESTS=$(usex test)
 		-DINSTALL_DOCS=$(usex doc)
+		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
 		-DUSE_SIMD=${mysimd%,}
 		-DLLVM_STATIC=ON
 		-DVERBOSE=OFF

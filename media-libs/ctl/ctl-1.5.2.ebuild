@@ -21,11 +21,6 @@ DEPEND="${RDEPEND}
 
 S="${WORKDIR}/CTL-ctl-${PV}"
 
-PATCHES=( "${FILESDIR}/ctl-1.5.2-openexr2-fixes.patch" )
+PATCHES=( "${FILESDIR}/${P}-cmake-fixes.patch" )
 
-src_prepare() {
-	cmake-utils_src_prepare
-
-	sed -e "s|doc/CTL|share/doc/${PF}|" \
-	    -i doc/CMakeLists.txt || die
-}
+mycmakeargs=( -DCMAKE_INSTALL_DOCDIR="share/doc/${PF}" )
