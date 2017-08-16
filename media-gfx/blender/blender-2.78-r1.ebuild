@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
-PYTHON_COMPAT=( python3_5 )
+PYTHON_COMPAT=( python{3_5,3_6} )
 
 inherit check-reqs cmake-utils fdo-mime flag-o-matic gnome2-utils \
 	pax-utils python-single-r1 toolchain-funcs versionator
@@ -66,7 +66,7 @@ RDEPEND="${PYTHON_DEPS}
 		x11-libs/libXi
 		x11-libs/libXxf86vm
 	)
-	jack? ( media-sound/jack-audio-connection-kit )
+	jack? ( virtual/jack )
 	jemalloc? ( dev-libs/jemalloc:= )
 	jpeg2k? ( media-libs/openjpeg:0 )
 	llvm? ( sys-devel/llvm:= )

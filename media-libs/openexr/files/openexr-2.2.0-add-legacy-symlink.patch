@@ -15,7 +15,7 @@ diff -purN a/CMakeLists.txt b/CMakeLists.txt
 +         WORKING_DIRECTORY ${_libpath}
 +         )"
 +   )
-+   INSTALL( FILES ${_libpath}/${_legacyname} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR} )
++   INSTALL( FILES ${_libpath}/${_legacyname} DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 +ENDMACRO(CREATE_LEGACY_SYMLINK)
  
  ##########################

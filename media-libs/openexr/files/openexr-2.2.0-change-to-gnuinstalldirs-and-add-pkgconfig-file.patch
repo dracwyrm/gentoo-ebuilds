@@ -72,14 +72,6 @@ diff -purN a/CMakeLists.txt b/CMakeLists.txt
 diff -purN a/exr2aces/CMakeLists.txt b/exr2aces/CMakeLists.txt
 --- a/exr2aces/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 +++ b/exr2aces/CMakeLists.txt	2017-08-15 10:31:30.365569555 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- ADD_EXECUTABLE ( exr2aces
-   main.cpp
- )
 @@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exr2aces
  INSTALL ( TARGETS
    exr2aces
@@ -90,14 +82,6 @@ diff -purN a/exr2aces/CMakeLists.txt b/exr2aces/CMakeLists.txt
 diff -purN a/exrbuild/CMakeLists.txt b/exrbuild/CMakeLists.txt
 --- a/exrbuild/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 +++ b/exrbuild/CMakeLists.txt	2017-08-15 10:31:41.225647766 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- ADD_EXECUTABLE ( exrbuild
-   exrbuild.cpp
- )
 @@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrbuild
  INSTALL ( TARGETS
    exrbuild
@@ -108,14 +92,6 @@ diff -purN a/exrbuild/CMakeLists.txt b/exrbuild/CMakeLists.txt
 diff -purN a/exrenvmap/CMakeLists.txt b/exrenvmap/CMakeLists.txt
 --- a/exrenvmap/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 +++ b/exrenvmap/CMakeLists.txt	2017-08-15 10:31:50.754722988 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- ADD_EXECUTABLE ( exrenvmap
-   makeLatLongMap.cpp
-   readInputImage.cpp
 @@ -22,5 +24,5 @@ TARGET_LINK_LIBRARIES ( exrenvmap
  INSTALL ( TARGETS
    exrenvmap
@@ -126,14 +102,6 @@ diff -purN a/exrenvmap/CMakeLists.txt b/exrenvmap/CMakeLists.txt
 diff -purN a/exrheader/CMakeLists.txt b/exrheader/CMakeLists.txt
 --- a/exrheader/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 +++ b/exrheader/CMakeLists.txt	2017-08-15 10:32:01.476814704 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- ADD_EXECUTABLE ( exrheader
-   main.cpp
- )
 @@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrheader
  INSTALL ( TARGETS
    exrheader
@@ -144,14 +112,6 @@ diff -purN a/exrheader/CMakeLists.txt b/exrheader/CMakeLists.txt
 diff -purN a/exrmakepreview/CMakeLists.txt b/exrmakepreview/CMakeLists.txt
 --- a/exrmakepreview/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 +++ b/exrmakepreview/CMakeLists.txt	2017-08-15 10:32:10.344896008 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- ADD_EXECUTABLE ( exrmakepreview
-   makePreview.cpp
-   main.cpp
 @@ -17,5 +19,5 @@ TARGET_LINK_LIBRARIES ( exrmakepreview
  INSTALL ( TARGETS
    exrmakepreview
@@ -162,14 +122,6 @@ diff -purN a/exrmakepreview/CMakeLists.txt b/exrmakepreview/CMakeLists.txt
 diff -purN a/exrmaketiled/CMakeLists.txt b/exrmaketiled/CMakeLists.txt
 --- a/exrmaketiled/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 +++ b/exrmaketiled/CMakeLists.txt	2017-08-15 10:32:19.059980538 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- ADD_EXECUTABLE ( exrmaketiled
-   makeTiled.cpp
-   main.cpp
 @@ -18,5 +20,5 @@ TARGET_LINK_LIBRARIES ( exrmaketiled
  INSTALL ( TARGETS
    exrmaketiled
@@ -180,14 +132,6 @@ diff -purN a/exrmaketiled/CMakeLists.txt b/exrmaketiled/CMakeLists.txt
 diff -purN a/exrmultipart/CMakeLists.txt b/exrmultipart/CMakeLists.txt
 --- a/exrmultipart/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 +++ b/exrmultipart/CMakeLists.txt	2017-08-15 10:32:29.027082648 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- ADD_EXECUTABLE ( exrmultipart
-   exrmultipart.cpp
- )
 @@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrmultipart
  INSTALL ( TARGETS
    exrmultipart
@@ -198,14 +142,6 @@ diff -purN a/exrmultipart/CMakeLists.txt b/exrmultipart/CMakeLists.txt
 diff -purN a/exrmultiview/CMakeLists.txt b/exrmultiview/CMakeLists.txt
 --- a/exrmultiview/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 +++ b/exrmultiview/CMakeLists.txt	2017-08-15 10:32:36.983168174 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- ADD_EXECUTABLE ( exrmultiview
-   makeMultiView.cpp
-   main.cpp
 @@ -19,5 +21,5 @@ TARGET_LINK_LIBRARIES ( exrmultiview
  INSTALL ( TARGETS
    exrmultiview
@@ -216,14 +152,6 @@ diff -purN a/exrmultiview/CMakeLists.txt b/exrmultiview/CMakeLists.txt
 diff -purN a/exrstdattr/CMakeLists.txt b/exrstdattr/CMakeLists.txt
 --- a/exrstdattr/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 +++ b/exrstdattr/CMakeLists.txt	2017-08-15 10:32:44.302249904 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- ADD_EXECUTABLE ( exrstdattr
-   main.cpp
- )
 @@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrstdattr
  INSTALL ( TARGETS
    exrstdattr
@@ -234,14 +162,6 @@ diff -purN a/exrstdattr/CMakeLists.txt b/exrstdattr/CMakeLists.txt
 diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
 --- a/IlmImf/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 +++ b/IlmImf/CMakeLists.txt	2017-08-15 10:33:24.005740626 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- SET(CMAKE_INCLUDE_CURRENT_DIR 1)
- 
- ADD_EXECUTABLE ( b44ExpLogTable
 @@ -167,7 +169,7 @@ SET_SOURCE_FILES_PROPERTIES (
  INSTALL ( TARGETS
    IlmImf
@@ -262,11 +182,6 @@ diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
 diff -purN a/IlmImfUtil/CMakeLists.txt b/IlmImfUtil/CMakeLists.txt
 --- a/IlmImfUtil/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 +++ b/IlmImfUtil/CMakeLists.txt	2017-08-15 10:33:58.541226060 +0100
-@@ -1,3 +1,4 @@
-+INCLUDE ( GNUInstallDirs )
- 
- SET ( ILMIMFUTIL_SRCS
-   ImfImageChannel.cpp
 @@ -41,7 +42,7 @@ TARGET_LINK_LIBRARIES ( IlmImfUtil
  INSTALL ( TARGETS
    IlmImfUtil

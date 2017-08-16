@@ -72,7 +72,7 @@ diff -purN a/CMakeLists.txt b/CMakeLists.txt
 +         WORKING_DIRECTORY ${_libpath}
 +         )"
 +   )
-+   INSTALL( FILES ${_libpath}/${_legacyname} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR} )
++   INSTALL( FILES ${_libpath}/${_legacyname} DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 +ENDMACRO(CREATE_LEGACY_SYMLINK)
  
  SET (LIB_TYPE STATIC)
@@ -281,14 +281,6 @@ diff -purN a/Half/half.h b/Half/half.h
 diff -purN a/Iex/CMakeLists.txt b/Iex/CMakeLists.txt
 --- a/Iex/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
 +++ b/Iex/CMakeLists.txt	2017-08-15 16:30:35.881950767 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- IF(BUILD_SHARED_LIBS)
-     ADD_DEFINITIONS(-DIEX_EXPORTS)
- ENDIF()
 @@ -13,7 +15,7 @@ ADD_LIBRARY ( Iex ${LIB_TYPE}
  INSTALL ( TARGETS
    Iex
@@ -308,14 +300,6 @@ diff -purN a/Iex/CMakeLists.txt b/Iex/CMakeLists.txt
 diff -purN a/IexMath/CMakeLists.txt b/IexMath/CMakeLists.txt
 --- a/IexMath/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
 +++ b/IexMath/CMakeLists.txt	2017-08-15 16:30:35.882950768 +0100
-@@ -1,5 +1,7 @@
- # pstanczyk@ilm.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- IF(BUILD_SHARED_LIBS)
-     ADD_DEFINITIONS(-DIEXMATH_EXPORTS)
- ENDIF()
 @@ -12,7 +14,7 @@ TARGET_LINK_LIBRARIES(IexMath Iex)
  INSTALL ( TARGETS
    IexMath
@@ -335,14 +319,6 @@ diff -purN a/IexMath/CMakeLists.txt b/IexMath/CMakeLists.txt
 diff -purN a/IlmThread/CMakeLists.txt b/IlmThread/CMakeLists.txt
 --- a/IlmThread/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmThread/CMakeLists.txt	2017-08-15 16:30:35.882950768 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- SET( ILMTHREAD_LIBRARY_SOURCES
-   IlmThread.cpp
-   IlmThreadMutex.cpp
 @@ -31,7 +33,7 @@ TARGET_LINK_LIBRARIES(IlmThread Iex)
  INSTALL ( TARGETS
    IlmThread
@@ -362,14 +338,6 @@ diff -purN a/IlmThread/CMakeLists.txt b/IlmThread/CMakeLists.txt
 diff -purN a/Imath/CMakeLists.txt b/Imath/CMakeLists.txt
 --- a/Imath/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
 +++ b/Imath/CMakeLists.txt	2017-08-15 16:30:35.882950768 +0100
-@@ -1,5 +1,7 @@
- # yue.nicholas@gmail.com
- 
-+INCLUDE ( GNUInstallDirs )
-+
- IF(BUILD_SHARED_LIBS)
-     ADD_DEFINITIONS(-DIMATH_EXPORTS)
- ENDIF()
 @@ -19,7 +21,7 @@ TARGET_LINK_LIBRARIES(Imath Iex)
  INSTALL ( TARGETS
    Imath
