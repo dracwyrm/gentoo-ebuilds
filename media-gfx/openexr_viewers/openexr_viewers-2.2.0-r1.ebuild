@@ -28,7 +28,7 @@ DEPEND="${RDEPEND}
 
 S="${WORKDIR}/openexr-${PV}/OpenEXR_Viewers"
 
-PATCHES=( "${FILESDIR}/${P}-post-release-fixes.patch" )
+PATCHES=( "${FILESDIR}/${P}-use-gnuinstalldirs.patch" )
 
 src_configure() {
 	local mycmakeargs=(

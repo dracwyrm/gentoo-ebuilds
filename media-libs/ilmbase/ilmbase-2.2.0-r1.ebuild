@@ -20,4 +20,7 @@ MULTILIB_WRAPPED_HEADERS=( /usr/include/OpenEXR/IlmBaseConfig.h )
 
 S="${WORKDIR}/openexr-${PV}/IlmBase"
 
-PATCHES=( "${FILESDIR}/${P}-post-release-fixes.patch" )
+PATCHES=( "${FILESDIR}/${P}-post-release-fixes-v20170109.patch"
+	  "${FILESDIR}/${P}-use-gnuinstall-dirs.patch"
+	  "${FILESDIR}/${P}-fix-pkgconfig-file.patch"
+)

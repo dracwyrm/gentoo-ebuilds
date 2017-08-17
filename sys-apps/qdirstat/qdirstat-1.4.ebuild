@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit qmake-utils
+inherit gnome2-utils qmake-utils xdg-utils
 
 DESCRIPTION="Qt app to show where your disk space has gone and to help you clean it up"
 HOMEPAGE="https://github.com/shundhammer/qdirstat"
@@ -24,4 +24,14 @@ src_configure() {
 
 src_install() {
 	emake INSTALL_ROOT="${ED}" install
+}
+
+pkg_postinst() {
+	gnome2_icon_cache_update
+	xdg_desktop_database_update
+}
+
+pkg_postrm() {
+	gnome2_icon_cache_update
+	xdg_desktop_database_update
 }

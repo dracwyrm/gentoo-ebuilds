@@ -1,4 +1,4 @@
-diff -purNEZbB a/configure.ac b/configure.ac
+diff -purN a/configure.ac b/configure.ac
 --- a/configure.ac	2014-08-10 05:21:45.000000000 +0100
 +++ b/configure.ac	2017-01-09 19:54:21.000000000 +0000
 @@ -188,7 +188,7 @@ AC_COMPILE_IFELSE(
@@ -10,7 +10,7 @@ diff -purNEZbB a/configure.ac b/configure.ac
               #else
                   #error No GCC style inline asm supported for AVX instructions
               #endif
-diff -purNEZbB a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
+diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
 --- a/IlmImf/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
 @@ -8,8 +8,8 @@ ADD_EXECUTABLE ( b44ExpLogTable
@@ -41,7 +41,7 @@ diff -purNEZbB a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
    ImfEnvmap.h
    ImfEnvmapAttribute.h
    ImfInt64.h
-diff -purNEZbB a/IlmImf/ImfCRgbaFile.h b/IlmImf/ImfCRgbaFile.h
+diff -purN a/IlmImf/ImfCRgbaFile.h b/IlmImf/ImfCRgbaFile.h
 --- a/IlmImf/ImfCRgbaFile.h	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfCRgbaFile.h	2017-01-09 19:54:21.000000000 +0000
 @@ -98,7 +98,7 @@ typedef struct ImfRgba ImfRgba;
@@ -53,7 +53,7 @@ diff -purNEZbB a/IlmImf/ImfCRgbaFile.h b/IlmImf/ImfCRgbaFile.h
  
  
  /*
-diff -purNEZbB a/IlmImf/ImfDeepTiledInputPart.cpp b/IlmImf/ImfDeepTiledInputPart.cpp
+diff -purN a/IlmImf/ImfDeepTiledInputPart.cpp b/IlmImf/ImfDeepTiledInputPart.cpp
 --- a/IlmImf/ImfDeepTiledInputPart.cpp	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfDeepTiledInputPart.cpp	2017-01-09 19:54:21.000000000 +0000
 @@ -90,7 +90,7 @@ DeepTiledInputPart::isComplete () const
@@ -65,7 +65,7 @@ diff -purNEZbB a/IlmImf/ImfDeepTiledInputPart.cpp b/IlmImf/ImfDeepTiledInputPart
  }
  
  
-diff -purNEZbB a/IlmImf/ImfDwaCompressor.cpp b/IlmImf/ImfDwaCompressor.cpp
+diff -purN a/IlmImf/ImfDwaCompressor.cpp b/IlmImf/ImfDwaCompressor.cpp
 --- a/IlmImf/ImfDwaCompressor.cpp	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfDwaCompressor.cpp	2017-01-09 19:54:21.000000000 +0000
 @@ -149,6 +149,7 @@
@@ -241,16 +241,18 @@ diff -purNEZbB a/IlmImf/ImfDwaCompressor.cpp b/IlmImf/ImfDwaCompressor.cpp
  
      //
      // Allocate a zip/deflate compressor big enought to hold the DC data
-@@ -3096,7 +3106,7 @@ DwaCompressor::initializeBuffers (size_t
+@@ -3095,8 +3105,8 @@ DwaCompressor::initializeBuffers (size_t
+ 
      if (planarUncBufferSize[UNKNOWN] > 0)
      {
-         planarUncBufferSize[UNKNOWN] =
+-        planarUncBufferSize[UNKNOWN] =
 -            (int) ceil (1.01f * (float)planarUncBufferSize[UNKNOWN]) + 100;
++        planarUncBufferSize[UNKNOWN] = 
 +            compressBound ((uLongf)planarUncBufferSize[UNKNOWN]);
      }
  
      for (int i = 0; i < NUM_COMPRESSOR_SCHEMES; ++i)
-diff -purNEZbB a/IlmImf/ImfDwaCompressorSimd.h b/IlmImf/ImfDwaCompressorSimd.h
+diff -purN a/IlmImf/ImfDwaCompressorSimd.h b/IlmImf/ImfDwaCompressorSimd.h
 --- a/IlmImf/ImfDwaCompressorSimd.h	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfDwaCompressorSimd.h	2017-01-09 19:54:21.000000000 +0000
 @@ -51,6 +51,8 @@
@@ -262,7 +264,7 @@ diff -purNEZbB a/IlmImf/ImfDwaCompressorSimd.h b/IlmImf/ImfDwaCompressorSimd.h
  OPENEXR_IMF_INTERNAL_NAMESPACE_HEADER_ENTER
  
  #define _SSE_ALIGNMENT        32
-@@ -334,12 +336,14 @@ interleaveByte2 (char *dst, char *src0,
+@@ -334,34 +336,37 @@ interleaveByte2 (char *dst, char *src0,
          // use aligned loads
          //
      
@@ -273,20 +275,101 @@ diff -purNEZbB a/IlmImf/ImfDwaCompressorSimd.h b/IlmImf/ImfDwaCompressorSimd.h
              dst[2 * x + 1] = src1[x];
          }
  
+-        dst_epi8  = (__m128i*)&dst[16];
+-        src0_epi8 = (__m128i*)&src0[8];
+-        src1_epi8 = (__m128i*)&src1[8];
+-        sseWidth  =  (numBytes - 8) / 16;
+-
+-        for (int x=0; x<sseWidth; ++x)
 +        if (numBytes > 8) 
-+        {
-         dst_epi8  = (__m128i*)&dst[16];
-         src0_epi8 = (__m128i*)&src0[8];
-         src1_epi8 = (__m128i*)&src1[8];
-@@ -364,6 +368,7 @@ interleaveByte2 (char *dst, char *src0,
-             dst[2 * x + 1] = src1[x];
+         {
+-            _mm_stream_si128 (&dst_epi8[2 * x],
+-                              _mm_unpacklo_epi8 (src0_epi8[x], src1_epi8[x]));
++            dst_epi8  = (__m128i*)&dst[16];
++            src0_epi8 = (__m128i*)&src0[8];
++            src1_epi8 = (__m128i*)&src1[8];
++            sseWidth  =  (numBytes - 8) / 16;
+ 
+-            _mm_stream_si128 (&dst_epi8[2 * x + 1],
+-                              _mm_unpackhi_epi8 (src0_epi8[x], src1_epi8[x]));
+-        }
++            for (int x=0; x<sseWidth; ++x)
++            {
++                _mm_stream_si128 (&dst_epi8[2 * x],
++                                  _mm_unpacklo_epi8 (src0_epi8[x], src1_epi8[x]));
+ 
+-        //
+-        // Then do run the leftovers one at a time
+-        //
++                _mm_stream_si128 (&dst_epi8[2 * x + 1],
++                                  _mm_unpackhi_epi8 (src0_epi8[x], src1_epi8[x]));
++            }
+ 
+-        for (int x = 16 * sseWidth + 8; x < numBytes; ++x)
+-        {
+-            dst[2 * x]     = src0[x];
+-            dst[2 * x + 1] = src1[x];
++            //
++            // Then do run the leftovers one at a time
++            //
++
++            for (int x = 16 * sseWidth + 8; x < numBytes; ++x)
++            {
++                dst[2 * x]     = src0[x];
++                dst[2 * x + 1] = src1[x];
++            }
          }
      }
-+    }
+     else
+diff -purN a/IlmImf/ImfFastHuf.cpp b/IlmImf/ImfFastHuf.cpp
+--- a/IlmImf/ImfFastHuf.cpp	2014-08-10 05:21:45.000000000 +0100
++++ b/IlmImf/ImfFastHuf.cpp	2017-01-09 19:54:21.000000000 +0000
+@@ -107,7 +107,7 @@ FastHufDecoder::FastHufDecoder
+     for (int i = 0; i <= MAX_CODE_LEN; ++i)
+     {
+         codeCount[i] = 0;
+-        base[i]      = 0xffffffffffffffffL;
++        base[i]      = 0xffffffffffffffffULL;
+         offset[i]    = 0;
+     }
+ 
+@@ -352,7 +352,7 @@ FastHufDecoder::buildTables (Int64 *base
+ 
+     for (int i = 0; i <= MAX_CODE_LEN; ++i)
+     {
+-        if (base[i] != 0xffffffffffffffffL)
++        if (base[i] != 0xffffffffffffffffULL)
+         {
+             _ljBase[i] = base[i] << (64 - i);
+         }
+@@ -362,7 +362,7 @@ FastHufDecoder::buildTables (Int64 *base
+             // Unused code length - insert dummy values
+             //
+ 
+-            _ljBase[i] = 0xffffffffffffffffL;
++            _ljBase[i] = 0xffffffffffffffffULL;
+         }
+     }
+ 
+@@ -417,7 +417,7 @@ FastHufDecoder::buildTables (Int64 *base
+ 
+     int minIdx = TABLE_LOOKUP_BITS;
+ 
+-    while (minIdx > 0 && _ljBase[minIdx] == 0xffffffffffffffffL)
++    while (minIdx > 0 && _ljBase[minIdx] == 0xffffffffffffffffULL)
+         minIdx--;
+ 
+     if (minIdx < 0)
+@@ -427,7 +427,7 @@ FastHufDecoder::buildTables (Int64 *base
+         // Set the min value such that the table is never tested.
+         //
+ 
+-        _tableMin = 0xffffffffffffffffL;
++        _tableMin = 0xffffffffffffffffULL;
+     }
      else
      {
-         //
-diff -purNEZbB a/IlmImf/ImfInputFile.cpp b/IlmImf/ImfInputFile.cpp
+diff -purN a/IlmImf/ImfInputFile.cpp b/IlmImf/ImfInputFile.cpp
 --- a/IlmImf/ImfInputFile.cpp	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfInputFile.cpp	2017-01-09 19:54:21.000000000 +0000
 @@ -854,6 +854,39 @@ InputFile::rawPixelData (int firstScanLi
@@ -329,13 +412,15 @@ diff -purNEZbB a/IlmImf/ImfInputFile.cpp b/IlmImf/ImfInputFile.cpp
  void
  InputFile::rawTileData (int &dx, int &dy,
  			int &lx, int &ly,
-diff -purNEZbB a/IlmImf/ImfInputFile.h b/IlmImf/ImfInputFile.h
+diff -purN a/IlmImf/ImfInputFile.h b/IlmImf/ImfInputFile.h
 --- a/IlmImf/ImfInputFile.h	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfInputFile.h	2017-01-09 19:54:21.000000000 +0000
-@@ -202,6 +202,29 @@ class IMF_EXPORT InputFile : public Gene
+@@ -201,7 +201,30 @@ class IMF_EXPORT InputFile : public Gene
+     void		rawPixelData (int firstScanLine,
  				      const char *&pixelData,
  				      int &pixelDataSize);
-                                      
+-                                     
++
 +
 +    //----------------------------------------------
 +    // Read a scanline's worth of raw pixel data 
@@ -362,7 +447,7 @@ diff -purNEZbB a/IlmImf/ImfInputFile.h b/IlmImf/ImfInputFile.h
      //--------------------------------------------------
      // Read a tile of raw pixel data from the file,
      // without uncompressing it (this function is
-diff -purNEZbB a/IlmImf/ImfInputPart.cpp b/IlmImf/ImfInputPart.cpp
+diff -purN a/IlmImf/ImfInputPart.cpp b/IlmImf/ImfInputPart.cpp
 --- a/IlmImf/ImfInputPart.cpp	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfInputPart.cpp	2017-01-09 19:54:21.000000000 +0000
 @@ -104,6 +104,14 @@ InputPart::rawPixelData (int firstScanLi
@@ -380,13 +465,14 @@ diff -purNEZbB a/IlmImf/ImfInputPart.cpp b/IlmImf/ImfInputPart.cpp
  void
  InputPart::rawTileData (int &dx, int &dy, int &lx, int &ly,
               const char *&pixelData, int &pixelDataSize)
-diff -purNEZbB a/IlmImf/ImfInputPart.h b/IlmImf/ImfInputPart.h
+diff -purN a/IlmImf/ImfInputPart.h b/IlmImf/ImfInputPart.h
 --- a/IlmImf/ImfInputPart.h	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfInputPart.h	2017-01-09 19:54:21.000000000 +0000
-@@ -66,6 +66,13 @@ class IMF_EXPORT InputPart
+@@ -66,7 +66,14 @@ class IMF_EXPORT InputPart
          void                rawPixelData (int firstScanLine,
                                            const char *&pixelData,
                                            int &pixelDataSize);
+-        void                rawTileData (int &dx, int &dy,
 +
 + 
 +        void                rawPixelDataToBuffer (int scanLine,
@@ -394,10 +480,11 @@ diff -purNEZbB a/IlmImf/ImfInputPart.h b/IlmImf/ImfInputPart.h
 +                                                  int &pixelDataSize) const;
 +
 +
-         void                rawTileData (int &dx, int &dy,
++       void                 rawTileData (int &dx, int &dy,
                                           int &lx, int &ly,
                                           const char *&pixelData,
-diff -purNEZbB a/IlmImf/ImfOptimizedPixelReading.h b/IlmImf/ImfOptimizedPixelReading.h
+                                          int &pixelDataSize);
+diff -purN a/IlmImf/ImfOptimizedPixelReading.h b/IlmImf/ImfOptimizedPixelReading.h
 --- a/IlmImf/ImfOptimizedPixelReading.h	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfOptimizedPixelReading.h	2017-01-09 19:54:21.000000000 +0000
 @@ -60,7 +60,7 @@ public:
@@ -409,7 +496,7 @@ diff -purNEZbB a/IlmImf/ImfOptimizedPixelReading.h b/IlmImf/ImfOptimizedPixelRea
  
  
  //------------------------------------------------------------------------
-diff -purNEZbB a/IlmImf/ImfScanLineInputFile.cpp b/IlmImf/ImfScanLineInputFile.cpp
+diff -purN a/IlmImf/ImfScanLineInputFile.cpp b/IlmImf/ImfScanLineInputFile.cpp
 --- a/IlmImf/ImfScanLineInputFile.cpp	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfScanLineInputFile.cpp	2017-01-09 19:54:21.000000000 +0000
 @@ -1264,7 +1264,7 @@ detectOptimizationMode (const vector<sli
@@ -460,7 +547,7 @@ diff -purNEZbB a/IlmImf/ImfScanLineInputFile.cpp b/IlmImf/ImfScanLineInputFile.c
 +
 +
  OPENEXR_IMF_INTERNAL_NAMESPACE_SOURCE_EXIT
-diff -purNEZbB a/IlmImf/ImfScanLineInputFile.h b/IlmImf/ImfScanLineInputFile.h
+diff -purN a/IlmImf/ImfScanLineInputFile.h b/IlmImf/ImfScanLineInputFile.h
 --- a/IlmImf/ImfScanLineInputFile.h	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfScanLineInputFile.h	2017-01-09 19:54:21.000000000 +0000
 @@ -184,6 +184,28 @@ class IMF_EXPORT ScanLineInputFile : pub
@@ -492,7 +579,7 @@ diff -purNEZbB a/IlmImf/ImfScanLineInputFile.h b/IlmImf/ImfScanLineInputFile.h
      struct Data;
  
    private:
-diff -purNEZbB a/IlmImf/ImfSimd.h b/IlmImf/ImfSimd.h
+diff -purN a/IlmImf/ImfSimd.h b/IlmImf/ImfSimd.h
 --- a/IlmImf/ImfSimd.h	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfSimd.h	2017-01-09 19:54:21.000000000 +0000
 @@ -50,7 +50,7 @@
@@ -504,7 +591,7 @@ diff -purNEZbB a/IlmImf/ImfSimd.h b/IlmImf/ImfSimd.h
      #include <emmintrin.h>
      #include <mmintrin.h>
  #endif
-diff -purNEZbB a/IlmImf/ImfVersion.h b/IlmImf/ImfVersion.h
+diff -purN a/IlmImf/ImfVersion.h b/IlmImf/ImfVersion.h
 --- a/IlmImf/ImfVersion.h	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/ImfVersion.h	2017-01-09 19:54:21.000000000 +0000
 @@ -109,8 +109,8 @@ const int ALL_FLAGS		= TILED_FLAG | LONG
@@ -518,7 +605,7 @@ diff -purNEZbB a/IlmImf/ImfVersion.h b/IlmImf/ImfVersion.h
  inline int   makeTiled (int version)	{return version | TILED_FLAG;}
  inline int   makeNotTiled (int version) {return version & ~TILED_FLAG;}
  inline int   getVersion (int version)	{return version & VERSION_NUMBER_FIELD;}
-diff -purNEZbB a/IlmImf/Makefile.am b/IlmImf/Makefile.am
+diff -purN a/IlmImf/Makefile.am b/IlmImf/Makefile.am
 --- a/IlmImf/Makefile.am	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImf/Makefile.am	2017-01-09 19:54:21.000000000 +0000
 @@ -127,6 +127,7 @@ libIlmImfinclude_HEADERS = ImfForward.h
@@ -529,7 +616,7 @@ diff -purNEZbB a/IlmImf/Makefile.am b/IlmImf/Makefile.am
  			   ImfEnvmap.h \
  			   ImfEnvmapAttribute.h \
  			   ImfInt64.h ImfRgba.h \
-diff -purNEZbB a/IlmImfTest/Makefile.am b/IlmImfTest/Makefile.am
+diff -purN a/IlmImfTest/Makefile.am b/IlmImfTest/Makefile.am
 --- a/IlmImfTest/Makefile.am	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImfTest/Makefile.am	2017-01-09 19:54:21.000000000 +0000
 @@ -74,6 +74,8 @@ EXTRA_DIST = comp_none.exr comp_piz.exr
@@ -541,14 +628,16 @@ diff -purNEZbB a/IlmImfTest/Makefile.am b/IlmImfTest/Makefile.am
               v1.7.test.planar.exr  v1.7.test.tiled.exr v1.7.test.1.exr v1.7.test.interleaved.exr \
               invalid_shared_attrs_multipart.exr \
  	     tiled_with_scanlineimage_type.exr scanline_with_tiledimage_type.exr \
-diff -purNEZbB a/IlmImfTest/testDwaCompressorSimd.cpp b/IlmImfTest/testDwaCompressorSimd.cpp
+diff -purN a/IlmImfTest/testDwaCompressorSimd.cpp b/IlmImfTest/testDwaCompressorSimd.cpp
 --- a/IlmImfTest/testDwaCompressorSimd.cpp	2014-08-10 05:21:45.000000000 +0100
 +++ b/IlmImfTest/testDwaCompressorSimd.cpp	2017-01-09 19:54:21.000000000 +0000
-@@ -172,7 +172,8 @@ void
+@@ -171,8 +171,9 @@ testCsc()
+ void
  testInterleave()
  {
-     const int bufferLen = 100000;
+-    const int bufferLen = 100000;
 -    const int numIter   = 10000;
++    const int bufferLen     = 100000;
 +    const int randomNumIter = 10000;
 +    const int lengthNumIter = 128;
      Rand48    rand48(0);
@@ -610,7 +699,7 @@ diff -purNEZbB a/IlmImfTest/testDwaCompressorSimd.cpp b/IlmImfTest/testDwaCompre
      delete[] srcA;
      delete[] srcB;
      delete[] dst;
-diff -purNEZbB a/Makefile.am b/Makefile.am
+diff -purN a/Makefile.am b/Makefile.am
 --- a/Makefile.am	2014-08-10 05:21:45.000000000 +0100
 +++ b/Makefile.am	2017-01-09 19:54:21.000000000 +0000
 @@ -13,7 +13,7 @@ DIST_SUBDIRS = \

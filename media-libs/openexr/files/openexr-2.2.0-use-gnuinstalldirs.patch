@@ -1,6 +1,6 @@
 diff -purN a/CMakeLists.txt b/CMakeLists.txt
 --- a/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/CMakeLists.txt	2017-08-15 10:30:44.047334117 +0100
++++ b/CMakeLists.txt	2017-08-17 12:09:18.649351487 +0100
 @@ -25,7 +25,7 @@ set(CPACK_SOURCE_PACKAGE_FILE_NAME
  set(CPACK_SOURCE_IGNORE_FILES
    "/.git*;/.cvs*;${CPACK_SOURCE_IGNORE_FILES}")
@@ -39,40 +39,17 @@ diff -purN a/CMakeLists.txt b/CMakeLists.txt
    )
  
  # Examples
-@@ -256,5 +256,28 @@ INSTALL ( FILES
+@@ -256,5 +256,5 @@ INSTALL ( FILES
    IlmImfExamples/previewImageExamples.h
    IlmImfExamples/namespaceAlias.h
    DESTINATION
 -  ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}/examples
 +  ${CMAKE_INSTALL_DOCDIR}/examples
    )
-+
-+# OpenEXR.pc
-+FILE ( WRITE ${CMAKE_BINARY_DIR}/OpenEXR.pc "prefix=${CMAKE_INSTALL_PREFIX}\n" )
-+FILE ( APPEND ${CMAKE_BINARY_DIR}/OpenEXR.pc "exec_prefix=\${prefix}
-+libdir=${CMAKE_INSTALL_FULL_LIBDIR}
-+includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}
-+OpenEXR_includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}/OpenEXR
-+
-+Name: OpenEXR
-+Description: OpenEXR library
-+Version: ${OPENEXR_VERSION}
-+
-+Libs: -L\${libdir} -lIlmImfUtil${OPENEXR_LIBSUFFIX} -lIlmImf${OPENEXR_LIBSUFFIX}
-+Cflags: -I\${OpenEXR_includedir}
-+Requires: IlmBase
-+Libs.private: -lz
-+")
-+
-+INSTALL ( FILES
-+  ${CMAKE_BINARY_DIR}/OpenEXR.pc
-+  DESTINATION
-+  ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-+)
 diff -purN a/exr2aces/CMakeLists.txt b/exr2aces/CMakeLists.txt
 --- a/exr2aces/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exr2aces/CMakeLists.txt	2017-08-15 10:31:30.365569555 +0100
-@@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exr2aces
++++ b/exr2aces/CMakeLists.txt	2017-08-17 12:08:58.890456233 +0100
+@@ -16,5 +16,5 @@ TARGET_LINK_LIBRARIES ( exr2aces
  INSTALL ( TARGETS
    exr2aces
    DESTINATION
@@ -81,8 +58,8 @@ diff -purN a/exr2aces/CMakeLists.txt b/exr2aces/CMakeLists.txt
  )
 diff -purN a/exrbuild/CMakeLists.txt b/exrbuild/CMakeLists.txt
 --- a/exrbuild/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrbuild/CMakeLists.txt	2017-08-15 10:31:41.225647766 +0100
-@@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrbuild
++++ b/exrbuild/CMakeLists.txt	2017-08-17 12:08:58.890456233 +0100
+@@ -16,5 +16,5 @@ TARGET_LINK_LIBRARIES ( exrbuild
  INSTALL ( TARGETS
    exrbuild
    DESTINATION
@@ -91,8 +68,8 @@ diff -purN a/exrbuild/CMakeLists.txt b/exrbuild/CMakeLists.txt
  )
 diff -purN a/exrenvmap/CMakeLists.txt b/exrenvmap/CMakeLists.txt
 --- a/exrenvmap/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrenvmap/CMakeLists.txt	2017-08-15 10:31:50.754722988 +0100
-@@ -22,5 +24,5 @@ TARGET_LINK_LIBRARIES ( exrenvmap
++++ b/exrenvmap/CMakeLists.txt	2017-08-17 12:08:58.890456233 +0100
+@@ -22,5 +22,5 @@ TARGET_LINK_LIBRARIES ( exrenvmap
  INSTALL ( TARGETS
    exrenvmap
    DESTINATION
@@ -101,8 +78,8 @@ diff -purN a/exrenvmap/CMakeLists.txt b/exrenvmap/CMakeLists.txt
  )
 diff -purN a/exrheader/CMakeLists.txt b/exrheader/CMakeLists.txt
 --- a/exrheader/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrheader/CMakeLists.txt	2017-08-15 10:32:01.476814704 +0100
-@@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrheader
++++ b/exrheader/CMakeLists.txt	2017-08-17 12:08:58.891456228 +0100
+@@ -16,5 +16,5 @@ TARGET_LINK_LIBRARIES ( exrheader
  INSTALL ( TARGETS
    exrheader
    DESTINATION
@@ -111,8 +88,8 @@ diff -purN a/exrheader/CMakeLists.txt b/exrheader/CMakeLists.txt
  )
 diff -purN a/exrmakepreview/CMakeLists.txt b/exrmakepreview/CMakeLists.txt
 --- a/exrmakepreview/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrmakepreview/CMakeLists.txt	2017-08-15 10:32:10.344896008 +0100
-@@ -17,5 +19,5 @@ TARGET_LINK_LIBRARIES ( exrmakepreview
++++ b/exrmakepreview/CMakeLists.txt	2017-08-17 12:08:58.891456228 +0100
+@@ -17,5 +17,5 @@ TARGET_LINK_LIBRARIES ( exrmakepreview
  INSTALL ( TARGETS
    exrmakepreview
    DESTINATION
@@ -121,8 +98,8 @@ diff -purN a/exrmakepreview/CMakeLists.txt b/exrmakepreview/CMakeLists.txt
  )
 diff -purN a/exrmaketiled/CMakeLists.txt b/exrmaketiled/CMakeLists.txt
 --- a/exrmaketiled/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrmaketiled/CMakeLists.txt	2017-08-15 10:32:19.059980538 +0100
-@@ -18,5 +20,5 @@ TARGET_LINK_LIBRARIES ( exrmaketiled
++++ b/exrmaketiled/CMakeLists.txt	2017-08-17 12:08:58.891456228 +0100
+@@ -18,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrmaketiled
  INSTALL ( TARGETS
    exrmaketiled
    DESTINATION
@@ -131,8 +108,8 @@ diff -purN a/exrmaketiled/CMakeLists.txt b/exrmaketiled/CMakeLists.txt
  )
 diff -purN a/exrmultipart/CMakeLists.txt b/exrmultipart/CMakeLists.txt
 --- a/exrmultipart/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrmultipart/CMakeLists.txt	2017-08-15 10:32:29.027082648 +0100
-@@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrmultipart
++++ b/exrmultipart/CMakeLists.txt	2017-08-17 12:08:58.891456228 +0100
+@@ -16,5 +16,5 @@ TARGET_LINK_LIBRARIES ( exrmultipart
  INSTALL ( TARGETS
    exrmultipart
    DESTINATION
@@ -141,8 +118,8 @@ diff -purN a/exrmultipart/CMakeLists.txt b/exrmultipart/CMakeLists.txt
  )
 diff -purN a/exrmultiview/CMakeLists.txt b/exrmultiview/CMakeLists.txt
 --- a/exrmultiview/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrmultiview/CMakeLists.txt	2017-08-15 10:32:36.983168174 +0100
-@@ -19,5 +21,5 @@ TARGET_LINK_LIBRARIES ( exrmultiview
++++ b/exrmultiview/CMakeLists.txt	2017-08-17 12:08:58.891456228 +0100
+@@ -19,5 +19,5 @@ TARGET_LINK_LIBRARIES ( exrmultiview
  INSTALL ( TARGETS
    exrmultiview
    DESTINATION
@@ -151,8 +128,8 @@ diff -purN a/exrmultiview/CMakeLists.txt b/exrmultiview/CMakeLists.txt
  )
 diff -purN a/exrstdattr/CMakeLists.txt b/exrstdattr/CMakeLists.txt
 --- a/exrstdattr/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/exrstdattr/CMakeLists.txt	2017-08-15 10:32:44.302249904 +0100
-@@ -16,5 +18,5 @@ TARGET_LINK_LIBRARIES ( exrstdattr
++++ b/exrstdattr/CMakeLists.txt	2017-08-17 12:08:58.892456222 +0100
+@@ -16,5 +16,5 @@ TARGET_LINK_LIBRARIES ( exrstdattr
  INSTALL ( TARGETS
    exrstdattr
    DESTINATION
@@ -161,8 +138,8 @@ diff -purN a/exrstdattr/CMakeLists.txt b/exrstdattr/CMakeLists.txt
  )
 diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
 --- a/IlmImf/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/IlmImf/CMakeLists.txt	2017-08-15 10:33:24.005740626 +0100
-@@ -167,7 +169,7 @@ SET_SOURCE_FILES_PROPERTIES (
++++ b/IlmImf/CMakeLists.txt	2017-08-17 12:08:58.892456222 +0100
+@@ -167,7 +167,7 @@ SET_SOURCE_FILES_PROPERTIES (
  INSTALL ( TARGETS
    IlmImf
    DESTINATION
@@ -171,7 +148,7 @@ diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
  )
  
  # Headers
-@@ -261,6 +263,6 @@ INSTALL ( FILES
+@@ -261,6 +261,6 @@ INSTALL ( FILES
    ImfDeepImageStateAttribute.h
    ImfFloatVectorAttribute.h
    DESTINATION
@@ -181,8 +158,8 @@ diff -purN a/IlmImf/CMakeLists.txt b/IlmImf/CMakeLists.txt
  
 diff -purN a/IlmImfUtil/CMakeLists.txt b/IlmImfUtil/CMakeLists.txt
 --- a/IlmImfUtil/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
-+++ b/IlmImfUtil/CMakeLists.txt	2017-08-15 10:33:58.541226060 +0100
-@@ -41,7 +42,7 @@ TARGET_LINK_LIBRARIES ( IlmImfUtil
++++ b/IlmImfUtil/CMakeLists.txt	2017-08-17 12:08:58.892456222 +0100
+@@ -41,7 +41,7 @@ TARGET_LINK_LIBRARIES ( IlmImfUtil
  INSTALL ( TARGETS
    IlmImfUtil
    DESTINATION
@@ -191,7 +168,7 @@ diff -purN a/IlmImfUtil/CMakeLists.txt b/IlmImfUtil/CMakeLists.txt
  )
  
  # Headers
-@@ -62,6 +63,6 @@ INSTALL ( FILES
+@@ -62,6 +62,6 @@ INSTALL ( FILES
    ImfImageDataWindow.h
    ImfImageChannelRenaming.h
    DESTINATION

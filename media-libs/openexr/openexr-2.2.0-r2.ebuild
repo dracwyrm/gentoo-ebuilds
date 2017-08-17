@@ -25,13 +25,12 @@ DEPEND="${RDEPEND}
 	>=sys-devel/autoconf-archive-2016.09.16"
 
 S="${WORKDIR}/openexr-${PV}/OpenEXR"
-
+#	"${FILESDIR}/${P}-fix-config.h-collision.patch"
 PATCHES=(
-	"${FILESDIR}/${P}-post-release-fixes.patch"
-	"${FILESDIR}/${P}-change-to-gnuinstalldirs-and-add-pkgconfig-file.patch"
-	"${FILESDIR}/${P}-use-ull-for-64-bit-literals.patch"
+	"${FILESDIR}/${P}-post-release-fixes-v20170109.patch"
+	"${FILESDIR}/${P}-use-gnuinstalldirs.patch"
+	"${FILESDIR}/${P}-fix-pkgconfig-file.patch"
 	"${FILESDIR}/${P}-fix-cpuid-on-abi_x86_32.patch"
-	"${FILESDIR}/${P}-fix-config.h-collision.patch"
 	"${FILESDIR}/${P}-add-legacy-symlink.patch"
 )
 
