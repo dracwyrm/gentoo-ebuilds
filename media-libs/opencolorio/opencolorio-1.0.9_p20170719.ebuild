@@ -17,7 +17,7 @@ SRC_URI="https://github.com/imageworks/OpenColorIO/archive/${MY_GIT_COMMIT}.tar.
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="~amd64 ~x86"
 IUSE="doc opengl pdf python cpu_flags_x86_sse2 test"
 
 RDEPEND="opengl? (
@@ -79,6 +79,7 @@ src_configure() {
 		-DOCIO_BUILD_PYGLUE="$(usex python)"
 		-DOCIO_USE_SSE="$(usex cpu_flags_x86_sse2)"
 		-DOCIO_BUILD_TESTS="$(usex test)"
+		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
 	)
 	cmake-utils_src_configure
 }

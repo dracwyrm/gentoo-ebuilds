@@ -18,8 +18,8 @@ IUSE="examples"
 
 # Only need hard blocker for 2.2.0 series. Can remove on version bump.
 RDEPEND="sys-libs/zlib[${MULTILIB_USEDEP}]
-	 ~media-libs/ilmbase-${PV}:=[${MULTILIB_USEDEP}]
-	 !!=media-libs/ilmbase-2.2.0"
+	~media-libs/ilmbase-${PV}:=[${MULTILIB_USEDEP}]
+	!!=media-libs/ilmbase-2.2.0"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	>=sys-devel/autoconf-archive-2016.09.16"

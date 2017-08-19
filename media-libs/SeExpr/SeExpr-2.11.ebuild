@@ -7,7 +7,6 @@ inherit cmake-utils
 
 DESCRIPTION="An embeddable expression evaluation engine"
 HOMEPAGE="http://www.disneyanimation.com/technology/seexpr.html"
-
 SRC_URI="https://github.com/wdas/SeExpr/archive/v2.11.tar.gz -> ${P}.tar.gz"
 
 LICENSE="Apache-2.0"
@@ -16,7 +15,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE="doc"
 
 RDEPEND="sys-devel/llvm:=
-	media-libs/libpng:=
+	media-libs/libpng:0=
 	virtual/opengl"
 
 DEPEND="${RDEPEND}

@@ -11,9 +11,7 @@ SRC_URI="https://github.com/KhronosGroup/OpenCOLLADA/archive/v${PV}.tar.gz -> ${
 
 LICENSE="MIT"
 SLOT="0"
-
 KEYWORDS="~amd64 ~ppc64 ~x86"
-
 IUSE="static-libs"
 
 # This is still needed to have so version numbers
@@ -63,6 +61,9 @@ src_install() {
 
 	dobin "${BUILD_DIR}/bin/DAEValidator"
 	dobin "${BUILD_DIR}/bin/OpenCOLLADAValidator"
+	# Need to be in same directory as above binaries
+	docinto "/usr/bin"
+	dodoc "${BUILD_DIR}/bin/COLLADAPhysX3Schema.xsd"
 	dodoc "${BUILD_DIR}/bin/collada_schema_1_4_1.xsd"
 	dodoc "${BUILD_DIR}/bin/collada_schema_1_5.xsd"
 }

@@ -8,14 +8,12 @@ inherit eutils flag-o-matic cmake-utils python-single-r1 versionator
 
 DESCRIPTION="Libs for the efficient manipulation of volumetric data"
 HOMEPAGE="http://www.openvdb.org"
-
 SRC_URI="https://github.com/dreamworksanimation/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MPL-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="+abi3-compat doc python"
-
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 RDEPEND="sys-libs/zlib
@@ -38,8 +36,9 @@ DEPEND="${RDEPEND}
 	dev-cpp/tbb
 	doc? ( app-doc/doxygen[latex] )"
 
-PATCHES=( "${FILESDIR}/${P}-use-pkg-config.patch"
-	  "${FILESDIR}/${P}-use-gnuinstalldirs.patch"
+PATCHES=(
+	"${FILESDIR}/${P}-use-pkg-config.patch"
+	"${FILESDIR}/${P}-use-gnuinstalldirs.patch"
 )
 
 src_configure() {

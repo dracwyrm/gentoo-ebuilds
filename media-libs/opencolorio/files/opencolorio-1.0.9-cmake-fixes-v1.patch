@@ -115,7 +115,7 @@ diff -purN a/docs/CMakeLists.txt b/docs/CMakeLists.txt
 -
  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build-html/
 -        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/OpenColorIO/html
-+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/$ENV{P}/html
++        DESTINATION ${CMAKE_INSTALL_DOCDIR}/html
          PATTERN .* EXCLUDE
  )
  
@@ -143,7 +143,7 @@ diff -purN a/docs/CMakeLists.txt b/docs/CMakeLists.txt
      
      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/build-latex/OpenColorIO.pdf
 -            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/OpenColorIO/)
-+            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/$ENV{P}/)
++            DESTINATION ${CMAKE_INSTALL_DOCDIR})
      
  endif()
 +

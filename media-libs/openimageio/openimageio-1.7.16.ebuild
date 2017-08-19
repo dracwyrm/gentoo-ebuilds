@@ -112,7 +112,7 @@ src_configure() {
 		-DVERBOSE=ON
 	)
 
-	if [[ ${EPYTHON} == python3* ]]; then
+	if python_is_python3; then
 		mycmakeargs+=( -DUSE_PYTHON3=ON -DPYTHON3_VERSION="${EPYTHON/python/}" )
 	else
 		mycmakeargs+=( -DUSE_PYTHON3=OFF -DPYTHON_VERSION="${EPYTHON/python/}" )

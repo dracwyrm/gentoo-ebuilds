@@ -8,6 +8,7 @@ inherit cmake-utils
 DESCRIPTION="Per-Face Texture Mapping for Production Rendering"
 HOMEPAGE="http://ptex.us/"
 SRC_URI="https://github.com/wdas/ptex/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+
 LICENSE="BSD"
 SLOT="0"
 RDEPEND="sys-libs/zlib"
@@ -16,7 +17,9 @@ DEPEND="${RDEPEND}
 
 KEYWORDS="~amd64 ~x86"
 
-PATCHES=( "${FILESDIR}/${P}-20170213.patch"
-	"${FILESDIR}/${P}-allow-custom-build-type.patch" )
+PATCHES=(
+	"${FILESDIR}/${P}-20170213.patch"
+	"${FILESDIR}/${P}-allow-custom-build-type.patch"
+)
 
-mycmakeargs=( -DCMAKE_INSTALL_DOCDIR="${EPREFIX}/usr/share/doc/${PF}/html" )
+mycmakeargs=( -DCMAKE_INSTALL_DOCDIR="share/doc/${PF}/html" )

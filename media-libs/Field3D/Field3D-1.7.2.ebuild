@@ -7,7 +7,6 @@ inherit cmake-utils
 
 DESCRIPTION="A library for storing voxel data"
 HOMEPAGE="http://opensource.imageworks.com/?p=field3d"
-
 SRC_URI="https://github.com/imageworks/Field3D/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"

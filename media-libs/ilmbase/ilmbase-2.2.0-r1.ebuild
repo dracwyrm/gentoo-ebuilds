@@ -14,13 +14,12 @@ LICENSE="BSD"
 SLOT="0/12" # based on SONAME
 KEYWORDS="~amd64 -arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~x64-macos ~x86-solaris"
 
-DOCS=( AUTHORS ChangeLog NEWS README )
-
 MULTILIB_WRAPPED_HEADERS=( /usr/include/OpenEXR/IlmBaseConfig.h )
 
 S="${WORKDIR}/openexr-${PV}/IlmBase"
 
-PATCHES=( "${FILESDIR}/${P}-post-release-fixes-v20170109.patch"
-	  "${FILESDIR}/${P}-use-gnuinstall-dirs.patch"
-	  "${FILESDIR}/${P}-fix-pkgconfig-file.patch"
+PATCHES=(
+	"${FILESDIR}/${P}-post-release-fixes-v20170109.patch"
+	"${FILESDIR}/${P}-use-gnuinstall-dirs.patch"
+	"${FILESDIR}/${P}-fix-pkgconfig-file.patch"
 )

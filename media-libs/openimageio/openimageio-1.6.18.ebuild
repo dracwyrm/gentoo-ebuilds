@@ -26,7 +26,7 @@ RDEPEND="dev-libs/boost:=
 	>=media-libs/libwebp-0.2.1:=
 	media-libs/openexr:=
 	media-libs/tiff:0=
-	sys-libs/zlib:0=
+	sys-libs/zlib
 	virtual/jpeg:0=
 	colorio? ( >=media-libs/opencolorio-1.0.7:0= )
 	ffmpeg? ( media-video/ffmpeg:0= )
@@ -39,9 +39,9 @@ RDEPEND="dev-libs/boost:=
 	)
 	ptex? ( media-libs/ptex )
 	qt4? (
-		dev-qt/qtcore:4=
-		dev-qt/qtgui:4=
-		dev-qt/qtopengl:4=
+		dev-qt/qtcore:4
+		dev-qt/qtgui:4
+		dev-qt/qtopengl:4
 		media-libs/glew:=
 	)
 	raw? ( media-libs/libraw:0= )

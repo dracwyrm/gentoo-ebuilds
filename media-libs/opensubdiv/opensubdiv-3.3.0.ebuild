@@ -4,15 +4,14 @@
 EAPI=6
 inherit cmake-utils toolchain-funcs versionator
 
+MY_PV="$(replace_all_version_separators '_')"
 DESCRIPTION="An Open-Source subdivision surface library"
 HOMEPAGE="http://graphics.pixar.com/opensubdiv/"
-
-MY_PV="$(replace_all_version_separators '_')"
-
 SRC_URI="https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v${MY_PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="ZLIB"
 SLOT="0"
+KEYWORDS="~amd64 ~x86"
 IUSE="cuda doc examples opencl openmp ptex tbb tutorials"
 
 RDEPEND="media-libs/glew:=
@@ -24,12 +23,11 @@ DEPEND="${RDEPEND}
 	tbb? ( dev-cpp/tbb )
 	doc? ( dev-python/docutils app-doc/doxygen )"
 
-KEYWORDS="~amd64 ~x86"
-
 S="${WORKDIR}/OpenSubdiv-${MY_PV}"
 
-PATCHES=( "${FILESDIR}/${P}-fix-quotes.patch"
-	  "${FILESDIR}/${P}-cmake-fixes.patch"
+PATCHES=(
+	"${FILESDIR}/${P}-fix-quotes.patch"
+	"${FILESDIR}/${P}-cmake-fixes.patch"
 )
 
 pkg_pretend() {

@@ -59,6 +59,8 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	game-engine? ( boost )
 	?? ( ffmpeg libav )"
 
+RESTRICT="test"
+
 RDEPEND="
 	${PYTHON_DEPS}
 	dev-python/numpy[${PYTHON_USEDEP}]
@@ -231,8 +233,6 @@ src_compile() {
 	fi
 }
 
-src_test() { :; }
-
 src_install() {
 	local i
 
@@ -244,13 +244,13 @@ src_install() {
 		dodoc -r "${CMAKE_USE_DIR}"/doc/python_api/BPY_API/*
 
 		docinto "html/API/blender"
-		dodoc -r "${CMAKE_USE_DIR}"/doc/doxygen/html/*
+		dodoc -r "${CMAKE_USE_DIR}"/doc/doxygen/html/.
 	fi
 
 	cmake-utils_src_install
 
 	# fix doc installdir
-	docinto "html"
+	docinto html
 	dodoc "${CMAKE_USE_DIR}"/release/text/readme.html
 	rm -rf "${ED%/}"/usr/share/doc/blender
 

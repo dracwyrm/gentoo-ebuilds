@@ -9,7 +9,6 @@ inherit check-reqs cmake-utils fdo-mime flag-o-matic gnome2-utils \
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
 HOMEPAGE="http://www.blender.org"
-
 SRC_URI="http://download.blender.org/source/${P}.tar.gz"
 
 # Blender can have letters in the version string,
@@ -102,8 +101,10 @@ DEPEND="${RDEPEND}
 		dev-python/sphinx[latex]
 	)"
 
-PATCHES=( "${FILESDIR}/${PN}-fix-install-rules.patch"
-	  "${FILESDIR}/${PN}-2.78-eigen-3.3.1.patch" )
+PATCHES=(
+	"${FILESDIR}/${PN}-fix-install-rules.patch"
+	"${FILESDIR}/${PN}-2.78-eigen-3.3.1.patch"
+)
 
 blender_check_requirements() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
@@ -142,7 +143,7 @@ src_prepare() {
 src_configure() {
 	# FIX: forcing '-funsigned-char' fixes an anti-aliasing issue with menu
 	# shadows, see bug #276338 for reference
-	append-flags -funsigned-char
+	#append-flags -funsigned-char
 	append-lfs-flags
 	append-cppflags -DOPENVDB_3_ABI_COMPATIBLE
 
@@ -253,7 +254,7 @@ src_install() {
 	cmake-utils_src_install
 
 	# fix doc installdir
-	docinto "html"
+	docinto html
 	dodoc "${CMAKE_USE_DIR}"/release/text/readme.html
 	rm -r "${ED%/}"/usr/share/doc/blender || die
 
