@@ -3,9 +3,7 @@
 
 EAPI=6
 
-PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} )
-
-inherit cmake-utils python-single-r1 vcs-snapshot
+inherit cmake-utils vcs-snapshot
 
 DESCRIPTION="A library for reading and writing images"
 HOMEPAGE="https://sites.google.com/site/openimageio/ https://github.com/OpenImageIO"
@@ -21,12 +19,11 @@ X86_CPU_FEATURES=(
 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
 
-IUSE="colorio doc ffmpeg field3d gif jpeg opencv opengl ptex python qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
-REQUIRED_USE="${PYTHON_REQUIRED_USE}"
+IUSE="colorio doc ffmpeg field3d gif jpeg opencv opengl ptex qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
 
 RESTRICT="test" #431412
 
-RDEPEND=">=dev-libs/boost-1.62:=[python?,${PYTHON_USEDEP}]
+RDEPEND=">=dev-libs/boost-1.62:=
 	dev-libs/pugixml:=
 	>=media-libs/ilmbase-2.2.0-r1:=
 	media-libs/libpng:0=
@@ -40,16 +37,12 @@ RDEPEND=">=dev-libs/boost-1.62:=[python?,${PYTHON_USEDEP}]
 	field3d? ( media-libs/Field3D )
 	gif? ( media-libs/giflib )
 	jpeg? ( virtual/jpeg:= )
-	opencv? (
-		>=media-libs/opencv-2.3:=
-		python? ( >=media-libs/opencv-2.4.8[python,${PYTHON_USEDEP}] )
-	)
+	opencv? ( >=media-libs/opencv-2.3:= )
 	opengl? (
 		virtual/glu
 		virtual/opengl
 	)
 	ptex? ( media-libs/ptex:= )
-	python? ( ${PYTHON_DEPS} )
 	qt4? (
 		dev-qt/qtcore:4
 		dev-qt/qtgui:4
@@ -62,17 +55,9 @@ RDEPEND=">=dev-libs/boost-1.62:=[python?,${PYTHON_USEDEP}]
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
 
+PATCHES=( "${FILESDIR}/${P}-use-GNUInstallDirs.patch" )
+
 DOCS=( src/doc/${PN}.pdf )
-
-pkg_setup() {
-	use python && python-single-r1_pkg_setup
-}
-
-src_prepare() {
-	cmake-utils_src_prepare
-
-	use python && python_fix_shebang .
-}
 
 src_configure() {
 	# Build with SIMD support
@@ -86,9 +71,7 @@ src_configure() {
 	[[ -z $mysimd ]] && mysimd="0"
 
 	local mycmakeargs=(
-		-DLIB_INSTALL_DIR="/usr/$(get_libdir)"
 		-DOIIO_BUILD_TESTS=OFF # as they are RESTRICTed
-		$(use python && echo -DPYLIB_INSTALL_DIR="$(python_get_sitedir)")
 		-DSTOP_ON_WARNING=OFF
 		-DUSE_NUKE=OFF
 		-DUSE_EXTERNAL_PUGIXML=ON
@@ -105,18 +88,14 @@ src_configure() {
 		-DUSE_OPENJPEG=$(usex jpeg)
 		-DUSE_OPENSSL=$(usex ssl)
 		-DUSE_PTEX=$(usex ptex)
-		-DUSE_PYTHON=$(usex python)
+		-DUSE_PYTHON=OFF
+		-DUSE_PYTHON3=OFF
 		-DUSE_LIBRAW=$(usex raw)
 		-DUSE_QT=$(usex qt4)
 		-DUSE_SIMD=${mysimd%,}
 		-DVERBOSE=ON
+		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
 	)
-
-	if python_is_python3; then
-		mycmakeargs+=( -DUSE_PYTHON3=ON -DPYTHON3_VERSION="${EPYTHON/python/}" )
-	else
-		mycmakeargs+=( -DUSE_PYTHON3=OFF -DPYTHON_VERSION="${EPYTHON/python/}" )
-	fi
 
 	cmake-utils_src_configure
 }

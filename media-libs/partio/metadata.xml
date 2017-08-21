@@ -16,4 +16,7 @@
 	<longdescription>
 		A library for particle IO and manipulation
 	</longdescription>
+	<upstream>
+		<remote-id type="github">wdas/partio</remote-id>
+	</upstream>
 </pkgmetadata>

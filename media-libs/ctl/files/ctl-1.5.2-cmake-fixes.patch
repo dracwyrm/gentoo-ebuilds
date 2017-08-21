@@ -99,14 +99,12 @@ diff -purN a/config/CTL.pc.in b/config/CTL.pc.in
 diff -purN a/config/OpenEXR_CTL.pc.in b/config/OpenEXR_CTL.pc.in
 --- a/config/OpenEXR_CTL.pc.in	2014-06-03 02:11:24.000000000 +0100
 +++ b/config/OpenEXR_CTL.pc.in	2017-08-15 12:58:19.539342327 +0100
-@@ -1,11 +1,12 @@
+@@ -1,11 +1,10 @@
 -prefix=@prefix@
 -exec_prefix=@exec_prefix@
 -libdir=@libdir@
 -includedir=@includedir@
 -OpenEXR_includedir=@includedir@/OpenEXR
-+prefix=@CMAKE_INSTALL_PREFIX@
-+exec_prefix=@CMAKE_INSTALL_PREFIX@
 +libdir=@CMAKE_INSTALL_FULL_LIBDIR@
 +includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
 +OpenEXR_includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@/OpenEXR

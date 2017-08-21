@@ -33,6 +33,7 @@ RDEPEND="sys-libs/zlib
 	)"
 
 DEPEND="${RDEPEND}
+	virtual/pkgconfig
 	dev-cpp/tbb
 	doc? ( app-doc/doxygen[latex] )"
 

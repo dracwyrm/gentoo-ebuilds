@@ -16,4 +16,7 @@
 	<longdescription>
 		An embeddable expression evaluation engine
 	</longdescription>
+	<upstream>
+		<remote-id type="github">wdas/SeExpr</remote-id>
+	</upstream>
 </pkgmetadata>

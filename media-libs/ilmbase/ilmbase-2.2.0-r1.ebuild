@@ -14,6 +14,8 @@ LICENSE="BSD"
 SLOT="0/12" # based on SONAME
 KEYWORDS="~amd64 -arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~x64-macos ~x86-solaris"
 
+DEPEND="virtual/pkgconfig"
+
 MULTILIB_WRAPPED_HEADERS=( /usr/include/OpenEXR/IlmBaseConfig.h )
 
 S="${WORKDIR}/openexr-${PV}/IlmBase"

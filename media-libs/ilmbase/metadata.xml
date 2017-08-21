@@ -4,4 +4,7 @@
 	<maintainer type="project">
 		<email>media-video@gentoo.org</email>
 	</maintainer>
+	<upstream>
+		<remote-id type="github">openexr/openexr</remote-id>
+	</upstream>
 </pkgmetadata>

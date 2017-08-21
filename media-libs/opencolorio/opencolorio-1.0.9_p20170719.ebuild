@@ -32,6 +32,7 @@ RDEPEND="opengl? (
 	dev-libs/tinyxml
 	"
 DEPEND="${RDEPEND}
+	virtual/pkgconfig
 	doc? (
 		pdf? ( dev-python/sphinx[latex,${PYTHON_USEDEP}] )
 		!pdf? ( dev-python/sphinx[${PYTHON_USEDEP}] )

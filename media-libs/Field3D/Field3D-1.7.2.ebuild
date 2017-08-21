@@ -18,7 +18,8 @@ RDEPEND=">=dev-libs/boost-1.62:=
 	virtual/mpi
 	>=media-libs/ilmbase-2.2.0:="
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	virtual/pkgconfig"
 
 PATCHES=( "${FILESDIR}/Field3D-1.7.2-openexr-fixes.patch" )
 

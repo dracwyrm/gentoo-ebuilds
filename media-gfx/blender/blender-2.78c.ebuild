@@ -94,6 +94,7 @@ RDEPEND="${PYTHON_DEPS}
 	valgrind? ( dev-util/valgrind )"
 
 DEPEND="${RDEPEND}
+	virtual/pkgconfig
 	>=dev-cpp/eigen-3.2.8:3
 	nls? ( sys-devel/gettext )
 	doc? (
@@ -107,10 +108,12 @@ PATCHES=(
 )
 
 blender_check_requirements() {
-	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+	if [[ ${MERGE_TYPE} != binary ]]; then
+		use openmp && tc-check-openmp
 
-	if use doc; then
-		CHECKREQS_DISK_BUILD="4G" check-reqs_pkg_pretend
+		if use doc; then
+			CHECKREQS_DISK_BUILD="4G" check-reqs_pkg_pretend
+		fi
 	fi
 }
 

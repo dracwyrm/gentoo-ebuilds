@@ -4,8 +4,6 @@ Date: Mon, 22 May 2017 23:02:26 +0100
 Subject: [PATCH] Addressed issue 992.
 
 - Fixed dangling quotes produced by cmake file.
-- Added token stringification to convert OPENSUBDIV_VERSION_STRING into
-a string.
 ---
  CMakeLists.txt                               | 2 +-
  examples/glEvalLimit/glEvalLimit.cpp         | 4 +++-

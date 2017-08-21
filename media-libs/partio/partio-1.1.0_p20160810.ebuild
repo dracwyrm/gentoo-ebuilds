@@ -9,7 +9,7 @@ inherit cmake-utils vcs-snapshot python-single-r1
 DESCRIPTION="A library for particle IO and manipulation"
 HOMEPAGE="http://www.disneyanimation.com/technology/partio.html"
 
-MY_GIT_COMMIT="7f3e0d19e1931a591f53d4485bfffc665724a967"
+MY_GIT_COMMIT="2a6c32e1da80104c153e0509b5e16a6dcc9d31de"
 SRC_URI="https://github.com/wdas/${PN}/archive/${MY_GIT_COMMIT}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
@@ -17,7 +17,6 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
 IUSE="doc"
-
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 RDEPEND="${PYTHON_DEPS}
@@ -29,8 +28,6 @@ RDEPEND="${PYTHON_DEPS}
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )
 	dev-lang/swig:*"
-
-PATCHES=( "${FILESDIR}/${PN}-1.1.0-cmake-fixes.patch" )
 
 src_prepare() {
 	cmake-utils_src_prepare

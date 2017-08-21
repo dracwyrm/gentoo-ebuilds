@@ -15,7 +15,7 @@ KEYWORDS="~amd64 ~ppc64 ~x86"
 
 X86_CPU_FEATURES=( sse2:sse2 sse3:sse3 ssse3:ssse3 sse4_1:sse4.1 sse4_2:sse4.2 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
-IUSE="colorio ffmpeg gif jpeg2k opencv opengl ptex qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
+IUSE="colorio doc ffmpeg field3d gif jpeg2k opencv opengl ptex qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
 
 RESTRICT="test" #431412
 
@@ -49,13 +49,15 @@ RDEPEND="dev-libs/boost:=
 	truetype? ( media-libs/freetype:2= )"
 DEPEND="${RDEPEND}"
 
+PATCHES=( ${FILESDIR}/${P}-Use-GNUInstallDirs.patch )
+
 DOCS=( CHANGES CREDITS README.rst src/doc/${PN}.pdf )
 
 src_prepare() {
 	cmake-utils_src_prepare
 
 	# Add more Boost versions.
-	sed -e 's|"1.60"|"1.63" "1.62" "1.61" "1.60"|' \
+	sed -e 's|"1.60"|"1.64" "1.63" "1.62" "1.61" "1.60"|' \
 	    -i src/cmake/externalpackages.cmake || die
 }
 
@@ -71,14 +73,13 @@ src_configure() {
 	[[ -z $mysimd ]] && mysimd="0"
 
 	local mycmakeargs=(
-		-DLIB_INSTALL_DIR="/usr/$(get_libdir)"
 		-DBUILDSTATIC=OFF
 		-DLINKSTATIC=OFF
-		-DINSTALL_DOCS=OFF
+		-DINSTALL_DOCS=$(usex doc)
 		-DOIIO_BUILD_TESTS=OFF # as they are RESTRICTed
 		-DSTOP_ON_WARNING=OFF
 		-DUSE_EXTERNAL_PUGIXML=ON
-		-DUSE_FIELD3D=OFF # missing in Portage
+		-DUSE_FIELD3D=$(usex field3d)
 		-DUSE_FREETYPE=$(usex truetype)
 		-DUSE_FFMPEG=$(usex ffmpeg)
 		-DUSE_GIF=$(usex gif)
