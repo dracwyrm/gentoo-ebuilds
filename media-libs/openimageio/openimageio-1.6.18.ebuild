@@ -30,6 +30,7 @@ RDEPEND="dev-libs/boost:=
 	virtual/jpeg:0=
 	colorio? ( >=media-libs/opencolorio-1.0.7:0= )
 	ffmpeg? ( media-video/ffmpeg:0= )
+	field3d? ( media-libs/Field3D )
 	gif? ( media-libs/giflib:0= )
 	jpeg2k? ( >=media-libs/openjpeg-1.5:0= )
 	opencv? ( media-libs/opencv:= )
