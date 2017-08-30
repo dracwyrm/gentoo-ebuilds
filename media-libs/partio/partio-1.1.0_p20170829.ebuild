@@ -9,7 +9,7 @@ inherit cmake-utils vcs-snapshot python-single-r1
 DESCRIPTION="A library for particle IO and manipulation"
 HOMEPAGE="http://www.disneyanimation.com/technology/partio.html"
 
-MY_GIT_COMMIT="2a6c32e1da80104c153e0509b5e16a6dcc9d31de"
+MY_GIT_COMMIT="2774ef3958da46d9f8a4230ebda9e04b1aa8f4e5"
 SRC_URI="https://github.com/wdas/${PN}/archive/${MY_GIT_COMMIT}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
@@ -23,21 +23,24 @@ RDEPEND="${PYTHON_DEPS}
 	media-libs/freeglut
 	virtual/opengl
 	sys-libs/zlib
-	media-libs/SeExpr"
+"
 
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )
-	dev-lang/swig:*"
+	dev-lang/swig:*
+"
 
 src_prepare() {
 	cmake-utils_src_prepare
 
 	sed -e '/ADD_SUBDIRECTORY (src\/tests)/d' -i CMakeLists.txt || die
-	sed -e "s|doc/partio|doc/${PF}|" -i src/doc/CMakeLists.txt || die
 }
 
 src_configure() {
-	local mycmakeargs=( $(cmake-utils_use_find_package doc Doxygen) )
+	local mycmakeargs=(
+		$(cmake-utils_use_find_package doc Doxygen)
+		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
+	)
 
 	cmake-utils_src_configure
 }
