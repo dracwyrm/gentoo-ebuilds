@@ -1,4 +1,4 @@
-From 75b1aca8122c3774817a0964b369e733c735b5b5 Mon Sep 17 00:00:00 2001
+From 9bba4a1acfc42e09780d754245c1e8514a081a70 Mon Sep 17 00:00:00 2001
 From: Jonathan Scruggs <j.scruggs@gmail.com>
 Date: Sat, 19 Aug 2017 12:18:02 +0100
 Subject: [PATCH] oiio/RB-1.7: Use GNUInstallDirs for installation paths
@@ -8,23 +8,36 @@ Change all hard coded paths to GNUInstallDirs varibles.
 Remove variable setting in main CMakeFiles.txt file since
 GNUInstallDirs does all this for you.
 
+Fix boost python detection and clean up python detection
+
 Signed-off by: Jonathan Scruggs <j.scruggs@gmail.com>
 ---
- CMakeLists.txt                   | 63 +++++-----------------------------------
- src/cmake/oiio_macros.cmake      |  6 ++--
- src/doc/CMakeLists.txt           | 16 +++++-----
- src/fonts/CMakeLists.txt         |  6 ++--
- src/include/CMakeLists.txt       |  6 ++--
- src/nuke/txReader/CMakeLists.txt |  2 +-
- src/nuke/txWriter/CMakeLists.txt |  2 +-
- src/python/CMakeLists.txt        | 18 ++++++------
- 8 files changed, 37 insertions(+), 82 deletions(-)
+ CMakeLists.txt                   |  73 ++--------------
+ src/cmake/externalpackages.cmake |  32 ++++---
+ src/cmake/oiio_macros.cmake      |   6 +-
+ src/doc/CMakeLists.txt           |  16 ++--
+ src/fonts/CMakeLists.txt         |   6 +-
+ src/include/CMakeLists.txt       |   6 +-
+ src/nuke/txReader/CMakeLists.txt |   2 +-
+ src/nuke/txWriter/CMakeLists.txt |   2 +-
+ src/python/CMakeLists.txt        | 177 ++++++++++-----------------------------
+ 9 files changed, 96 insertions(+), 224 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ca8da565..6821e1c6 100644
+index ca8da565..1bad3f31 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -353,6 +353,8 @@ if (LINKSTATIC)
+@@ -181,9 +181,6 @@ set (USE_OPENGL ON CACHE BOOL "Include OpenGL support")
+ set (USE_QT ON CACHE BOOL "Include Qt support")
+ set (FORCE_OPENGL_1 OFF CACHE BOOL "Force iv to use OpenGL's fixed pipeline")
+ set (USE_PYTHON ON CACHE BOOL "Build the Python bindings")
+-set (USE_PYTHON3 OFF CACHE BOOL "Build the Python3 bindings")
+-set (PYTHON_VERSION 2.6)
+-set (PYTHON3_VERSION 3.2)
+ set (PYLIB_INCLUDE_SONAME OFF CACHE BOOL "If ON, soname/soversion will be set for Python module library")
+ set (PYLIB_LIB_PREFIX OFF CACHE BOOL "If ON, prefix the Python module with 'lib'")
+ set (USE_FIELD3D ON CACHE BOOL "Use Field3D if found")
+@@ -353,6 +350,8 @@ if (LINKSTATIC)
      set (Boost_USE_STATIC_LIBS 1)
  endif ()
  
@@ -33,7 +46,7 @@ index ca8da565..6821e1c6 100644
  set (CMAKE_MODULE_PATH
       "${PROJECT_SOURCE_DIR}/src/cmake/modules"
       "${PROJECT_SOURCE_DIR}/src/cmake")
-@@ -370,59 +372,6 @@ include_directories (
+@@ -370,59 +369,6 @@ include_directories (
    )
  
  
@@ -93,7 +106,7 @@ index ca8da565..6821e1c6 100644
  set (PLUGIN_SEARCH_PATH "" CACHE STRING "Default plugin search path")
  
  set (INSTALL_DOCS ON CACHE BOOL "Install documentation")
-@@ -440,9 +389,9 @@ if (CMAKE_SKIP_RPATH)
+@@ -440,9 +386,9 @@ if (CMAKE_SKIP_RPATH)
      set (CMAKE_SKIP_RPATH FALSE)
      unset (CMAKE_INSTALL_RPATH)
  else ()
@@ -105,8 +118,19 @@ index ca8da565..6821e1c6 100644
      endif ()
      set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
  endif ()
-@@ -531,7 +480,9 @@ if (USE_PYTHON3 AND boost_PYTHON_FOUND AND NOT BUILD_OIIOUTIL_ONLY)
+@@ -521,17 +467,14 @@ if (NOT EMBEDPLUGINS AND NOT BUILD_OIIOUTIL_ONLY)
+     endforeach ()
  endif ()
+ 
+-if (USE_PYTHON AND boost_PYTHON_FOUND AND NOT BUILD_OIIOUTIL_ONLY)
++if (PYTHONLIBS_FOUND AND boost_PYTHON_FOUND AND NOT BUILD_OIIOUTIL_ONLY)
+     add_subdirectory (src/python)
+ endif ()
+-if (USE_PYTHON3 AND boost_PYTHON_FOUND AND NOT BUILD_OIIOUTIL_ONLY)
+-    #build the python3 module in a different binary directory since it will
+-    #have the same name as the python2 module (e.g. OpenImageIO.so)
+-    add_subdirectory (src/python src/python3)
+-endif ()
  
  add_subdirectory (src/include)
 -add_subdirectory (src/doc)
@@ -116,6 +140,68 @@ index ca8da565..6821e1c6 100644
  add_subdirectory (src/fonts)
  add_subdirectory (src/nuke)
  
+diff --git a/src/cmake/externalpackages.cmake b/src/cmake/externalpackages.cmake
+index 03faf7bd..970aef6b 100644
+--- a/src/cmake/externalpackages.cmake
++++ b/src/cmake/externalpackages.cmake
+@@ -107,6 +107,25 @@ endif ()
+ # OpenEXR setup
+ ###########################################################################
+ 
++###########################################################################
++# Python Setup
++
++if (USE_PYTHON)
++    find_package (PythonLibs REQUIRED)
++    EXECUTE_PROCESS(COMMAND python -c "import sys;print('%s.%s'%sys.version_info[0:2])"
++                OUTPUT_VARIABLE PYTHON_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
++
++    if (VERBOSE)
++        message (STATUS "Python found ${PYTHONLIBS_FOUND} ")
++        message (STATUS "Python include dirs ${PYTHON_INCLUDE_PATH}")
++        message (STATUS "Python libraries    ${PYTHON_LIBRARIES}")
++        message (STATUS "Python to include 'lib' prefix: ${PYLIB_LIB_PREFIX}")
++        message (STATUS "Python to include SO version: ${PYLIB_INCLUDE_SONAME}")
++    endif ()
++endif ()
++
++# Python Setup
++###########################################################################
+ 
+ ###########################################################################
+ # Boost setup
+@@ -115,12 +134,6 @@ if (NOT Boost_FIND_QUIETLY)
+     message (STATUS "BOOST_ROOT ${BOOST_ROOT}")
+ endif ()
+ 
+-if (NOT DEFINED Boost_ADDITIONAL_VERSIONS)
+-  set (Boost_ADDITIONAL_VERSIONS "1.60" "1.59" "1.58" "1.57" "1.56"
+-                                 "1.55" "1.54" "1.53" "1.52" "1.51" "1.50"
+-                                 "1.49" "1.48" "1.47" "1.46" "1.45" "1.44"
+-                                 "1.43" "1.43.0" "1.42" "1.42.0")
+-endif ()
+ if (LINKSTATIC)
+     set (Boost_USE_STATIC_LIBS   ON)
+ endif ()
+@@ -131,15 +144,14 @@ if (BOOST_CUSTOM)
+     # Boost_VERSION, Boost_INCLUDE_DIRS, Boost_LIBRARY_DIRS, Boost_LIBRARIES.
+ else ()
+     set (Boost_COMPONENTS filesystem regex system thread)
+-    find_package (Boost 1.42 REQUIRED
+-                  COMPONENTS ${Boost_COMPONENTS}
+-                 )
++    find_package (Boost REQUIRED COMPONENTS ${Boost_COMPONENTS})
+ 
+     # Try to figure out if this boost distro has Boost::python.  If we
+     # include python in the component list above, cmake will abort if
+     # it's not found.  So we resort to checking for the boost_python
+     # library's existance to get a soft failure.
+-    find_library (my_boost_python_lib boost_python
++    find_library (my_boost_python_lib
++                  NAMES boost_python boost_python-${PYTHON_VERSION}
+                   PATHS ${Boost_LIBRARY_DIRS} NO_DEFAULT_PATH)
+     mark_as_advanced (my_boost_python_lib)
+     if (NOT my_boost_python_lib AND Boost_SYSTEM_LIBRARY_RELEASE)
 diff --git a/src/cmake/oiio_macros.cmake b/src/cmake/oiio_macros.cmake
 index ee7be325..bfd07413 100644
 --- a/src/cmake/oiio_macros.cmake
@@ -182,7 +268,7 @@ index 1e296da0..da17ed9d 100644
  endif ()
  
 diff --git a/src/include/CMakeLists.txt b/src/include/CMakeLists.txt
-index b063e6f3..6a19efab 100644
+index b063e6f3..d5d92067 100644
 --- a/src/include/CMakeLists.txt
 +++ b/src/include/CMakeLists.txt
 @@ -19,5 +19,7 @@ set (OIIO_BUILD_CPP14 ${USE_CPP14})
@@ -216,29 +302,162 @@ index 66312bc4..fcdf2d64 100644
 -    LIBRARY DESTINATION "${LIB_INSTALL_DIR}/nuke")
 +    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}/nuke")
 diff --git a/src/python/CMakeLists.txt b/src/python/CMakeLists.txt
-index 81a4a890..f0c575ee 100644
+index 81a4a890..2152004a 100644
 --- a/src/python/CMakeLists.txt
 +++ b/src/python/CMakeLists.txt
-@@ -4,10 +4,15 @@ string (REGEX MATCH "python3\$" _py3_subdir ${CMAKE_CURRENT_BINARY_DIR})
- 
- if (_py3_subdir)
-     set (BUILD_PY3 ON)
-+    set (PYTHON_DIR python3)
- else ()
-     set (BUILD_PY3 OFF)
-+    set (PYTHON_DIR python)
+@@ -1,143 +1,56 @@
+-#if the CMAKE_CURRENT_BINARY_DIR is python3, then build the python3 module,
+-#otherwise the python2 module
+-string (REGEX MATCH "python3\$" _py3_subdir ${CMAKE_CURRENT_BINARY_DIR})
+-
+-if (_py3_subdir)
+-    set (BUILD_PY3 ON)
+-else ()
+-    set (BUILD_PY3 OFF)
+-endif ()
+-
+-if (NOT BOOST_CUSTOM AND NOT BUILD_PY3)
+-    #Unset those, otherwise find_package(PythonLibs) will pick up old stuff
+-    #if it has been run before
+-    unset(Python_ADDITIONAL_VERSIONS)
+-    unset(PYTHON_LIBRARY)
+-    unset(PYTHON_LIBRARY CACHE)
+-    unset(PYTHON_INCLUDE_DIR)
+-    unset(PYTHON_INCLUDE_DIR CACHE)
+-    unset(PYTHON_INCLUDE_PATH)
+-    unset(PYTHON_INCLUDE_PATH CACHE)
+-    find_package (PythonLibs ${PYTHON_VERSION} REQUIRED)
+-    find_package (Boost 1.42 REQUIRED COMPONENTS python)
+-elseif (BOOST_CUSTOM AND NOT BUILD_PY3)
+-    find_package (PythonLibs ${PYTHON_VERSION} REQUIRED)
+-else ()
+-    #BOOST_CUSTOM is ignored for python3
+-
+-    #Unset those, otherwise find_package(PythonLibs) will pick up old stuff
+-    #if it has been run before
+-    unset(PYTHON_LIBRARY)
+-    unset(PYTHON_LIBRARY CACHE)
+-    unset(PYTHON_INCLUDE_DIR)
+-    unset(PYTHON_INCLUDE_DIR CACHE)
+-    unset(PYTHON_INCLUDE_PATH)
+-    unset(PYTHON_INCLUDE_PATH CACHE)
+-
+-    #cmake 2.8 does not look for python 3.4
+-    set(Python_ADDITIONAL_VERSIONS 3.4)
+-    find_package (PythonInterp ${PYTHON3_VERSION} REQUIRED)
+-    find_package (PythonLibs ${PYTHON3_VERSION} REQUIRED)
+-
+-    #Finding the python3 component for boost is a little tricky, since it has
+-    #different names on different systems. Try the most common ones
+-    #(boost_python3, boost_python-py34, …).
+-    foreach (_boost_py3_lib python3 python-py34 python-py33 python-py32)
+-        find_package (Boost 1.42 QUIET COMPONENTS ${_boost_py3_lib})
+-        string (TOUPPER ${_boost_py3_lib} boost_py3_lib_name)
+-        if (Boost_${boost_py3_lib_name}_FOUND)
+-            #Not the most beautiful thing to do, but that gets them included in
+-            #the target_link_libraries(…) call farther down
+-            set (Boost_PYTHON_LIBRARIES ${Boost_${boost_py3_lib_name}_LIBRARIES})
+-            break ()
+-        endif ()
+-    endforeach ()
+-endif ()
+-
+-if (APPLE)
+-#    set (PYTHON_LIBRARIES /opt/local/lib)
+-endif ()
+-
+ # Disable some warnings for Clang, it's a little too picky with boost
+ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+     add_definitions ("-Wno-array-bounds")
  endif ()
  
-+set (PYLIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/${PYTHON_DIR}/site-packages CACHE STRING
-+     "Install location for python libraries (relative to CMAKE_INSTALL_PREFIX or absolute)")
+-if (BUILD_PY3)
+-    set (target_name Py3OpenImageIO)
++set (target_name PyOpenImageIO)
 +
- if (NOT BOOST_CUSTOM AND NOT BUILD_PY3)
-     #Unset those, otherwise find_package(PythonLibs) will pick up old stuff
-     #if it has been run before
-@@ -123,15 +128,10 @@ if (BOOST_CUSTOM OR Boost_FOUND AND PYTHONLIBS_FOUND)
-                                SUFFIX ".pyd")
-     endif()
-     
++set (python_srcs py_imageinput.cpp py_imageoutput.cpp
++    py_imagecache.cpp py_imagespec.cpp py_roi.cpp
++    py_imagebuf.cpp py_imagebufalgo.cpp
++    py_typedesc.cpp py_paramvalue.cpp py_deepdata.cpp
++    py_oiio.cpp)
++
++include_directories (${PYTHON_INCLUDE_PATH} ${Boost_INCLUDE_DIRS})
++add_library (${target_name} MODULE ${python_srcs})
++if (APPLE)
++    target_link_libraries (${target_name} OpenImageIO ${Boost_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${CMAKE_DL_LIBS})
++    set_target_properties (${target_name} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+ else ()
+-    set (target_name PyOpenImageIO)
++    target_link_libraries (${target_name} OpenImageIO ${Boost_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} ${CMAKE_DL_LIBS})
+ endif ()
+ 
+-if (BOOST_CUSTOM OR Boost_FOUND AND PYTHONLIBS_FOUND)
+-
+-    set (python_srcs py_imageinput.cpp py_imageoutput.cpp
+-         py_imagecache.cpp py_imagespec.cpp py_roi.cpp
+-         py_imagebuf.cpp py_imagebufalgo.cpp
+-         py_typedesc.cpp py_paramvalue.cpp py_deepdata.cpp
+-         py_oiio.cpp)
++# Exclude the 'lib' prefix from the name
++if(NOT PYLIB_LIB_PREFIX)
++    add_definitions("-DOIIO_PYMODULE_NAME=OpenImageIO")
++    set_target_properties (${target_name} PROPERTIES
++                           OUTPUT_NAME OpenImageIO
++                           PREFIX "")
++else()
++    add_definitions("-DOIIO_PYMODULE_NAME=PyOpenImageIO")
++    set_target_properties (${target_name} PROPERTIES
++                           OUTPUT_NAME PyOpenImageIO
++                           PREFIX lib)
++endif ()
+ 
++if(PYLIB_INCLUDE_SONAME)
+     if (VERBOSE)
+-        message (STATUS "Python found ${PYTHONLIBS_FOUND} ")
+-        message (STATUS "Python include dirs ${PYTHON_INCLUDE_PATH}")
+-        message (STATUS "Python libraries    ${PYTHON_LIBRARIES}")
+-        message (STATUS "Python to include 'lib' prefix: ${PYLIB_LIB_PREFIX}")
+-        message (STATUS "Python to include SO version: ${PYLIB_INCLUDE_SONAME}")
+-    endif ()
+-
+-    include_directories (${PYTHON_INCLUDE_PATH} ${Boost_INCLUDE_DIRS})
+-    add_library (${target_name} MODULE ${python_srcs})
+-    if (APPLE)
+-        target_link_libraries (${target_name} OpenImageIO ${Boost_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${CMAKE_DL_LIBS})
+-        set_target_properties (${target_name} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+-    else ()
+-        target_link_libraries (${target_name} OpenImageIO ${Boost_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} ${CMAKE_DL_LIBS})
+-    endif ()
+-
+-    # Exclude the 'lib' prefix from the name
+-    if(NOT PYLIB_LIB_PREFIX)
+-        add_definitions("-DOIIO_PYMODULE_NAME=OpenImageIO")
+-        set_target_properties (${target_name} PROPERTIES
+-                                 OUTPUT_NAME OpenImageIO
+-                                 PREFIX "")
+-    else()
+-        add_definitions("-DOIIO_PYMODULE_NAME=PyOpenImageIO")
+-        set_target_properties (${target_name} PROPERTIES
+-                                 OUTPUT_NAME PyOpenImageIO
+-                                 PREFIX lib)
+-    endif ()
+-
+-    if(PYLIB_INCLUDE_SONAME)
+-        if (VERBOSE)
+-            message(STATUS "Setting PyOIIO SOVERSION to: ${SOVERSION}")
+-        endif ()
+-        set_target_properties(${target_name} PROPERTIES
+-            VERSION ${OIIO_VERSION_MAJOR}.${OIIO_VERSION_MINOR}
+-            SOVERSION ${SOVERSION}
+-        )
+-    endif()
+-
+-    if (WIN32)
+-        set_target_properties (${target_name} PROPERTIES
+-                               DEBUG_POSTFIX "_d"
+-                               SUFFIX ".pyd")
+-    endif()
+-    
 -    if (BUILD_PY3)
 -        install (TARGETS ${target_name}
 -                 RUNTIME DESTINATION ${PYLIB3_INSTALL_DIR} COMPONENT user
@@ -247,14 +466,34 @@ index 81a4a890..f0c575ee 100644
 -        install (TARGETS ${target_name}
 -                 RUNTIME DESTINATION ${PYLIB_INSTALL_DIR} COMPONENT user
 -                 LIBRARY DESTINATION ${PYLIB_INSTALL_DIR} COMPONENT user)
++        message(STATUS "Setting PyOIIO SOVERSION to: ${SOVERSION}")
+     endif ()
+-elseif (BUILD_PY3)
+-    if (NOT PYTHONLIBS_FOUND)
+-        message (STATUS "Python3 libraries not found")
 -    endif ()
-+    install (TARGETS ${target_name}
-+             RUNTIME DESTINATION ${PYLIB_INSTALL_DIR} COMPONENT user
-+             LIBRARY DESTINATION ${PYLIB_INSTALL_DIR} COMPONENT user
+-    if (NOT Boost_FOUND)
+-        message (STATUS "Boost python3 component not found")
+-    endif ()
+-    set(USE_PYTHON3 OFF)
+-endif ()
++    set_target_properties(${target_name} PROPERTIES
++        VERSION ${OIIO_VERSION_MAJOR}.${OIIO_VERSION_MINOR}
++        SOVERSION ${SOVERSION}
 +    )
- elseif (BUILD_PY3)
-     if (NOT PYTHONLIBS_FOUND)
-         message (STATUS "Python3 libraries not found")
++endif()
++
++if (WIN32)
++    set_target_properties (${target_name} PROPERTIES
++                           DEBUG_POSTFIX "_d"
++                           SUFFIX ".pyd")
++endif()
++
++SET(PYTHON_DEST "${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION}/site-packages" )
++install (TARGETS ${target_name}
++         RUNTIME DESTINATION ${PYTHON_DEST} COMPONENT user
++         LIBRARY DESTINATION ${PYTHON_DEST} COMPONENT user
++)
 -- 
 2.14.1
 

@@ -2,8 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
+PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} )
 
-inherit cmake-utils vcs-snapshot
+inherit cmake-utils vcs-snapshot python-single-r1
 
 DESCRIPTION="A library for reading and writing images"
 HOMEPAGE="https://sites.google.com/site/openimageio/ https://github.com/OpenImageIO"
@@ -19,11 +20,13 @@ X86_CPU_FEATURES=(
 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
 
-IUSE="colorio doc ffmpeg field3d gif jpeg opencv opengl ptex qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
+IUSE="colorio doc ffmpeg field3d gif jpeg opencv opengl ptex python qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 RESTRICT="test" #431412
 
-RDEPEND=">=dev-libs/boost-1.62:=
+RDEPEND="${PYTHON_DEPS}
+	>=dev-libs/boost-1.62:=
 	dev-libs/pugixml:=
 	>=media-libs/ilmbase-2.2.0-r1:=
 	media-libs/libpng:0=
@@ -55,9 +58,15 @@ RDEPEND=">=dev-libs/boost-1.62:=
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
 
-PATCHES=( "${FILESDIR}/${P}-use-GNUInstallDirs.patch" )
+#PATCHES=( "${FILESDIR}/${P}-use-GNUInstallDirs.patch" )
+PATCHES=( "${FILESDIR}/0001-oiio-RB-1.7-Use-GNUInstallDirs-for-installation-path.patch"
+	"${FILESDIR}/0002-oiio-RB-1.7-Make-python-and-boost-detection-more-gen.patch")
 
 DOCS=( src/doc/${PN}.pdf )
+
+pkg_setup() {
+	use python && python-single-r1_pkg_setup
+}
 
 src_configure() {
 	# Build with SIMD support
@@ -88,14 +97,15 @@ src_configure() {
 		-DUSE_OPENJPEG=$(usex jpeg)
 		-DUSE_OPENSSL=$(usex ssl)
 		-DUSE_PTEX=$(usex ptex)
-		-DUSE_PYTHON=OFF
-		-DUSE_PYTHON3=OFF
+		-DUSE_PYTHON=$(usex python)
 		-DUSE_LIBRAW=$(usex raw)
 		-DUSE_QT=$(usex qt4)
 		-DUSE_SIMD=${mysimd%,}
 		-DVERBOSE=ON
 		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
 	)
+	
+	use python && mycmakeargs+=( -DPYTHON_EXECUTABLE="${PYTHON}" )
 
 	cmake-utils_src_configure
 }
