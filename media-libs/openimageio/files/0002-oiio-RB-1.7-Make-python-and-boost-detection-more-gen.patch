@@ -1,4 +1,4 @@
-From 61c1ecd3e6fc2a9ed252b0ba2e9661c1611e19cb Mon Sep 17 00:00:00 2001
+From b18d5fe7b00deb36d9922b837013f530f1f25efe Mon Sep 17 00:00:00 2001
 From: Jonathan Scruggs <j.scruggs@gmail.com>
 Date: Fri, 1 Sep 2017 18:53:04 +0100
 Subject: [PATCH 2/2] oiio/RB-1.7: Make python and boost detection more generic
@@ -8,10 +8,10 @@ Remove redundant code.
 
 Signed-off by: Jonathan Scruggs <j.scruggs@gmail.com>
 ---
- CMakeLists.txt                   |  32 +++++-----
- src/cmake/externalpackages.cmake | 129 +++++++++++++++++++++-----------------
- src/python/CMakeLists.txt        | 132 +++++++++++++++++++--------------------
- 3 files changed, 155 insertions(+), 138 deletions(-)
+ CMakeLists.txt                   |  32 ++++----
+ src/cmake/externalpackages.cmake | 129 ++++++++++++++++++--------------
+ src/python/CMakeLists.txt        | 155 +++++++++++++++++++++------------------
+ 3 files changed, 171 insertions(+), 145 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 82e9c8af..1a6d018c 100644
@@ -242,10 +242,10 @@ index 03faf7bd..d3c6e41f 100644
  link_directories ("${Boost_LIBRARY_DIRS}")
  
 diff --git a/src/python/CMakeLists.txt b/src/python/CMakeLists.txt
-index 81a4a890..415a2c32 100644
+index 81a4a890..b96cead7 100644
 --- a/src/python/CMakeLists.txt
 +++ b/src/python/CMakeLists.txt
-@@ -1,59 +1,60 @@
+@@ -1,59 +1,70 @@
 -#if the CMAKE_CURRENT_BINARY_DIR is python3, then build the python3 module,
 -#otherwise the python2 module
 -string (REGEX MATCH "python3\$" _py3_subdir ${CMAKE_CURRENT_BINARY_DIR})
@@ -295,51 +295,66 @@ index 81a4a890..415a2c32 100644
 -    unset(PYTHON_INCLUDE_DIR CACHE)
 -    unset(PYTHON_INCLUDE_PATH)
 -    unset(PYTHON_INCLUDE_PATH CACHE)
-+# The version that was found may not be the default or user
-+# defined one.
-+set (PYTHON_VERSION ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
-+find_package (PythonLibs ${PYTHON_VERSION} REQUIRED)
- 
+-
 -    #cmake 2.8 does not look for python 3.4
 -    set(Python_ADDITIONAL_VERSIONS 3.4)
 -    find_package (PythonInterp ${PYTHON3_VERSION} REQUIRED)
 -    find_package (PythonLibs ${PYTHON3_VERSION} REQUIRED)
-+if (VERBOSE)
-+    message (STATUS "Python found ${PYTHONLIBS_FOUND} ")
-+    message (STATUS "Python executable ${PYTHON_EXECUTABLE} ")
-+    message (STATUS "Python version ${PYTHON_VERSION_STRING} ")
-+    message (STATUS "Python include dirs ${PYTHON_INCLUDE_PATH}")
-+    message (STATUS "Python libraries    ${PYTHON_LIBRARIES}")
-+    message (STATUS "Python to include 'lib' prefix: ${PYLIB_LIB_PREFIX}")
-+    message (STATUS "Python to include SO version: ${PYLIB_INCLUDE_SONAME}")
-+endif ()
- 
-+if (NOT BOOST_CUSTOM)
-     #Finding the python3 component for boost is a little tricky, since it has
-     #different names on different systems. Try the most common ones
-     #(boost_python3, boost_python-py34, …).
+-
+-    #Finding the python3 component for boost is a little tricky, since it has
+-    #different names on different systems. Try the most common ones
+-    #(boost_python3, boost_python-py34, …).
 -    foreach (_boost_py3_lib python3 python-py34 python-py33 python-py32)
 -        find_package (Boost 1.42 QUIET COMPONENTS ${_boost_py3_lib})
 -        string (TOUPPER ${_boost_py3_lib} boost_py3_lib_name)
 -        if (Boost_${boost_py3_lib_name}_FOUND)
++# The version that was found may not be the default or user
++# defined one.
++set (PYTHON_VERSION_FOUND ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
++find_package (PythonLibs ${PYTHON_VERSION_FOUND} REQUIRED)
++
++if (VERBOSE)
++
++endif ()
++
++if (NOT BOOST_CUSTOM)
++    #Finding the python component for boost is a little tricky, since it has
++    #different names on different systems.
 +    set (boost_PYTHON_FOUND OFF)
-+    foreach (_boost_py_lib "python" "python${PYTHON_VERSION_MAJOR}"
-+            "python-py${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}"
-+            "python-${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
-+        find_package (Boost 1.42 QUIET COMPONENTS ${_boost_py_lib})
-+        string (TOUPPER ${_boost_py_lib} boost_py_lib_name)
-+        if (Boost_${boost_py_lib_name}_FOUND)
++    foreach (_py_lib "python" "python${PYTHON_VERSION_MAJOR}")
++        find_package (Boost 1.42 QUIET COMPONENTS ${_py_lib})
++        string (TOUPPER ${_py_lib} _py_lib_name)
++        if (Boost_${_py_lib_name}_FOUND)
              #Not the most beautiful thing to do, but that gets them included in
              #the target_link_libraries(…) call farther down
 -            set (Boost_PYTHON_LIBRARIES ${Boost_${boost_py3_lib_name}_LIBRARIES})
-+            set (Boost_PYTHON_LIBRARIES ${Boost_${boost_py_lib_name}_LIBRARIES})
++            set (Boost_PYTHON_LIBRARIES ${Boost_${_py_lib_name}_LIBRARIES})
 +            set (boost_PYTHON_FOUND ON)
              break ()
          endif ()
      endforeach ()
  endif ()
  
++# Use python executable to find the site packages dir
++execute_process (COMMAND ${PYTHON_EXECUTABLE} -m site --user-site
++                 OUTPUT_VARIABLE _py_full_site_dir
++                 OUTPUT_STRIP_TRAILING_WHITESPACE)
++
++# Cut off the temporary compile dir
++string (REGEX MATCH "(python.*)" _py_site_dir ${_py_full_site_dir})
++
++# Construct proper install path 
++set (PYTHON_SITE_DIR "${CMAKE_INSTALL_LIBDIR}/${_py_site_dir}")
++
 +if (VERBOSE)
++    message (STATUS "Python found ${PYTHONLIBS_FOUND} ")
++    message (STATUS "Python executable ${PYTHON_EXECUTABLE} ")
++    message (STATUS "Python version ${PYTHON_VERSION_STRING} ")
++    message (STATUS "Python include dirs ${PYTHON_INCLUDE_PATH}")
++    message (STATUS "Python libraries    ${PYTHON_LIBRARIES}")
++    message (STATUS "Python site packages dir ${PYTHON_SITE_DIR}")
++    message (STATUS "Python to include 'lib' prefix: ${PYLIB_LIB_PREFIX}")
++    message (STATUS "Python to include SO version: ${PYLIB_INCLUDE_SONAME}")
 +    message (STATUS "Boost python found ${boost_PYTHON_FOUND}")
 +    message (STATUS "Boost python libraries ${Boost_PYTHON_LIBRARIES}")
 +endif ()
@@ -347,7 +362,7 @@ index 81a4a890..415a2c32 100644
  if (APPLE)
  #    set (PYTHON_LIBRARIES /opt/local/lib)
  endif ()
-@@ -63,13 +64,13 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+@@ -63,13 +74,13 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
      add_definitions ("-Wno-array-bounds")
  endif ()
  
@@ -366,7 +381,7 @@ index 81a4a890..415a2c32 100644
  
      set (python_srcs py_imageinput.cpp py_imageoutput.cpp
           py_imagecache.cpp py_imagespec.cpp py_roi.cpp
-@@ -77,13 +78,13 @@ if (BOOST_CUSTOM OR Boost_FOUND AND PYTHONLIBS_FOUND)
+@@ -77,13 +88,13 @@ if (BOOST_CUSTOM OR Boost_FOUND AND PYTHONLIBS_FOUND)
           py_typedesc.cpp py_paramvalue.cpp py_deepdata.cpp
           py_oiio.cpp)
  
@@ -387,24 +402,32 @@ index 81a4a890..415a2c32 100644
  
      include_directories (${PYTHON_INCLUDE_PATH} ${Boost_INCLUDE_DIRS})
      add_library (${target_name} MODULE ${python_srcs})
-@@ -123,21 +124,20 @@ if (BOOST_CUSTOM OR Boost_FOUND AND PYTHONLIBS_FOUND)
+@@ -123,21 +134,19 @@ if (BOOST_CUSTOM OR Boost_FOUND AND PYTHONLIBS_FOUND)
                                 SUFFIX ".pyd")
      endif()
      
 -    if (BUILD_PY3)
--        install (TARGETS ${target_name}
--                 RUNTIME DESTINATION ${PYLIB3_INSTALL_DIR} COMPONENT user
--                 LIBRARY DESTINATION ${PYLIB3_INSTALL_DIR} COMPONENT user)
--    else ()
 +#     if (BUILD_PY3)
 +#         install (TARGETS ${target_name}
 +#                  RUNTIME DESTINATION ${PYLIB3_INSTALL_DIR} COMPONENT user
 +#                  LIBRARY DESTINATION ${PYLIB3_INSTALL_DIR} COMPONENT user)
 +#     else ()
-+        set (PYLIB_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages")
          install (TARGETS ${target_name}
-                  RUNTIME DESTINATION ${PYLIB_INSTALL_DIR} COMPONENT user
-                  LIBRARY DESTINATION ${PYLIB_INSTALL_DIR} COMPONENT user)
+-                 RUNTIME DESTINATION ${PYLIB3_INSTALL_DIR} COMPONENT user
+-                 LIBRARY DESTINATION ${PYLIB3_INSTALL_DIR} COMPONENT user)
+-    else ()
+-        install (TARGETS ${target_name}
+-                 RUNTIME DESTINATION ${PYLIB_INSTALL_DIR} COMPONENT user
+-                 LIBRARY DESTINATION ${PYLIB_INSTALL_DIR} COMPONENT user)
+-    endif ()
+-elseif (BUILD_PY3)
+-    if (NOT PYTHONLIBS_FOUND)
+-        message (STATUS "Python3 libraries not found")
+-    endif ()
+-    if (NOT Boost_FOUND)
+-        message (STATUS "Boost python3 component not found")
++                 RUNTIME DESTINATION ${PYTHON_SITE_DIR} COMPONENT user
++                 LIBRARY DESTINATION ${PYTHON_SITE_DIR} COMPONENT user)
 +#     endif ()
 +else ()
 +    # If Boost python components were not found, turn off all python support.
@@ -412,13 +435,6 @@ index 81a4a890..415a2c32 100644
 +    if (APPLE AND USE_PYTHON)
 +        message (STATUS "   If your Boost is from Macports, you need the +python26 variant to get Python support.")
      endif ()
--elseif (BUILD_PY3)
--    if (NOT PYTHONLIBS_FOUND)
--        message (STATUS "Python3 libraries not found")
--    endif ()
--    if (NOT Boost_FOUND)
--        message (STATUS "Boost python3 component not found")
--    endif ()
 -    set(USE_PYTHON3 OFF)
  endif ()
 -- 
