@@ -102,10 +102,7 @@ DEPEND="${RDEPEND}
 		dev-python/sphinx[latex]
 	)"
 
-PATCHES=(
-	"${FILESDIR}/${PN}-fix-install-rules.patch"
-	"${FILESDIR}/${PN}-2.78-eigen-3.3.1.patch"
-)
+PATCHES=( "${FILESDIR}/${PN}-fix-install-rules.patch" )
 
 blender_check_requirements() {
 	if [[ ${MERGE_TYPE} != binary ]]; then
