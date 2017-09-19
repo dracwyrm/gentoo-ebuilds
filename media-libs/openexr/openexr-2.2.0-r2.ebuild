@@ -7,9 +7,7 @@ inherit cmake-multilib
 
 DESCRIPTION="ILM's OpenEXR high dynamic-range image file format libraries"
 HOMEPAGE="http://openexr.com/"
-# changing sources. Using a revision on the binary in order
-# to keep the old one for previous ebuilds.
-SRC_URI="https://github.com/openexr/openexr/archive/v${PV}.tar.gz -> openexr-${PV}-r1.tar.gz"
+SRC_URI="http://download.savannah.gnu.org/releases/openexr/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/22" # based on SONAME
@@ -24,14 +22,10 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	>=sys-devel/autoconf-archive-2016.09.16"
 
-S="${WORKDIR}/openexr-${PV}/OpenEXR"
-#	"${FILESDIR}/${P}-fix-config.h-collision.patch"
 PATCHES=(
 	"${FILESDIR}/${P}-post-release-fixes-v20170109.patch"
-	"${FILESDIR}/${P}-use-gnuinstalldirs.patch"
-	"${FILESDIR}/${P}-fix-pkgconfig-file.patch"
 	"${FILESDIR}/${P}-fix-cpuid-on-abi_x86_32.patch"
-	"${FILESDIR}/${P}-add-legacy-symlink.patch"
+	"${FILESDIR}/${P}-use-gnuinstalldirs-and-fix-pkgconfig-file.patch"
 )
 
 mycmakeargs=(
