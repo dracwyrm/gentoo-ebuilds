@@ -58,9 +58,7 @@ RDEPEND="${PYTHON_DEPS}
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
 
-#PATCHES=( "${FILESDIR}/${P}-use-GNUInstallDirs.patch" )
-PATCHES=( "${FILESDIR}/0001-oiio-RB-1.7-Use-GNUInstallDirs-for-installation-path.patch"
-	"${FILESDIR}/0002-oiio-RB-1.7-Make-python-and-boost-detection-more-gen.patch")
+PATCHES=( "${FILESDIR}/${P}-Use-GNUInstallDirs-and-simplify-python-boost-detection.patch" )
 
 DOCS=( src/doc/${PN}.pdf )
 
@@ -104,8 +102,6 @@ src_configure() {
 		-DVERBOSE=ON
 		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
 	)
-	
-	use python && mycmakeargs+=( -DPYTHON_EXECUTABLE="${PYTHON}" )
 
 	cmake-utils_src_configure
 }
