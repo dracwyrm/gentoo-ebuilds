@@ -6,9 +6,7 @@ inherit cmake-utils flag-o-matic
 
 DESCRIPTION="OpenEXR Viewers"
 HOMEPAGE="http://openexr.com/"
-# changing sources. Using a revision on the binary in order
-# to keep the old one for previous ebuilds.
-SRC_URI="https://github.com/openexr/openexr/archive/v${PV}.tar.gz -> openexr-${PV}-r1.tar.gz"
+SRC_URI="http://download.savannah.gnu.org/releases/openexr/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
@@ -26,9 +24,7 @@ RDEPEND="~media-libs/ilmbase-${PV}:=
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
-S="${WORKDIR}/openexr-${PV}/OpenEXR_Viewers"
-
-PATCHES=( "${FILESDIR}/${P}-use-gnuinstalldirs.patch" )
+PATCHES=( "${FILESDIR}/${P}-add-missing-files.patch" )
 
 src_configure() {
 	local mycmakeargs=(
