@@ -38,9 +38,13 @@ DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
 
 PATCHES=(
-	"${FILESDIR}/${P}-use-pkg-config.patch"
 	"${FILESDIR}/${P}-use-gnuinstalldirs.patch"
+	"${FILESDIR}/${P}-use-pkg-config.patch"
 )
+
+pkg_setup() {
+	use python && python-single-r1_pkg_setup
+}
 
 src_configure() {
 	local myprefix="${EPREFIX}/usr/"
@@ -62,7 +66,7 @@ src_configure() {
 		-DTBB_LOCATION="${myprefix}"
 	)
 
-	use python && mycmakeargs+=( -DPYOENVDB_INSTALL_DIRECTORY=$(python_get_sitedir) )
+	use python && mycmakeargs+=( -DPYOENVDB_INSTALL_DIRECTORY=${python_get_sitedir} )
 
 	cmake-utils_src_configure
 }
