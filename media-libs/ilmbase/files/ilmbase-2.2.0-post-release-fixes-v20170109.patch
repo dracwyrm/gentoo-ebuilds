@@ -1,6 +1,7 @@
-diff -purN a/Half/CMakeLists.txt b/Half/CMakeLists.txt
---- a/Half/CMakeLists.txt	2014-08-10 05:21:45.000000000 +0100
-+++ b/Half/CMakeLists.txt	2017-01-09 19:54:21.000000000 +0000
+diff --git a/Half/CMakeLists.txt b/Half/CMakeLists.txt
+index 6f9714d..958d1b0 100644
+--- a/Half/CMakeLists.txt
++++ b/Half/CMakeLists.txt
 @@ -1,23 +1,24 @@
  # yue.nicholas@gmail.com
  
@@ -46,9 +47,10 @@ diff -purN a/Half/CMakeLists.txt b/Half/CMakeLists.txt
    )
  
  IF(BUILD_SHARED_LIBS)
-diff -purN a/Half/half.cpp b/Half/half.cpp
---- a/Half/half.cpp	2014-08-10 05:21:45.000000000 +0100
-+++ b/Half/half.cpp	2017-01-09 19:54:21.000000000 +0000
+diff --git a/Half/half.cpp b/Half/half.cpp
+index 609aaa1..09a50aa 100644
+--- a/Half/half.cpp
++++ b/Half/half.cpp
 @@ -94,9 +94,9 @@ half::convert (int i)
      // of float and half (127 versus 15).
      //
@@ -62,62 +64,10 @@ diff -purN a/Half/half.cpp b/Half/half.cpp
  
      //
      // Now reassemble s, e and m into a half:
-diff -purN a/Half/halfExport.h b/Half/halfExport.h
---- a/Half/halfExport.h	2014-08-10 05:21:45.000000000 +0100
-+++ b/Half/halfExport.h	2017-01-09 19:54:21.000000000 +0000
-@@ -1,15 +1,39 @@
--#ifndef HALFEXPORT_H
--#define HALFEXPORT_H
--
-+///////////////////////////////////////////////////////////////////////////
-+//
-+// Copyright (c) 2008, Industrial Light & Magic, a division of Lucas
-+// Digital Ltd. LLC
-+//
-+// All rights reserved.
- //
--//  Copyright (c) 2008 Lucasfilm Entertainment Company Ltd.
--//  All rights reserved.   Used under authorization.
--//  This material contains the confidential and proprietary
--//  information of Lucasfilm Entertainment Company and
--//  may not be copied in whole or in part without the express
--//  written permission of Lucasfilm Entertainment Company.
--//  This copyright notice does not imply publication.
-+// Redistribution and use in source and binary forms, with or without
-+// modification, are permitted provided that the following conditions are
-+// met:
-+// *       Redistributions of source code must retain the above copyright
-+// notice, this list of conditions and the following disclaimer.
-+// *       Redistributions in binary form must reproduce the above
-+// copyright notice, this list of conditions and the following disclaimer
-+// in the documentation and/or other materials provided with the
-+// distribution.
-+// *       Neither the name of Industrial Light & Magic nor the names of
-+// its contributors may be used to endorse or promote products derived
-+// from this software without specific prior written permission.
- //
-+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-+//
-+///////////////////////////////////////////////////////////////////////////
-+
-+#ifndef HALFEXPORT_H
-+#define HALFEXPORT_H
- 
- #if defined(OPENEXR_DLL)
-     #if defined(HALF_EXPORTS)
-diff -purN a/Half/half.h b/Half/half.h
---- a/Half/half.h	2014-08-10 05:21:45.000000000 +0100
-+++ b/Half/half.h	2017-01-09 19:54:21.000000000 +0000
+diff --git a/Half/half.h b/Half/half.h
+index f78e4f6..da418d6 100644
+--- a/Half/half.h
++++ b/Half/half.h
 @@ -459,7 +459,7 @@ half::half (float f)
  	// to do the float-to-half conversion.
  	//
@@ -136,10 +86,11 @@ diff -purN a/Half/half.h b/Half/half.h
  	    _h = e + ((m + 0x00000fff + ((m >> 13) & 1)) >> 13);
  	}
  	else
-diff -purN a/Imath/ImathMatrix.h b/Imath/ImathMatrix.h
---- a/Imath/ImathMatrix.h	2014-08-10 05:21:45.000000000 +0100
-+++ b/Imath/ImathMatrix.h	2017-01-09 19:54:21.000000000 +0000
-@@ -2527,11 +2527,11 @@ Matrix44<T>::multiply (const Matrix44<T>
+diff --git a/Imath/ImathMatrix.h b/Imath/ImathMatrix.h
+index 3e96c2f..1d7f8dc 100644
+--- a/Imath/ImathMatrix.h
++++ b/Imath/ImathMatrix.h
+@@ -2527,11 +2527,11 @@ Matrix44<T>::multiply (const Matrix44<T> &a,
                         const Matrix44<T> &b,
                         Matrix44<T> &c)
  {
@@ -155,9 +106,10 @@ diff -purN a/Imath/ImathMatrix.h b/Imath/ImathMatrix.h
  
      a0 = ap[0];
      a1 = ap[1];
-diff -purN a/Makefile.am b/Makefile.am
---- a/Makefile.am	2014-08-10 05:21:45.000000000 +0100
-+++ b/Makefile.am	2017-01-09 19:54:21.000000000 +0000
+diff --git a/Makefile.am b/Makefile.am
+index a2e5370..b3c4e86 100644
+--- a/Makefile.am
++++ b/Makefile.am
 @@ -15,7 +15,7 @@ DIST_SUBDIRS = \
  
  EXTRA_DIST = \
