@@ -40,6 +40,7 @@ DEPEND="${RDEPEND}
 PATCHES=(
 	"${FILESDIR}/${P}-use-gnuinstalldirs.patch"
 	"${FILESDIR}/${P}-use-pkg-config.patch"
+	"${FILESDIR}/${P}-boost-python-v1.65-fix.patch"
 )
 
 pkg_setup() {
