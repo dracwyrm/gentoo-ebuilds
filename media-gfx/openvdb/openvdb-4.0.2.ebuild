@@ -4,11 +4,12 @@
 EAPI=6
 PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} )
 
-inherit eutils flag-o-matic cmake-utils python-single-r1 versionator
+inherit cmake-utils flag-o-matic python-single-r1 versionator
 
 DESCRIPTION="Libs for the efficient manipulation of volumetric data"
 HOMEPAGE="http://www.openvdb.org"
-SRC_URI="https://github.com/dreamworksanimation/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/dreamworksanimation/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz
+	https://github.com/dracwyrm/gentoo-patches/raw/master/${PN}/${P}-patchset-01.tar.xz"
 
 LICENSE="MPL-2.0"
 SLOT="0"
@@ -16,9 +17,9 @@ KEYWORDS="~amd64 ~x86"
 IUSE="+abi3-compat doc python"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
-RDEPEND="sys-libs/zlib
+RDEPEND="sys-libs/zlib:=
 	>=dev-libs/boost-1.62:=[python?,${PYTHON_USEDEP}]
-	>=media-libs/openexr-2.2.0-r2:=
+	media-libs/openexr:=
 	media-libs/glfw:=
 	x11-libs/libXi
 	x11-libs/libXrandr
@@ -38,9 +39,9 @@ DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
 
 PATCHES=(
-	"${FILESDIR}/${P}-use-gnuinstalldirs.patch"
-	"${FILESDIR}/${P}-use-pkg-config.patch"
-	"${FILESDIR}/${P}-boost-python-v1.65-fix.patch"
+	"${WORKDIR}/0001-Change-hardcoded-paths-to-GNUInstallDirs-variables.patch"
+	"${WORKDIR}/0002-Use-PkgConfig-to-find-IlmBase-and-OpenEXR.patch"
+	"${WORKDIR}/0003-Boost-1.65-NumPy-support.patch"
 )
 
 pkg_setup() {
