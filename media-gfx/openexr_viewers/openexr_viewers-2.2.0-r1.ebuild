@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
-inherit cmake-utils flag-o-matic
+inherit autotools flag-o-matic
 
 DESCRIPTION="OpenEXR Viewers"
 HOMEPAGE="http://openexr.com/"
@@ -11,31 +11,48 @@ SRC_URI="http://download.savannah.gnu.org/releases/openexr/${P}.tar.gz"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~x86-fbsd"
-IUSE="cg"
+IUSE="cg opengl"
 
 RDEPEND="~media-libs/ilmbase-${PV}:=
 	~media-libs/openexr-${PV}:=
 	>=media-libs/ctl-1.5.2:=
-	virtual/opengl
 	x11-libs/fltk:1[opengl]
-	cg? ( media-gfx/nvidia-cg-toolkit
-	      || ( media-libs/freeglut media-libs/mesa[glut] ) )"
+	opengl? (
+		virtual/opengl
+		x11-libs/fltk:1[opengl]
+		cg? ( media-gfx/nvidia-cg-toolkit )
+	)"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
-PATCHES=( "${FILESDIR}/${P}-add-missing-files.patch" )
+PATCHES=( "${FILESDIR}/${P}-Remove-nVidia-automagic.patch" )
+
+src_prepare() {
+	default
+	sed -i -e 's:AM_CONFIG_HEADER:AC_CONFIG_HEADERS:' configure.ac || die
+	eautoreconf
+}
 
 src_configure() {
-	local mycmakeargs=(
-		$(cmake-utils_use_find_package cg GLUT)
-		$(cmake-utils_use_find_package cg Cg)
-		-DOPENEXR_PACKAGE_PREFIX="${EPREFIX}/usr"
-		-DILMBASE_PACKAGE_PREFIX="${EPREFIX}/usr"
-		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
-	)
+	local myconf
 
-	use cg && append-flags "$(no-as-needed)" # binary-only libCg is not properly linked
+	if use cg; then
+		myconf="--with-cg-prefix=/opt/nvidia-cg-toolkit"
+		append-flags "$(no-as-needed)" # binary-only libCg is not properly linked
+	fi
 
-	cmake-utils_src_configure
+	econf \
+		$(use_enable cg) \
+		$(use_with opengl fltk-config /usr/bin/fltk-config) \
+		${myconf}
+}
+
+src_install() {
+	emake \
+		DESTDIR="${D}" \
+		docdir=/usr/share/doc/${PF}/pdf \
+		install
+
+	dodoc AUTHORS ChangeLog NEWS README
 }
