@@ -15,20 +15,21 @@ SRC_URI="https://github.com/wdas/${PN}/archive/${MY_GIT_COMMIT}.tar.gz -> ${P}.t
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-
 IUSE="doc"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 RDEPEND="${PYTHON_DEPS}
 	media-libs/freeglut
 	virtual/opengl
-	sys-libs/zlib
+	sys-libs/zlib:=
 "
 
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )
 	dev-lang/swig:*
 "
+
+PATCHES=( "${FILESDIR}/${PN}-1.1.0-Rename-partconv.patch" )
 
 src_prepare() {
 	cmake-utils_src_prepare
