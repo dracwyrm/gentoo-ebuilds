@@ -13,15 +13,16 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-RDEPEND=">=dev-libs/boost-1.62:=
+RDEPEND="
+	>=dev-libs/boost-1.62:=
+	>=media-libs/ilmbase-2.2.0:=
 	sci-libs/hdf5:=
-	virtual/mpi
-	>=media-libs/ilmbase-2.2.0:="
+	virtual/mpi"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
-PATCHES=( "${FILESDIR}/Field3D-1.7.2-openexr-fixes.patch" )
+PATCHES=( "${FILESDIR}/Field3D-1.7.2-Use-PkgConfig-for-IlmBase.patch" )
 
 # Docs are not finished yet.
 mycmakeargs=( -DINSTALL_DOCS=OFF )
