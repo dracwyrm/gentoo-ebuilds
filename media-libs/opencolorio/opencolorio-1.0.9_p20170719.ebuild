@@ -19,28 +19,28 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="doc opengl pdf python cpu_flags_x86_sse2 test"
+REQUIRED_USE="
+	doc? ( python )
+	python? ( ${PYTHON_REQUIRED_USE} )"
 
-RDEPEND="opengl? (
+RDEPEND="
+	opengl? (
 		media-libs/lcms:2
-		>=media-libs/openimageio-1.1.0
+		media-libs/openimageio
 		media-libs/glew:=
 		media-libs/freeglut
 		virtual/opengl
-		)
+	)
 	python? ( ${PYTHON_DEPS} )
 	>=dev-cpp/yaml-cpp-0.5
-	dev-libs/tinyxml
-	"
+	dev-libs/tinyxml"
+
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	doc? (
 		pdf? ( dev-python/sphinx[latex,${PYTHON_USEDEP}] )
 		!pdf? ( dev-python/sphinx[${PYTHON_USEDEP}] )
-	)
-	"
-
-# Documentation building requires Python bindings building
-REQUIRED_USE="doc? ( python )"
+	)"
 
 # Restricting tests, bugs #439790 and #447908
 RESTRICT="test"
