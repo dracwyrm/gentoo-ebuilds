@@ -1,52 +1,20 @@
-diff --git a/Half/CMakeLists.txt b/Half/CMakeLists.txt
-index 6f9714d..958d1b0 100644
---- a/Half/CMakeLists.txt
-+++ b/Half/CMakeLists.txt
-@@ -1,23 +1,24 @@
- # yue.nicholas@gmail.com
- 
- ADD_EXECUTABLE ( eLut eLut.cpp )
--
--ADD_CUSTOM_COMMAND (
--  TARGET eLut POST_BUILD
--  COMMAND eLut > ${CMAKE_CURRENT_BINARY_DIR}/eLut.h
-+ADD_CUSTOM_COMMAND(
-+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/eLut.h
-+  COMMAND eLut ARGS > ${CMAKE_CURRENT_BINARY_DIR}/eLut.h
-+  DEPENDS eLut
-   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
--)
-+  )
- SET_SOURCE_FILES_PROPERTIES(
-   ${CMAKE_CURRENT_BINARY_DIR}/eLut.h
-   PROPERTIES HEADER_FILE_ONLY TRUE
-   )
- 
- ADD_EXECUTABLE ( toFloat toFloat.cpp )
--ADD_CUSTOM_COMMAND (
--  TARGET toFloat POST_BUILD
--  COMMAND toFloat > ${CMAKE_CURRENT_BINARY_DIR}/toFloat.h
-+ADD_CUSTOM_COMMAND(
-+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/toFloat.h
-+  COMMAND toFloat ARGS > ${CMAKE_CURRENT_BINARY_DIR}/toFloat.h
-+  DEPENDS toFloat
-   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
--)
-+  )
- SET_SOURCE_FILES_PROPERTIES(
-   ${CMAKE_CURRENT_BINARY_DIR}/toFloat.h
-   PROPERTIES HEADER_FILE_ONLY TRUE
-@@ -27,9 +28,7 @@ SET_SOURCE_FILES_PROPERTIES(
-   half.cpp
-   PROPERTIES
-   OBJECT_DEPENDS
--  ${CMAKE_CURRENT_BINARY_DIR}/eLut.h
--  OBJECT_DEPENDS
--  ${CMAKE_CURRENT_BINARY_DIR}/toFloat.h
-+  "${CMAKE_CURRENT_BINARY_DIR}/eLut.h;${CMAKE_CURRENT_BINARY_DIR}/toFloat.h"
-   )
- 
- IF(BUILD_SHARED_LIBS)
+From 6d297f35c5dbfacc8a5e94f33b986db7ab468db9 Mon Sep 17 00:00:00 2001
+From: Larry Gritz <lg@larrygritz.com>
+Date: Fri, 30 Sep 2016 15:58:27 -0700
+Subject: [PATCH] Remove 'register' keyword.
+
+'register' is a relic of K&R-era C, it's utterly useless in modern
+compilers.  It's been deprecated in C++11, and therefore will generate
+warnings when encountered -- and many packages that use OpenEXR's public
+headers use -Werr to turn warnings into errors. Starting in C++17, the
+keyword is removed entirely, and thus will certainly be a build break
+for that version of the standard. So it's time for it to go.
+---
+ IlmBase/Half/half.cpp       | 6 +++---
+ IlmBase/Half/half.h         | 4 ++--
+ IlmBase/Imath/ImathMatrix.h | 8 ++++----
+ 3 files changed, 9 insertions(+), 9 deletions(-)
+
 diff --git a/Half/half.cpp b/Half/half.cpp
 index 609aaa1..09a50aa 100644
 --- a/Half/half.cpp
@@ -106,16 +74,6 @@ index 3e96c2f..1d7f8dc 100644
  
      a0 = ap[0];
      a1 = ap[1];
-diff --git a/Makefile.am b/Makefile.am
-index a2e5370..b3c4e86 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -15,7 +15,7 @@ DIST_SUBDIRS = \
- 
- EXTRA_DIST = \
- 	AUTHORS COPYING ChangeLog INSTALL LICENSE NEWS \
--	README README.CVS README.OSX README.win32 \
-+	README README.CVS README.OSX \
- 	README.cmake.txt README.namespacing README.git \
- 	bootstrap \
- 	config.windows/IlmBaseConfig.h \
+-- 
+2.14.1
+
