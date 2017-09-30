@@ -4,7 +4,7 @@
 EAPI=6
 PYTHON_COMPAT=( python{3_5,3_6} )
 
-inherit check-reqs cmake-utils fdo-mime flag-o-matic gnome2-utils \
+inherit check-reqs cmake-utils xdg-utils flag-o-matic gnome2-utils \
 	pax-utils python-single-r1 toolchain-funcs versionator
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
@@ -20,27 +20,24 @@ LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
 IUSE="+boost +bullet +dds +elbeem +game-engine +openexr collada colorio \
 	cuda cycles debug doc ffmpeg fftw headless jack jemalloc jpeg2k libav \
-	llvm man ndof nls openal openimageio openmp opensubdiv openvdb osl \
-	player sdl sndfile test tiff valgrind"
+	llvm man ndof nls openal opencl openimageio openmp opensubdiv openvdb \
+	osl player sdl sndfile test tiff valgrind"
 
 # OpenCL and nVidia performance is rubbish with Blender
 # If you have nVidia, use CUDA.
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine !headless )
-	cuda? ( cycles )
+	cuda? ( cycles !opencl )
 	cycles? ( boost openexr tiff openimageio )
 	colorio? ( boost )
 	openvdb? ( boost )
-	opensubdiv? ( cuda )
 	nls? ( boost )
 	openal? ( boost )
+	opencl? ( cycles )
 	osl? ( cycles llvm )
 	game-engine? ( boost )
 	?? ( ffmpeg libav )"
 
-# Since not using OpenCL with nVidia, depend on ATI binary
-# blobs as Cycles with OpenCL does not work with any open
-# source drivers.
 RDEPEND="${PYTHON_DEPS}
 	dev-libs/lzo:2
 	>=dev-python/numpy-1.10.1[${PYTHON_USEDEP}]
@@ -56,7 +53,7 @@ RDEPEND="${PYTHON_DEPS}
 	virtual/opengl
 	boost? ( >=dev-libs/boost-1.62:=[nls?,threads(+)] )
 	collada? ( >=media-libs/opencollada-1.6.18:= )
-	colorio? ( >=media-libs/opencolorio-1.0.9-r2 )
+	colorio? ( media-libs/opencolorio )
 	cuda? ( =dev-util/nvidia-cuda-toolkit-8.0*:= )
 	ffmpeg? ( media-video/ffmpeg:=[x264,mp3,encode,theora,jpeg2k?] )
 	libav? ( >=media-video/libav-11.3:=[x264,mp3,encode,theora,jpeg2k?] )
@@ -76,12 +73,13 @@ RDEPEND="${PYTHON_DEPS}
 	)
 	nls? ( virtual/libiconv )
 	openal? ( media-libs/openal )
-	openimageio? ( >=media-libs/openimageio-1.6.9 )
+	opencl? ( virtual/opencl )
+	openimageio? ( >=media-libs/openimageio-1.7.0 )
 	openexr? (
 		>=media-libs/ilmbase-2.2.0:=
 		>=media-libs/openexr-2.2.0:=
 	)
-	opensubdiv? ( media-libs/opensubdiv[cuda=] )
+	opensubdiv? ( media-libs/opensubdiv[cuda=,opencl] )
 	openvdb? (
 		media-gfx/openvdb[${PYTHON_USEDEP},abi3-compat(+),openvdb-compression(+)]
 		dev-cpp/tbb
@@ -184,8 +182,7 @@ src_configure() {
 		-DWITH_MOD_FLUID=$(usex elbeem)
 		-DWITH_MOD_OCEANSIM=$(usex fftw)
 		-DWITH_OPENAL=$(usex openal)
-		-DWITH_OPENCL=OFF
-		-DWITH_CYCLES_DEVICE_OPENCL=OFF
+		-DWITH_OPENCL=$(usex opencl)
 		-DWITH_OPENCOLORIO=$(usex colorio)
 		-DWITH_OPENCOLLADA=$(usex collada)
 		-DWITH_OPENIMAGEIO=$(usex openimageio)
@@ -284,12 +281,12 @@ pkg_postinst() {
 	ewarn "  https://developer.blender.org/"
 	ewarn
 	gnome2_icon_cache_update
-	fdo-mime_desktop_database_update
+	xdg_mimeinfo_database_update
 }
 
 pkg_postrm() {
 	gnome2_icon_cache_update
-	fdo-mime_desktop_database_update
+	xdg_mimeinfo_database_update
 
 	ewarn ""
 	ewarn "You may want to remove the following directory."

@@ -29,7 +29,7 @@ EAPI=6
 PYTHON_COMPAT=( python3_4 )
 #PATCHSET="1"
 
-inherit multilib fdo-mime gnome2-utils cmake-utils eutils python-single-r1 versionator flag-o-matic toolchain-funcs pax-utils check-reqs
+inherit multilib xdg-utils gnome2-utils cmake-utils eutils python-single-r1 versionator flag-o-matic toolchain-funcs pax-utils check-reqs
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
 HOMEPAGE="http://www.blender.org"
@@ -83,7 +83,7 @@ RDEPEND="
 	cycles? (
 		media-libs/openimageio
 	)
-	ffmpeg? ( <media-video/ffmpeg-3:0=[x264,mp3,encode,theora,jpeg2k?] )
+	ffmpeg? ( media-video/ffmpeg:=[x264,mp3,encode,theora,jpeg2k?] )
 	libav? ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
 	fftw? ( sci-libs/fftw:3.0 )
 	jack? ( virtual/jack )
@@ -107,12 +107,13 @@ DEPEND="${RDEPEND}
 	nls? ( sys-devel/gettext )"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-2.68-doxyfile.patch
-	"${FILESDIR}"/${PN}-2.68-fix-install-rules.patch
-	"${FILESDIR}"/${PN}-2.70-sse2.patch
-	"${FILESDIR}"/${PN}-2.72-T42797.diff
-	"${FILESDIR}"/${P}-fix-util_simd.patch
-	"${FILESDIR}"/${P}-gcc6-fixes.patch
+	"${FILESDIR}/${PN}-2.68-doxyfile.patch"
+	"${FILESDIR}/${PN}-2.68-fix-install-rules.patch"
+	"${FILESDIR}/${PN}-2.70-sse2.patch"
+	"${FILESDIR}/${PN}-2.72-T42797.diff"
+	"${FILESDIR}/${P}-fix-util_simd.patch"
+	"${FILESDIR}/${P}-gcc6-fixes.patch"
+	"${FILESDIR}/${P}-ffmpeg3.patch"
 )
 
 pkg_pretend() {
@@ -281,10 +282,10 @@ pkg_postinst() {
 	ewarn
 
 	gnome2_icon_cache_update
-	fdo-mime_desktop_database_update
+	xdg_mimeinfo_database_update
 }
 
 pkg_postrm() {
 	gnome2_icon_cache_update
-	fdo-mime_desktop_database_update
+	xdg_mimeinfo_database_update
 }

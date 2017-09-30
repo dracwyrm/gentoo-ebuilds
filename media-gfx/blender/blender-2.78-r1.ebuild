@@ -4,7 +4,7 @@
 EAPI=6
 PYTHON_COMPAT=( python3_5 )
 
-inherit check-reqs cmake-utils fdo-mime flag-o-matic gnome2-utils \
+inherit check-reqs cmake-utils xdg-utils flag-o-matic gnome2-utils \
 	pax-utils python-single-r1 toolchain-funcs versionator
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
@@ -282,12 +282,12 @@ pkg_postinst() {
 	ewarn "  https://developer.blender.org/"
 	ewarn
 	gnome2_icon_cache_update
-	fdo-mime_desktop_database_update
+	xdg_mimeinfo_database_update
 }
 
 pkg_postrm() {
 	gnome2_icon_cache_update
-	fdo-mime_desktop_database_update
+	xdg_mimeinfo_database_update
 
 	ewarn ""
 	ewarn "You may want to remove the following directory."
