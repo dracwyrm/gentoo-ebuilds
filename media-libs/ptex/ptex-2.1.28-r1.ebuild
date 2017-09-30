@@ -11,11 +11,11 @@ SRC_URI="https://github.com/wdas/ptex/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-RDEPEND="sys-libs/zlib"
+KEYWORDS="~amd64 ~x86"
+
+RDEPEND="sys-libs/zlib:="
 DEPEND="${RDEPEND}
 	app-doc/doxygen"
-
-KEYWORDS="~amd64 ~x86"
 
 PATCHES=(
 	"${FILESDIR}/${P}-20170213.patch"
