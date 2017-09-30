@@ -14,14 +14,14 @@ SLOT="0"
 KEYWORDS="~amd64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~x86-fbsd"
 
 RDEPEND="media-libs/ilmbase:=
-	 media-libs/openexr:=
-	 media-libs/tiff:=
-	 !!media-libs/openexr_ctl"
+	media-libs/openexr:=
+	media-libs/tiff:=
+	!media-libs/openexr_ctl"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 S="${WORKDIR}/CTL-ctl-${PV}"
 
-PATCHES=( "${FILESDIR}/${P}-cmake-fixes.patch" )
+PATCHES=( "${FILESDIR}/${P}-Use-GNUInstallDirs-and-fix-PkgConfig-files.patch" )
 
 mycmakeargs=( -DCMAKE_INSTALL_DOCDIR="share/doc/${PF}" )
