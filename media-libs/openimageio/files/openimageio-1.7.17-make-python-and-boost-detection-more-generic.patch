@@ -1,38 +1,22 @@
-From 38d915b7b8fcfa24c0edf1b0005d9225c5ba5958 Mon Sep 17 00:00:00 2001
+From 0ec53b0e2cd0713fa3e0fbe538eb1c89fe4e59d2 Mon Sep 17 00:00:00 2001
 From: Jonathan Scruggs <j.scruggs@gmail.com>
-Date: Tue, 19 Sep 2017 17:06:00 +0100
-Subject: [PATCH] RB-1.7: Use GNUInstallDirs and simplify python and boost
- detection
+Date: Thu, 28 Sep 2017 16:42:25 +0100
+Subject: [PATCH 2/2] oiio/RB-1.7: Make python and boost detection more generic
 
-Change all hard coded paths to GNUInstallDirs varibles.
+* Fix boost and python detection for certain systems.
+* Clean up boost and python detection.
+* Remove redundant code.
 
-Remove the setting of variables in CMakeLists.txt
-
-Added new search paths for fonts.
-
-Changed location of INSTALL_DOCS test to stop all the document
-building when it would never be installed.
-
-Fix boost and python detection for certain systems.
-
-Clean up boost and python detection.
-
-Remove redundant code.
+Backported from:
+https://github.com/OpenImageIO/oiio/commit/fca7ed62bd679a8221147dcddb23a516796dab90
 ---
- CMakeLists.txt                           |  70 ++------------------
- src/cmake/externalpackages.cmake         |  61 +----------------
- src/cmake/oiio_macros.cmake              |   6 +-
- src/doc/CMakeLists.txt                   |  14 ++--
- src/fonts/CMakeLists.txt                 |   3 +-
- src/include/CMakeLists.txt               |   3 +-
- src/libOpenImageIO/imagebufalgo_draw.cpp |   6 ++
- src/nuke/txReader/CMakeLists.txt         |   3 +-
- src/nuke/txWriter/CMakeLists.txt         |   3 +-
- src/python/CMakeLists.txt                | 109 ++++++++++++-------------------
- 10 files changed, 73 insertions(+), 205 deletions(-)
+ CMakeLists.txt                   |  38 +------------
+ src/cmake/externalpackages.cmake |  61 +-------------------
+ src/python/CMakeLists.txt        | 119 ++++++++++++++++-----------------------
+ 3 files changed, 53 insertions(+), 165 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ca8da565..b2d6777e 100644
+index 635c61f4..0f80959a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -181,9 +181,7 @@ set (USE_OPENGL ON CACHE BOOL "Include OpenGL support")
@@ -46,76 +30,41 @@ index ca8da565..b2d6777e 100644
  set (PYLIB_INCLUDE_SONAME OFF CACHE BOOL "If ON, soname/soversion will be set for Python module library")
  set (PYLIB_LIB_PREFIX OFF CACHE BOOL "If ON, prefix the Python module with 'lib'")
  set (USE_FIELD3D ON CACHE BOOL "Use Field3D if found")
-@@ -353,6 +351,8 @@ if (LINKSTATIC)
-     set (Boost_USE_STATIC_LIBS 1)
- endif ()
- 
-+include (GNUInstallDirs)
-+
- set (CMAKE_MODULE_PATH
-      "${PROJECT_SOURCE_DIR}/src/cmake/modules"
-      "${PROJECT_SOURCE_DIR}/src/cmake")
-@@ -370,59 +370,6 @@ include_directories (
-   )
+@@ -373,32 +371,7 @@ include_directories (
  
  
--###########################################################################
--# Paths for install tree customization.  Note that relative paths are relative
--# to CMAKE_INSTALL_PREFIX.
--set (DEFAULT_BIN_INSTALL_DIR   "bin")
--set (DEFAULT_LIB_INSTALL_DIR   "lib")
--set (DEFAULT_INCLUDE_INSTALL_DIR "include/OpenImageIO")
+ ###########################################################################
+-# Set install paths for the python modules
+-# TODO: Figure out how to get the correct python directory
+-
 -if (UNIX AND NOT SELF_CONTAINED_INSTALL_TREE)
--    # Try to be well-behaved and install into reasonable places according to
--    # the "standard" unix directory heirarchy
 -    # TODO: Figure out how to get the correct python directory
--    set (DEFAULT_PYLIB_INSTALL_DIR "lib/python/site-packages")
--    set (DEFAULT_PYLIB3_INSTALL_DIR "lib/python3/site-packages")
--    set (DEFAULT_DOC_INSTALL_DIR "share/doc/OpenImageIO")
--    set (DEFAULT_MAN_INSTALL_DIR "share/man/man1")
--    set (DEFAULT_FONTS_INSTALL_DIR "share/fonts/oiio")
+-    set (DEFAULT_PYLIB_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/python/site-packages")
+-    set (DEFAULT_PYLIB3_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/python3/site-packages")
 -else ()
--    # Here is the "self-contained install tree" case: the expectation here is
--    # that everything OIIO related will go into its own directory, not into
--    # some standard system heirarchy.
+-    # Here is the "self-contained install tree" case: the expectation here
+-    # is that everything related to this project will go into its own
+-    # directory, not into some standard system heirarchy.
 -    set (DEFAULT_PYLIB_INSTALL_DIR "python")
 -    set (DEFAULT_PYLIB3_INSTALL_DIR "python3")
--    set (DEFAULT_DOC_INSTALL_DIR "doc")
--    set (DEFAULT_MAN_INSTALL_DIR "doc/man")
--    set (DEFAULT_FONTS_INSTALL_DIR "fonts/oiio")
 -endif ()
 -if (EXEC_INSTALL_PREFIX)
 -    # Tack on an extra prefix to support multi-arch builds.
--    set (DEFAULT_BIN_INSTALL_DIR   "${EXEC_INSTALL_PREFIX}/${DEFAULT_BIN_INSTALL_DIR}")
--    set (DEFAULT_LIB_INSTALL_DIR   "${EXEC_INSTALL_PREFIX}/${DEFAULT_LIB_INSTALL_DIR}")
 -    set (DEFAULT_PYLIB_INSTALL_DIR "${EXEC_INSTALL_PREFIX}/${DEFAULT_PYLIB_INSTALL_DIR}")
 -    set (DEFAULT_PYLIB3_INSTALL_DIR "${EXEC_INSTALL_PREFIX}/${DEFAULT_PYLIB3_INSTALL_DIR}")
--    set (DEFAULT_FONTS_INSTALL_DIR "${EXEC_INSTALL_PREFIX}/${DEFAULT_FONTS_INSTALL_DIR}")
 -endif ()
 -# Set up cmake cache variables corresponding to the defaults deduced above, so
 -# that the user can override them as desired:
--set (BIN_INSTALL_DIR ${DEFAULT_BIN_INSTALL_DIR} CACHE STRING
--     "Install location for binaries (relative to CMAKE_INSTALL_PREFIX or absolute)")
--set (LIB_INSTALL_DIR ${DEFAULT_LIB_INSTALL_DIR} CACHE STRING
--     "Install location for libraries (relative to CMAKE_INSTALL_PREFIX or absolute)")
 -set (PYLIB_INSTALL_DIR ${DEFAULT_PYLIB_INSTALL_DIR} CACHE STRING
 -     "Install location for python libraries (relative to CMAKE_INSTALL_PREFIX or absolute)")
 -set (PYLIB3_INSTALL_DIR ${DEFAULT_PYLIB3_INSTALL_DIR} CACHE STRING
 -     "Install location for python3 libraries (relative to CMAKE_INSTALL_PREFIX or absolute)")
--set (INCLUDE_INSTALL_DIR ${DEFAULT_INCLUDE_INSTALL_DIR} CACHE STRING
--     "Install location of header files (relative to CMAKE_INSTALL_PREFIX or absolute)")
--set (DOC_INSTALL_DIR ${DEFAULT_DOC_INSTALL_DIR} CACHE STRING
--     "Install location for documentation (relative to CMAKE_INSTALL_PREFIX or absolute)")
--set (FONTS_INSTALL_DIR ${DEFAULT_FONTS_INSTALL_DIR} CACHE STRING
--     "Install location for fonts (relative to CMAKE_INSTALL_PREFIX or absolute)")
--if (UNIX)
--    set (MAN_INSTALL_DIR ${DEFAULT_MAN_INSTALL_DIR} CACHE STRING
--         "Install location for manual pages (relative to CMAKE_INSTALL_PREFIX or absolute)")
--endif()
+-
++# Set default install options
  set (PLUGIN_SEARCH_PATH "" CACHE STRING "Default plugin search path")
  
  set (INSTALL_DOCS ON CACHE BOOL "Install documentation")
-@@ -521,17 +468,14 @@ if (NOT EMBEDPLUGINS AND NOT BUILD_OIIOUTIL_ONLY)
+@@ -494,14 +467,9 @@ if (NOT EMBEDPLUGINS AND NOT BUILD_OIIOUTIL_ONLY)
      endforeach ()
  endif ()
  
@@ -130,13 +79,7 @@ index ca8da565..b2d6777e 100644
 -endif ()
  
  add_subdirectory (src/include)
--add_subdirectory (src/doc)
-+if (INSTALL_DOCS)
-+    add_subdirectory (src/doc)
-+endif ()
- add_subdirectory (src/fonts)
- add_subdirectory (src/nuke)
- 
+ add_subdirectory (src/doc)
 diff --git a/src/cmake/externalpackages.cmake b/src/cmake/externalpackages.cmake
 index 03faf7bd..b354cda0 100644
 --- a/src/cmake/externalpackages.cmake
@@ -223,128 +166,8 @@ index 03faf7bd..b354cda0 100644
  endif ()
  
  include_directories (SYSTEM "${Boost_INCLUDE_DIRS}")
-diff --git a/src/cmake/oiio_macros.cmake b/src/cmake/oiio_macros.cmake
-index ee7be325..bfd07413 100644
---- a/src/cmake/oiio_macros.cmake
-+++ b/src/cmake/oiio_macros.cmake
-@@ -7,9 +7,9 @@
- #
- macro (oiio_install_targets)
-     install (TARGETS ${ARGN}
--             RUNTIME DESTINATION "${BIN_INSTALL_DIR}" COMPONENT user
--             LIBRARY DESTINATION "${LIB_INSTALL_DIR}" COMPONENT user
--             ARCHIVE DESTINATION "${LIB_INSTALL_DIR}" COMPONENT developer)
-+             RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT user
-+             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT user
-+             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT developer)
- endmacro ()
- 
- # Macro to add a build target for an IO plugin.
-diff --git a/src/doc/CMakeLists.txt b/src/doc/CMakeLists.txt
-index eea04340..0bb6ebcd 100644
---- a/src/doc/CMakeLists.txt
-+++ b/src/doc/CMakeLists.txt
-@@ -6,10 +6,9 @@ set (public_docs
-      "${OpenImageIO_SOURCE_DIR}/CHANGES.md"
- )
- 
--if (INSTALL_DOCS)
--    install (FILES ${public_docs} DESTINATION ${DOC_INSTALL_DIR}
--             COMPONENT documentation)
--endif ()
-+install (FILES ${public_docs}
-+         DESTINATION ${CMAKE_INSTALL_DOCDIR}
-+         COMPONENT documentation)
- 
- # generate man pages using txt2man and a tiny python script to munge the
- # result of "$tool --help"
-@@ -37,8 +36,7 @@ if (UNIX AND TXT2MAN AND PYTHONINTERP_FOUND)
-     # force man page build before install
-     add_custom_target (man_pages ALL DEPENDS ${manpage_files})
- 
--    if (INSTALL_DOCS)
--        install (FILES ${manpage_files}
--                 DESTINATION ${MAN_INSTALL_DIR} COMPONENT documentation)
--    endif ()
-+    install (FILES ${manpage_files}
-+             DESTINATION ${CMAKE_INSTALL_MANDIR}
-+             COMPONENT documentation)
- endif()
-diff --git a/src/fonts/CMakeLists.txt b/src/fonts/CMakeLists.txt
-index 1e296da0..4912c81f 100644
---- a/src/fonts/CMakeLists.txt
-+++ b/src/fonts/CMakeLists.txt
-@@ -1,7 +1,8 @@
- file (GLOB public_fonts "*/*.ttf")
- 
- if (INSTALL_FONTS AND USE_FREETYPE)
--    install (FILES ${public_fonts} DESTINATION ${FONTS_INSTALL_DIR}
-+    install (FILES ${public_fonts}
-+             DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/fonts/OpenImageIO
-              COMPONENT fonts)
- endif ()
- 
-diff --git a/src/include/CMakeLists.txt b/src/include/CMakeLists.txt
-index b063e6f3..80ae4986 100644
---- a/src/include/CMakeLists.txt
-+++ b/src/include/CMakeLists.txt
-@@ -19,5 +19,6 @@ set (OIIO_BUILD_CPP14 ${USE_CPP14})
- configure_file(OpenImageIO/oiioversion.h.in "${CMAKE_BINARY_DIR}/include/OpenImageIO/oiioversion.h" @ONLY)
- list(APPEND public_headers "${CMAKE_BINARY_DIR}/include/OpenImageIO/oiioversion.h")
- 
--install (FILES ${public_headers} DESTINATION ${INCLUDE_INSTALL_DIR}
-+install (FILES ${public_headers}
-+         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OpenImageIO
-          COMPONENT developer)
-diff --git a/src/libOpenImageIO/imagebufalgo_draw.cpp b/src/libOpenImageIO/imagebufalgo_draw.cpp
-index 4e3cc985..6e02990a 100644
---- a/src/libOpenImageIO/imagebufalgo_draw.cpp
-+++ b/src/libOpenImageIO/imagebufalgo_draw.cpp
-@@ -692,14 +692,20 @@ ImageBufAlgo::render_text (ImageBuf &R, int x, int y, string_view text,
-     if (systemRoot && *systemRoot)
-         search_dirs.push_back (std::string(systemRoot) + "/Fonts");
-     search_dirs.push_back ("/usr/share/fonts");
-+    search_dirs.push_back ("/usr/share/fonts/OpenImageIO");
-     search_dirs.push_back ("/Library/Fonts");
-+    search_dirs.push_back ("/Library/Fonts/OpenImageIO");
-     search_dirs.push_back ("C:/Windows/Fonts");
-+    search_dirs.push_back ("C:/Windows/Fonts/OpenImageIO");
-     search_dirs.push_back ("/usr/local/share/fonts");
-+    search_dirs.push_back ("/usr/local/share/fonts/OpenImageIO");
-     search_dirs.push_back ("/opt/local/share/fonts");
-+    search_dirs.push_back ("/opt/local/share/fonts/OpenImageIO");
-     // Try $OPENIMAGEIOHOME/fonts
-     const char *oiiohomedir = getenv ("OPENIMAGEIOHOME");
-     if (oiiohomedir && *oiiohomedir)
-         search_dirs.push_back (std::string(oiiohomedir) + "/fonts");
-+        search_dirs.push_back (std::string(oiiohomedir) + "/share/fonts/OpenImageIO");
-     // Try ../fonts relative to where this executing binary came from
-     std::string this_program = OIIO::Sysutil::this_program_path ();
-     if (this_program.size()) {
-diff --git a/src/nuke/txReader/CMakeLists.txt b/src/nuke/txReader/CMakeLists.txt
-index 3e72b6d4..660a2ee1 100644
---- a/src/nuke/txReader/CMakeLists.txt
-+++ b/src/nuke/txReader/CMakeLists.txt
-@@ -28,5 +28,4 @@ else ()
-         COMPILE_FLAGS "-fPIC -msse")
- endif ()
- 
--install (TARGETS txReader
--    LIBRARY DESTINATION "${LIB_INSTALL_DIR}/nuke")
-+oiio_install_targets (txReader)
-diff --git a/src/nuke/txWriter/CMakeLists.txt b/src/nuke/txWriter/CMakeLists.txt
-index 66312bc4..0fb70a36 100644
---- a/src/nuke/txWriter/CMakeLists.txt
-+++ b/src/nuke/txWriter/CMakeLists.txt
-@@ -28,5 +28,4 @@ else ()
-         COMPILE_FLAGS "-fPIC -msse")
- endif ()
- 
--install (TARGETS txWriter
--    LIBRARY DESTINATION "${LIB_INSTALL_DIR}/nuke")
-+oiio_install_targets (txWriter)
 diff --git a/src/python/CMakeLists.txt b/src/python/CMakeLists.txt
-index 81a4a890..4d319271 100644
+index 81a4a890..e58d372d 100644
 --- a/src/python/CMakeLists.txt
 +++ b/src/python/CMakeLists.txt
 @@ -1,54 +1,30 @@
@@ -390,7 +213,7 @@ index 81a4a890..4d319271 100644
 -    unset(PYTHON_INCLUDE_PATH)
 -    unset(PYTHON_INCLUDE_PATH CACHE)
 +if (NOT ${PYTHON_VERSION} EQUAL ${PYTHON_VERSION_FOUND} )
-+    message (WARNING "The requested version ${PYTHON_VERSION} was not found.")
++    message (WARNING "The requested version ${PYTHON_VERSION} was not found.") 
 +    message (WARNING "Using ${PYTHON_VERSION_FOUND} instead.")
 +endif ()
  
@@ -407,18 +230,20 @@ index 81a4a890..4d319271 100644
 -        find_package (Boost 1.42 QUIET COMPONENTS ${_boost_py3_lib})
 -        string (TOUPPER ${_boost_py3_lib} boost_py3_lib_name)
 -        if (Boost_${boost_py3_lib_name}_FOUND)
+-            #Not the most beautiful thing to do, but that gets them included in
+-            #the target_link_libraries(…) call farther down
+-            set (Boost_PYTHON_LIBRARIES ${Boost_${boost_py3_lib_name}_LIBRARIES})
 +if (NOT BOOST_CUSTOM)
-+    #Finding the python component for boost is a little tricky, since it has
-+    #different names on different systems. Try the most common ones.
++    # Finding the python component for boost is a little tricky, since it has
++    # different names on different systems. Try the most common ones.
 +    foreach (_py_lib python-${PYTHON_VERSION_FOUND} python
 +             python${PYTHON_VERSION_MAJOR}
 +             python-py${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
 +        find_package (Boost QUIET COMPONENTS ${_py_lib})
 +        string (TOUPPER ${_py_lib} _py_lib_name)
 +        if (Boost_${_py_lib_name}_FOUND)
-             #Not the most beautiful thing to do, but that gets them included in
-             #the target_link_libraries(…) call farther down
--            set (Boost_PYTHON_LIBRARIES ${Boost_${boost_py3_lib_name}_LIBRARIES})
++            # Not the most beautiful thing to do, but that gets them included in
++            # the target_link_libraries(…) call farther down
 +            set (Boost_PYTHON_LIBRARIES ${Boost_${_py_lib_name}_LIBRARIES})
              break ()
          endif ()
@@ -462,6 +287,15 @@ index 81a4a890..4d319271 100644
      endif ()
  
      include_directories (${PYTHON_INCLUDE_PATH} ${Boost_INCLUDE_DIRS})
+@@ -91,7 +72,7 @@ if (BOOST_CUSTOM OR Boost_FOUND AND PYTHONLIBS_FOUND)
+         target_link_libraries (${target_name} OpenImageIO ${Boost_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${CMAKE_DL_LIBS})
+         set_target_properties (${target_name} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+     else ()
+-        target_link_libraries (${target_name} OpenImageIO ${Boost_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} ${CMAKE_DL_LIBS})
++        target_link_libraries (${target_name} OpenImageIO ${SANITIZE_LIBRARIES} ${Boost_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} ${CMAKE_DL_LIBS})
+     endif ()
+ 
+     # Exclude the 'lib' prefix from the name
 @@ -123,21 +104,17 @@ if (BOOST_CUSTOM OR Boost_FOUND AND PYTHONLIBS_FOUND)
                                 SUFFIX ".pyd")
      endif()
@@ -478,23 +312,25 @@ index 81a4a890..4d319271 100644
 -elseif (BUILD_PY3)
 -    if (NOT PYTHONLIBS_FOUND)
 -        message (STATUS "Python3 libraries not found")
-+install (TARGETS ${target_name}
-+         RUNTIME DESTINATION ${PYTHON_SITE_DIR} COMPONENT user
-+         LIBRARY DESTINATION ${PYTHON_SITE_DIR} COMPONENT user)
+-    endif ()
+-    if (NOT Boost_FOUND)
+-        message (STATUS "Boost python3 component not found")
+-    endif ()
+-    set(USE_PYTHON3 OFF)
++    install (TARGETS ${target_name}
++             RUNTIME DESTINATION ${PYTHON_SITE_DIR} COMPONENT user
++             LIBRARY DESTINATION ${PYTHON_SITE_DIR} COMPONENT user)
 +else ()
 +    # If Boost python components were not found, turn off all python support.
 +    message (STATUS "Boost python support not found!")
 +    if (APPLE AND USE_PYTHON)
 +        message (STATUS "   If your Boost is from Macports, you need the +python26 variant to get Python support.")
-     endif ()
--    if (NOT Boost_FOUND)
--        message (STATUS "Boost python3 component not found")
-+    if (BOOST_CUSTOM)
-+       message (STATUS "   Please set the variable Boost_PYTHON_LIBRARIES to the location of the boost python libraries.")
-     endif ()
--    set(USE_PYTHON3 OFF)
-+    message (FATAL_ERROR "Python module cannot be built. Either disable python support or check your boost installation.")
++     endif ()
++     if (BOOST_CUSTOM)
++        message (STATUS "   Please set the variable Boost_PYTHON_LIBRARIES to the location of the boost python libraries.")
++     endif ()
++     message (FATAL_ERROR "Python module cannot be built. Either disable python support or check your boost installation.")
  endif ()
 -- 
-2.14.1
+2.14.2
 

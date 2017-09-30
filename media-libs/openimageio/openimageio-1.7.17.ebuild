@@ -20,13 +20,12 @@ X86_CPU_FEATURES=(
 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
 
-IUSE="colorio doc ffmpeg field3d gif jpeg opencv opengl ptex python qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
-REQUIRED_USE="${PYTHON_REQUIRED_USE}"
+IUSE="colorio doc ffmpeg field3d gif jpeg jpeg2k opencv opengl ptex python qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
+REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 RESTRICT="test" #431412
 
-RDEPEND="${PYTHON_DEPS}
-	>=dev-libs/boost-1.62:=
+RDEPEND=">=dev-libs/boost-1.62:=
 	dev-libs/pugixml:=
 	>=media-libs/ilmbase-2.2.0-r1:=
 	media-libs/libpng:0=
@@ -34,18 +33,22 @@ RDEPEND="${PYTHON_DEPS}
 	>=media-libs/openexr-2.2.0-r2:=
 	media-libs/tiff:0=
 	sys-libs/zlib:=
-	virtual/jpeg:0
-	colorio? ( >=media-libs/opencolorio-1.0.9:= )
+	virtual/jpeg:=
+	colorio? ( media-libs/opencolorio:= )
 	ffmpeg? ( media-video/ffmpeg:= )
-	field3d? ( media-libs/Field3D )
-	gif? ( media-libs/giflib )
-	jpeg? ( virtual/jpeg:= )
-	opencv? ( >=media-libs/opencv-2.3:= )
+	field3d? ( media-libs/Field3D:= )
+	gif? ( media-libs/giflib:0= )
+	jpeg2k? ( >=media-libs/openjpeg-1.5:0= )
+	opencv? ( media-libs/opencv:= )
 	opengl? (
 		virtual/glu
 		virtual/opengl
 	)
 	ptex? ( media-libs/ptex:= )
+	python? (
+		${PYTHON_DEPS}
+		dev-libs/boost:=[python,${PYTHON_USEDEP}]
+	)
 	qt4? (
 		dev-qt/qtcore:4
 		dev-qt/qtgui:4
@@ -58,9 +61,11 @@ RDEPEND="${PYTHON_DEPS}
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
 
-PATCHES=( "${FILESDIR}/${P}-Use-GNUInstallDirs-and-simplify-python-boost-detection.patch" )
+PATCHES=( "${FILESDIR}/${P}-use-gnuinstalldirs.patch"
+	"${FILESDIR}/${P}-make-python-and-boost-detection-more-generic.patch"
+)
 
-DOCS=( src/doc/${PN}.pdf )
+DOCS=( CHANGES.md CREDITS.md README.md src/doc/${PN}.pdf )
 
 pkg_setup() {
 	use python && python-single-r1_pkg_setup
@@ -69,38 +74,38 @@ pkg_setup() {
 src_configure() {
 	# Build with SIMD support
 	local cpufeature
-	local mysimd=""
+	local mysimd=()
 	for cpufeature in "${CPU_FEATURES[@]}"; do
-		use ${cpufeature%:*} && mysimd+="${cpufeature#*:},"
+		use "${cpufeature%:*}" && mysimd+=("${cpufeature#*:}")
 	done
 
 	# If no CPU SIMDs were used, completely disable them
-	[[ -z $mysimd ]] && mysimd="0"
+	[[ -z ${mysimd} ]] && mysimd=("0")
 
 	local mycmakeargs=(
+		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
+		-DINSTALL_DOCS=$(usex doc)
 		-DOIIO_BUILD_TESTS=OFF # as they are RESTRICTed
 		-DSTOP_ON_WARNING=OFF
-		-DUSE_NUKE=OFF
-		-DUSE_EXTERNAL_PUGIXML=ON
 		-DUSE_CPP14=ON
-		-DUSE_FIELD3D=$(usex field3d)
-		-DINSTALL_DOCS=$(usex doc)
-		-DUSE_FREETYPE=$(usex truetype)
+		-DUSE_EXTERNAL_PUGIXML=ON
 		-DUSE_FFMPEG=$(usex ffmpeg)
+		-DUSE_FIELD3D=$(usex field3d)
+		-DUSE_FREETYPE=$(usex truetype)
 		-DUSE_GIF=$(usex gif)
+		-DUSE_JPEGTURBO=ON
+		-DUSE_LIBRAW=$(usex raw)
+		-DUSE_NUKE=NO # Missing in Gentoo
+		-DUSE_NUKE=OFF
 		-DUSE_OCIO=$(usex colorio)
 		-DUSE_OPENCV=$(usex opencv)
 		-DUSE_OPENGL=$(usex opengl)
-		-DUSE_JPEGTURBO=$(usex jpeg)
-		-DUSE_OPENJPEG=$(usex jpeg)
+		-DUSE_OPENJPEG=$(usex jpeg2k)
 		-DUSE_OPENSSL=$(usex ssl)
 		-DUSE_PTEX=$(usex ptex)
 		-DUSE_PYTHON=$(usex python)
-		-DUSE_LIBRAW=$(usex raw)
 		-DUSE_QT=$(usex qt4)
-		-DUSE_SIMD=${mysimd%,}
-		-DVERBOSE=ON
-		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
+		-DUSE_SIMD="$(IFS=","; echo "${mysimd[*]}")"
 	)
 
 	cmake-utils_src_configure
