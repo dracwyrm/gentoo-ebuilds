@@ -34,6 +34,7 @@
 			<pkg>virtual/opencl</pkg>.
 		</flag>
 		<flag name="tutorials">
+			Installs sample binary files to /usr/bin/tutorials.
 		</flag>
 	</use>
 	<upstream>
