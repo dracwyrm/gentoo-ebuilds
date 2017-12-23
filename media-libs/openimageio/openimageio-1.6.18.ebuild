@@ -29,7 +29,7 @@ RDEPEND="dev-libs/boost:=
 	>=media-libs/libwebp-0.2.1:=
 	media-libs/openexr:=
 	media-libs/tiff:0=
-	sys-libs/zlib
+	sys-libs/zlib:=
 	virtual/jpeg:=
 	colorio? ( media-libs/opencolorio:0= )
 	ffmpeg? ( media-video/ffmpeg:0= )
@@ -57,7 +57,8 @@ RDEPEND="dev-libs/boost:=
 	truetype? ( media-libs/freetype:2= )"
 DEPEND="${RDEPEND}"
 
-PATCHES=( "${FILESDIR}/${P}-use-gnuinstalldirs.patch"
+PATCHES=(
+	"${FILESDIR}/${P}-use-gnuinstalldirs.patch"
 	"${FILESDIR}/${P}-make-python-and-boost-detection-more-generic.patch"
 	"${FILESDIR}/${P}-repair-breaks-after-boost-python-1.65-changes.patch"
 )

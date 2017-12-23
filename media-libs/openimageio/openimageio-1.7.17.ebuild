@@ -20,7 +20,7 @@ X86_CPU_FEATURES=(
 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
 
-IUSE="colorio doc ffmpeg field3d gif jpeg jpeg2k opencv opengl ptex python qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
+IUSE="colorio doc ffmpeg field3d gif jpeg2k opencv opengl ptex python qt4 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 RESTRICT="test" #431412
@@ -61,7 +61,8 @@ RDEPEND=">=dev-libs/boost-1.62:=
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
 
-PATCHES=( "${FILESDIR}/${P}-use-gnuinstalldirs.patch"
+PATCHES=(
+	"${FILESDIR}/${P}-use-gnuinstalldirs.patch"
 	"${FILESDIR}/${P}-make-python-and-boost-detection-more-generic.patch"
 )
 
