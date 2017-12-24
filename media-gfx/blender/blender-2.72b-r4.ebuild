@@ -29,7 +29,7 @@ EAPI=6
 PYTHON_COMPAT=( python3_4 )
 #PATCHSET="1"
 
-inherit multilib xdg-utils gnome2-utils cmake-utils eutils python-single-r1 versionator flag-o-matic toolchain-funcs pax-utils check-reqs
+inherit multilib fdo-mime gnome2-utils cmake-utils eutils python-single-r1 versionator flag-o-matic toolchain-funcs pax-utils check-reqs
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
 HOMEPAGE="http://www.blender.org"
@@ -59,8 +59,6 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	game-engine? ( boost )
 	?? ( ffmpeg libav )"
 
-RESTRICT="test"
-
 RDEPEND="
 	${PYTHON_DEPS}
 	dev-python/numpy[${PYTHON_USEDEP}]
@@ -83,10 +81,10 @@ RDEPEND="
 	cycles? (
 		media-libs/openimageio
 	)
-	ffmpeg? ( media-video/ffmpeg:=[x264,mp3,encode,theora,jpeg2k?] )
+	ffmpeg? ( media-video/ffmpeg:0=[x264,mp3,encode,theora,jpeg2k?] )
 	libav? ( >=media-video/libav-11.3:0=[x264,mp3,encode,theora,jpeg2k?] )
 	fftw? ( sci-libs/fftw:3.0 )
-	jack? ( virtual/jack )
+	jack? ( media-sound/jack-audio-connection-kit )
 	jpeg2k? ( media-libs/openjpeg:0 )
 	ndof? (
 		app-misc/spacenavd
@@ -107,13 +105,12 @@ DEPEND="${RDEPEND}
 	nls? ( sys-devel/gettext )"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-2.68-doxyfile.patch"
-	"${FILESDIR}/${PN}-2.68-fix-install-rules.patch"
-	"${FILESDIR}/${PN}-2.70-sse2.patch"
-	"${FILESDIR}/${PN}-2.72-T42797.diff"
-	"${FILESDIR}/${P}-fix-util_simd.patch"
-	"${FILESDIR}/${P}-gcc6-fixes.patch"
-	"${FILESDIR}/${P}-ffmpeg3.patch"
+	"${FILESDIR}"/${PN}-2.68-doxyfile.patch
+	"${FILESDIR}"/${PN}-2.68-fix-install-rules.patch
+	"${FILESDIR}"/${PN}-2.70-sse2.patch
+	"${FILESDIR}"/${PN}-2.72-T42797.diff
+	"${FILESDIR}"/${P}-fix-util_simd.patch
+	"${FILESDIR}"/${P}-gcc6-fixes.patch
 )
 
 pkg_pretend() {
@@ -133,7 +130,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	cmake-utils_src_prepare
+	default
 
 	# we don't want static glew, but it's scattered across
 	# thousand files
@@ -216,9 +213,8 @@ src_compile() {
 
 	if use doc; then
 		# Workaround for binary drivers.
-		addpredict /dev/ati
-		addpredict /dev/dri
-		addpredict /dev/nvidiactl
+		cards=( /dev/ati/card* /dev/nvidia* )
+		for card in "${cards[@]}"; do addpredict "${card}"; done
 
 		einfo "Generating Blender C/C++ API docs ..."
 		cd "${CMAKE_USE_DIR}"/doc/doxygen || die
@@ -234,6 +230,8 @@ src_compile() {
 	fi
 }
 
+src_test() { :; }
+
 src_install() {
 	local i
 
@@ -245,13 +243,14 @@ src_install() {
 		dodoc -r "${CMAKE_USE_DIR}"/doc/python_api/BPY_API/*
 
 		docinto "html/API/blender"
-		dodoc -r "${CMAKE_USE_DIR}"/doc/doxygen/html/.
+		dodoc -r "${CMAKE_USE_DIR}"/doc/doxygen/html/*
 	fi
 
-	cmake-utils_src_install
+	# fucked up cmake will relink binary for no reason
+	emake -C "${CMAKE_BUILD_DIR}" DESTDIR="${D}" install/fast
 
 	# fix doc installdir
-	docinto html
+	docinto "html"
 	dodoc "${CMAKE_USE_DIR}"/release/text/readme.html
 	rm -rf "${ED%/}"/usr/share/doc/blender
 
@@ -282,10 +281,10 @@ pkg_postinst() {
 	ewarn
 
 	gnome2_icon_cache_update
-	xdg_mimeinfo_database_update
+	fdo-mime_desktop_database_update
 }
 
 pkg_postrm() {
 	gnome2_icon_cache_update
-	xdg_mimeinfo_database_update
+	fdo-mime_desktop_database_update
 }

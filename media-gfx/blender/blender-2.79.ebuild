@@ -9,6 +9,7 @@ inherit check-reqs cmake-utils xdg-utils flag-o-matic gnome2-utils \
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
 HOMEPAGE="http://www.blender.org"
+
 SRC_URI="http://download.blender.org/source/${P}.tar.gz"
 
 # Blender can have letters in the version string,
@@ -18,7 +19,7 @@ MY_PV="$(get_version_component_range 1-2)"
 SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
-IUSE="+boost +bullet +dds +elbeem +game-engine +openexr collada colorio \
+IUSE="+bullet +dds +elbeem +game-engine +openexr collada colorio \
 	cuda cycles debug doc ffmpeg fftw headless jack jemalloc jpeg2k libav \
 	llvm man ndof nls openal opencl openimageio openmp opensubdiv openvdb \
 	osl player sdl sndfile test tiff valgrind"
@@ -28,17 +29,12 @@ IUSE="+boost +bullet +dds +elbeem +game-engine +openexr collada colorio \
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine !headless )
 	cuda? ( cycles !opencl )
-	cycles? ( boost openexr tiff openimageio )
-	colorio? ( boost )
-	openvdb? ( boost )
-	nls? ( boost )
-	openal? ( boost )
+	cycles? ( openexr tiff openimageio )
 	opencl? ( cycles )
-	osl? ( cycles llvm )
-	game-engine? ( boost )
-	?? ( ffmpeg libav )"
+	osl? ( cycles llvm )"
 
 RDEPEND="${PYTHON_DEPS}
+	>=dev-libs/boost-1.62:=[nls?,threads(+)]
 	dev-libs/lzo:2
 	>=dev-python/numpy-1.10.1[${PYTHON_USEDEP}]
 	dev-python/requests[${PYTHON_USEDEP}]
@@ -51,10 +47,9 @@ RDEPEND="${PYTHON_DEPS}
 	virtual/jpeg:0=
 	virtual/libintl
 	virtual/opengl
-	boost? ( >=dev-libs/boost-1.62:=[nls?,threads(+)] )
 	collada? ( >=media-libs/opencollada-1.6.18:= )
 	colorio? ( media-libs/opencolorio )
-	cuda? ( =dev-util/nvidia-cuda-toolkit-8.0*:= )
+	cuda? ( dev-util/nvidia-cuda-toolkit:= )
 	ffmpeg? ( media-video/ffmpeg:=[x264,mp3,encode,theora,jpeg2k?] )
 	libav? ( >=media-video/libav-11.3:=[x264,mp3,encode,theora,jpeg2k?] )
 	fftw? ( sci-libs/fftw:3.0= )
@@ -79,7 +74,7 @@ RDEPEND="${PYTHON_DEPS}
 		>=media-libs/ilmbase-2.2.0:=
 		>=media-libs/openexr-2.2.0:=
 	)
-	opensubdiv? ( media-libs/opensubdiv[cuda=,opencl] )
+	opensubdiv? ( >=media-libs/opensubdiv-3.3.0[cuda=,opencl] )
 	openvdb? (
 		media-gfx/openvdb[${PYTHON_USEDEP},abi3-compat(+),openvdb-compression(+)]
 		dev-cpp/tbb
@@ -103,12 +98,10 @@ DEPEND="${RDEPEND}
 PATCHES=( "${FILESDIR}/${PN}-fix-install-rules.patch" )
 
 blender_check_requirements() {
-	if [[ ${MERGE_TYPE} != binary ]]; then
-		use openmp && tc-check-openmp
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
 
-		if use doc; then
-			CHECKREQS_DISK_BUILD="4G" check-reqs_pkg_pretend
-		fi
+	if use doc; then
+		CHECKREQS_DISK_BUILD="4G" check-reqs_pkg_pretend
 	fi
 }
 
@@ -141,7 +134,7 @@ src_prepare() {
 src_configure() {
 	# FIX: forcing '-funsigned-char' fixes an anti-aliasing issue with menu
 	# shadows, see bug #276338 for reference
-	#append-flags -funsigned-char
+	append-flags -funsigned-char
 	append-lfs-flags
 	append-cppflags -DOPENVDB_3_ABI_COMPATIBLE
 
@@ -159,7 +152,7 @@ src_configure() {
 		-DWITH_SYSTEM_LZO=ON
 		-DWITH_C11=ON
 		-DWITH_CXX11=ON
-		-DWITH_BOOST=$(usex boost)
+		-DWITH_BOOST=ON
 		-DWITH_BULLET=$(usex bullet)
 		-DWITH_CODEC_FFMPEG=$(usex ffmpeg)
 		-DWITH_CODEC_SNDFILE=$(usex sndfile)
@@ -251,7 +244,7 @@ src_install() {
 	cmake-utils_src_install
 
 	# fix doc installdir
-	docinto html
+	docinto "html"
 	dodoc "${CMAKE_USE_DIR}"/release/text/readme.html
 	rm -r "${ED%/}"/usr/share/doc/blender || die
 
