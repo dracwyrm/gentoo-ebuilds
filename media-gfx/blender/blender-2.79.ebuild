@@ -24,11 +24,9 @@ IUSE="+bullet +dds +elbeem +game-engine +openexr collada colorio \
 	llvm man ndof nls openal opencl openimageio openmp opensubdiv openvdb \
 	osl player sdl sndfile test tiff valgrind"
 
-# OpenCL and nVidia performance is rubbish with Blender
-# If you have nVidia, use CUDA.
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	player? ( game-engine !headless )
-	cuda? ( cycles !opencl )
+	cuda? ( cycles )
 	cycles? ( openexr tiff openimageio )
 	opencl? ( cycles )
 	osl? ( cycles llvm )"
@@ -74,7 +72,7 @@ RDEPEND="${PYTHON_DEPS}
 		>=media-libs/ilmbase-2.2.0:=
 		>=media-libs/openexr-2.2.0:=
 	)
-	opensubdiv? ( >=media-libs/opensubdiv-3.3.0[cuda=,opencl] )
+	opensubdiv? ( >=media-libs/opensubdiv-3.3.0:=[cuda=,opencl=] )
 	openvdb? (
 		media-gfx/openvdb[${PYTHON_USEDEP},abi3-compat(+),openvdb-compression(+)]
 		dev-cpp/tbb

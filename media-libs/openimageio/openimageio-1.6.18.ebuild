@@ -78,7 +78,7 @@ src_configure() {
 		use "${cpufeature%:*}" && mysimd+=("${cpufeature#*:}")
 	done
 	# If no CPU SIMDs were used, completely disable them
-	-z ${mysimd} ]] && mysimd=("0")
+	[[ -z ${mysimd} ]] && mysimd=("0")
 
 	local mycmakeargs=(
 		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
