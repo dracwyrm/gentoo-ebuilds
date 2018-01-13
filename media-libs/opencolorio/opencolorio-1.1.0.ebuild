@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -11,8 +11,7 @@ inherit cmake-utils python-single-r1 vcs-snapshot
 DESCRIPTION="A color management framework for visual effects and animation"
 HOMEPAGE="http://opencolorio.org/"
 
-MY_GIT_COMMIT="927e81dbe39fb073d45dbea3f14c47ed1debc183"
-SRC_URI="https://github.com/imageworks/OpenColorIO/archive/${MY_GIT_COMMIT}.tar.gz \
+SRC_URI="https://github.com/imageworks/OpenColorIO/archive/v${PV}.tar.gz \
 		-> ${P}.tar.gz"
 
 LICENSE="BSD"
