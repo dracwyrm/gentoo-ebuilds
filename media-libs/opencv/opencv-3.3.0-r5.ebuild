@@ -27,6 +27,7 @@ REQUIRED_USE="
 	gflags? ( contrib )
 	glog? ( contrib )
 	contrib_cvv? ( contrib qt5 )
+	contrib_dnn? ( contrib )
 	contrib_hdf? ( contrib )
 	contrib_sfm? ( contrib eigen gflags glog )
 	contrib_xfeatures2d? ( contrib cuda )
