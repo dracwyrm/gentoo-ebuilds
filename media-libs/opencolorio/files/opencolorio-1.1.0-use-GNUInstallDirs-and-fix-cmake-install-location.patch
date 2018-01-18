@@ -1,20 +1,21 @@
-From a0e0b5e9e63b14954d5ab17fffcaae17ac978bc9 Mon Sep 17 00:00:00 2001
+From c43cc918c3e79e324f11ca47e95bfe36e9e0dd15 Mon Sep 17 00:00:00 2001
 From: Jonathan Scruggs <j.scruggs@gmail.com>
 Date: Sun, 14 Jan 2018 19:59:31 +0000
-Subject: [PATCH 2/3] Add GNUInstallDirs variables and fix install location for
+Subject: [PATCH] Add GNUInstallDirs variables and fix install location for
  cmake files
 
-GNUInstallDirs is supported on all platforms and set by the distro
-or OS. Variables are set to the standarg GNU locations.
+GNUInstallDirs is supported on all platforms and variables are set
+to the standard GNU locations.
 
 This patch corrects the location where the CMake files are
-installed to.
+installed.
 
 Signed-off by: Jonathan Scruggs <j.scruggs@gmail.com>
 ---
- CMakeLists.txt      | 9 +++++----
- docs/CMakeLists.txt | 4 ++--
- 2 files changed, 7 insertions(+), 6 deletions(-)
+ CMakeLists.txt                     | 9 +++++----
+ docs/CMakeLists.txt                | 4 ++--
+ export/pkgconfig/OpenColorIO.pc.in | 6 ++----
+ 3 files changed, 9 insertions(+), 10 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index b05c7e4..452fa1e 100644
@@ -82,6 +83,20 @@ index 3fd0299..a822a19 100644
 +            DESTINATION ${CMAKE_INSTALL_DOCDIR})
      
  endif()
+diff --git a/export/pkgconfig/OpenColorIO.pc.in b/export/pkgconfig/OpenColorIO.pc.in
+index 81ab4ce3..c4553a4f 100644
+--- a/export/pkgconfig/OpenColorIO.pc.in
++++ b/export/pkgconfig/OpenColorIO.pc.in
+@@ -1,7 +1,5 @@
+-prefix=@CMAKE_INSTALL_PREFIX@
+-exec_prefix=@CMAKE_INSTALL_EXEC_PREFIX@
+-includedir=${prefix}/include
+-libdir=${exec_prefix}/lib@LIB_SUFFIX@
++libdir=@CMAKE_INSTALL_FULL_LIBDIR@
++includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+ 
+ Name: OpenColorIO
+ Description: A color management framework for visual effects and animation
 -- 
 2.15.1
 
