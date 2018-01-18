@@ -57,7 +57,7 @@ RDEPEND=">=dev-libs/boost-1.62:=
 		opengl? ( dev-qt/qtopengl:4 )
 	)
 	raw? ( media-libs/libraw:= )
-	ssl? ( dev-libs/openssl:0= )
+	ssl? ( || ( dev-libs/openssl:0= dev-libs/libressl:0= ) )
 	truetype? ( media-libs/freetype:2= )"
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
