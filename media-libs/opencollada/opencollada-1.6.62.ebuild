@@ -41,7 +41,7 @@ src_prepare() {
 
 src_configure() {
 	local mycmakeargs=(
-		-DUSE_SHARED=$(usex !static-libs)
+		-DUSE_SHARED=ON
 		-DUSE_STATIC=$(usex static-libs)
 		-DUSE_LIBXML=ON
 	)
