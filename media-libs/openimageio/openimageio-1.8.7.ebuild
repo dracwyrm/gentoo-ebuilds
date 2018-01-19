@@ -20,7 +20,7 @@ X86_CPU_FEATURES=(
 )
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
 
-IUSE="colorio doc ffmpeg field3d gif jpeg2k opencv opengl ptex python qt5 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
+IUSE="colorio doc ffmpeg field3d gif jpeg2k libressl opencv opengl ptex python qt5 raw ssl +truetype ${CPU_FEATURES[@]%:*}"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 RESTRICT="test" #431412
@@ -57,7 +57,10 @@ RDEPEND=">=dev-libs/boost-1.62:=
 		opengl? ( dev-qt/qtopengl:4 )
 	)
 	raw? ( media-libs/libraw:= )
-	ssl? ( || ( dev-libs/openssl:0= dev-libs/libressl:0= ) )
+	ssl? (
+		!libressl? ( dev-libs/openssl:0= )
+		libressl? ( dev-libs/libressl:0= )
+	)
 	truetype? ( media-libs/freetype:2= )"
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
