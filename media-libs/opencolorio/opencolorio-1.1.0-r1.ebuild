@@ -67,7 +67,7 @@ src_configure() {
 	local mycmakeargs=(
 		-DOCIO_BUILD_JNIGLUE=OFF
 		-DOCIO_BUILD_NUKE=OFF
-		-DOCIO_BUILD_SHARED=$(usex !static-libs)
+		-DOCIO_BUILD_SHARED=ON
 		-DOCIO_BUILD_STATIC=$(usex static-libs)
 		-DOCIO_STATIC_JNIGLUE=OFF
 		-DOCIO_BUILD_TRUELIGHT=OFF
