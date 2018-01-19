@@ -95,7 +95,7 @@ src_configure() {
 		-DUSE_OPENSSL=$(usex ssl)
 		-DUSE_PTEX=$(usex ptex)
 		-DUSE_PYTHON=$(usex python)
-		-DUSE_QT=OFF # Depreciated
+		-DUSE_QT=OFF # Deprecated
 		-DUSE_SIMD="$(IFS=","; echo "${mysimd[*]}")"
 	)
 

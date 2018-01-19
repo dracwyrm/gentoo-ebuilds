@@ -85,7 +85,7 @@ src_configure() {
 		-DUSE_OPENSSL=$(usex ssl)
 		-DUSE_PYTHON=$(usex python)
 		-DUSE_LIBRAW=$(usex raw)
-		-DUSE_QT=OFF # Depreciated
+		-DUSE_QT=OFF # Deprecated
 	)
 
 	if [[ ${EPYTHON} == python3* ]]; then
