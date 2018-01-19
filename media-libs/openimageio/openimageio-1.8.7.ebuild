@@ -33,7 +33,7 @@ RDEPEND=">=dev-libs/boost-1.62:=
 	>=media-libs/openexr-2.2.0-r2:=
 	media-libs/tiff:0=
 	sys-libs/zlib:=
-	virtual/jpeg:=
+	virtual/jpeg:0
 	colorio? ( media-libs/opencolorio:= )
 	ffmpeg? ( media-video/ffmpeg:= )
 	field3d? ( media-libs/Field3D:= )
@@ -54,7 +54,7 @@ RDEPEND=">=dev-libs/boost-1.62:=
 		dev-qt/qtcore:5
 		dev-qt/qtgui:5
 		dev-qt/qtwidgets:5
-		opengl? ( dev-qt/qtopengl:4 )
+		opengl? ( dev-qt/qtopengl:5 )
 	)
 	raw? ( media-libs/libraw:= )
 	ssl? (
