@@ -96,7 +96,7 @@ src_configure() {
 		-DUSE_PTEX=$(usex ptex)
 		-DUSE_PYTHON=$(usex python)
 		-DUSE_QT=OFF # Deprecated
-		-DUSE_SIMD="$(IFS=","; echo "${mysimd[*]}")"
+		-DUSE_SIMD=$(local IFS=','; echo "${mysimd[*]}")
 	)
 
 	cmake-utils_src_configure
