@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -12,17 +12,21 @@ SRC_URI="https://github.com/rockowitz/ddcutil/archive/v${PV}.tar.gz -> ${P}.tar.
 SLOT="0"
 LICENSE="GPL-2"
 KEYWORDS="~amd64 ~x86"
-IUSE="usb-monitor user-permissions video_cards_nvidia"
+IUSE="drm usb-monitor user-permissions video_cards_nvidia X"
+REQUIRED_USE="drm? ( X )"
 
-RDEPEND="x11-libs/libXrandr
-	 x11-libs/libX11
-	 dev-libs/glib:2
-	 sys-apps/i2c-tools
-	 virtual/udev
-	 usb-monitor? (
+RDEPEND="dev-libs/glib:2
+	sys-apps/i2c-tools
+	virtual/udev
+	drm? ( x11-libs/libdrm )
+	usb-monitor? (
 		dev-libs/hidapi
 		virtual/libusb:1
 		sys-apps/usbutils
+	)
+	X? (
+		x11-libs/libXrandr
+		x11-libs/libX11
 	)"
 
 DEPEND="${RDEPEND}
@@ -51,11 +55,14 @@ src_configure() {
 	# Bug 607818.
 	replace-flags -O3 -O2
 
-	# Python API is still very experimental.
 	local myeconfargs=(
+		$(use_enable drm)
 		$(use_enable usb-monitor usb)
-		--disable-swig
+		$(use_enable X x11)
 		--enable-lib
+		--disable-cffi
+		--disable-cython
+		--disable-swig
 	)
 
 	econf "${myeconfargs[@]}"
