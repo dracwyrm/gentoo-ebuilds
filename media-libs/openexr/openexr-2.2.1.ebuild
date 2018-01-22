@@ -15,21 +15,22 @@ KEYWORDS="~amd64 -arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-fbsd ~x8
 IUSE="cpu_flags_x86_avx examples static-libs"
 
 RDEPEND="
-	sys-libs/zlib[${MULTILIB_USEDEP}]
-	>=media-libs/ilmbase-${PV}:=[${MULTILIB_USEDEP}]"
+	>=media-libs/ilmbase-${PV}:=[${MULTILIB_USEDEP}]
+	sys-libs/zlib[${MULTILIB_USEDEP}]"
+
 DEPEND="${RDEPEND}
-	virtual/pkgconfig[${MULTILIB_USEDEP}]
-	>=sys-devel/autoconf-archive-2016.09.16"
+	>=sys-devel/autoconf-archive-2016.09.16
+	virtual/pkgconfig[${MULTILIB_USEDEP}]"
 
 RESTRICT="test"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-2.2.0-fix-cpuid-on-abi_x86_32.patch"
-	"${FILESDIR}/${PN}-2.2.0-use-ull-for-64-bit-literals.patch"
-	"${FILESDIR}/${P}-fix-build-system.patch"
-	"${FILESDIR}/${PN}-2.2.0-fix-config.h-collision.patch"
-	"${FILESDIR}/${PN}-2.2.0-Fix-typo-in-C-bindings.patch"
-	"${FILESDIR}/${PN}-2.2.0-Install-missing-header-files.patch"
+	"${FILESDIR}/${PN}-2.2.0-fix-cpuid-on-abi_x86_32.patch" # master
+	"${FILESDIR}/${PN}-2.2.0-use-ull-for-64-bit-literals.patch" # master
+	"${FILESDIR}/${P}-fix-build-system-and-change-doc-install.patch" # in PR 241 upstream
+	"${FILESDIR}/${PN}-2.2.0-fix-config.h-collision.patch" # custom patch
+	"${FILESDIR}/${PN}-2.2.0-Fix-typo-in-C-bindings.patch" # master
+	"${FILESDIR}/${PN}-2.2.0-Install-missing-header-files.patch" # custom patch
 )
 
 src_prepare() {

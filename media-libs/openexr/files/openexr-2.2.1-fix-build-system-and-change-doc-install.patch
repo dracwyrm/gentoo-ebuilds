@@ -1,6 +1,205 @@
-* Fix completely broken build system
-* Change pdf+examples installation directory
+From a0c17959926a9b3d449b2faa629f4a491eb47832 Mon Sep 17 00:00:00 2001
+From: dracwyrm <j.scruggs@gmail.com>
+Date: Fri, 11 Aug 2017 11:02:59 +0100
+Subject: [PATCH] OpenEXR: Fix build system and change doc install
 
+The build sysem for the OpenEXR sub-module is has issues.
+This patch is being used on Gentoo Linux with great success.
+It also adresses the issue of linking to previously installed
+versions.
+
+Signed-off by: Jonathan Scruggs (j.scruggs@gmail.com)
+Signed-off by: David Seifert (soap@gentoo.org)
+---
+ IlmImf/Makefile.am         |  15 +--
+ IlmImfExamples/Makefile.am |   8 +-
+ IlmImfFuzzTest/Makefile.am |   6 +-
+ IlmImfTest/Makefile.am     |   6 +-
+ IlmImfUtil/Makefile.am     |  13 +--
+ IlmImfUtilTest/Makefile.am |   6 +-
+ configure.ac               | 215 ++++++++++++-------------------------
+ doc/Makefile.am            |   1 -
+ exrenvmap/Makefile.am      |   6 +-
+ exrheader/Makefile.am      |   6 +-
+ exrmakepreview/Makefile.am |   6 +-
+ exrmaketiled/Makefile.am   |   6 +-
+ exrmultipart/Makefile.am   |   8 +-
+ exrmultiview/Makefile.am   |   6 +-
+ exrstdattr/Makefile.am     |   6 +-
+ m4/path.pkgconfig.m4       |   3 +-
+ 16 files changed, 120 insertions(+), 197 deletions(-)
+
+diff --git a/IlmImf/Makefile.am b/IlmImf/Makefile.am
+index f537ba1..a7c219c 100644
+--- a/IlmImf/Makefile.am
++++ b/IlmImf/Makefile.am
+@@ -93,7 +93,7 @@ libIlmImf_la_SOURCES = ImfForward.h ImfAttribute.cpp ImfBoxAttribute.cpp ImfCRgb
+ 	               ImfSystemSpecific.cpp ImfZip.h ImfZip.cpp
+ 
+ 
+-libIlmImf_la_LDFLAGS = @ILMBASE_LDFLAGS@ -version-info @LIBTOOL_VERSION@ \
++libIlmImf_la_LDFLAGS = -version-info @LIBTOOL_VERSION@ \
+ 			-no-undefined 
+ 
+ 
+@@ -102,7 +102,7 @@ libIlmImf_la_LDFLAGS += -release @LIB_SUFFIX@
+ endif
+ 
+ 
+-libIlmImf_la_LIBADD =  -lz @ILMBASE_LIBS@
++libIlmImf_la_LIBADD = $(ZLIB_LIBS) $(ILMBASE_LIBS)
+ 
+ libIlmImfincludedir = $(includedir)/OpenEXR
+ 
+@@ -188,20 +188,21 @@ noinst_HEADERS = ImfCompressor.h    \
+ EXTRA_DIST = $(noinst_HEADERS) b44ExpLogTable.cpp b44ExpLogTable.h dwaLookups.cpp dwaLookups.h CMakeLists.txt
+ 
+ 
+-INCLUDES = @ILMBASE_CXXFLAGS@ \
+-	   -I$(top_builddir)  \
+-	   -I$(top_srcdir)/config
++INCLUDES = \
++	   -I$(top_builddir) \
++	   -I$(top_srcdir)/config \
++	   $(ILMBASE_CFLAGS) $(ZLIB_CFLAGS)
+ 
+ CLEANFILES = b44ExpLogTable b44ExpLogTable.h dwaLookups dwaLookups.h
+ 
+ b44ExpLogTable_SOURCES = b44ExpLogTable.cpp
+-b44ExpLogTable_LDADD = @ILMBASE_LDFLAGS@ @ILMBASE_LIBS@
++b44ExpLogTable_LDADD = $(ILMBASE_LIBS)
+ 
+ b44ExpLogTable.h: b44ExpLogTable
+ 	./b44ExpLogTable > b44ExpLogTable.h
+ 
+ dwaLookups_SOURCES = dwaLookups.cpp
+-dwaLookups_LDADD = @ILMBASE_LDFLAGS@ @ILMBASE_LIBS@
++dwaLookups_LDADD = $(ILMBASE_LIBS)
+ 
+ dwaLookups.h: dwaLookups
+ 	./dwaLookups > dwaLookups.h
+diff --git a/IlmImfExamples/Makefile.am b/IlmImfExamples/Makefile.am
+index 83a5b15..2d4d7cc 100644
+--- a/IlmImfExamples/Makefile.am
++++ b/IlmImfExamples/Makefile.am
+@@ -6,11 +6,11 @@ endif
+ 
+ INCLUDES = -I$(top_builddir) \
+            -I$(top_srcdir)/IlmImf -I$(top_srcdir)/config \
+-	   @ILMBASE_CXXFLAGS@
++           $(ILMBASE_CFLAGS) $(ZLIB_CFLAGS)
+ 
+ LDADD = -L$(top_builddir)/IlmImf \
+-	@ILMBASE_LDFLAGS@ @ILMBASE_LIBS@ \
+-	-lIlmImf -lz
++	$(ILMBASE_LIBS) \
++	-lIlmImf $(ZLIB_CFLAGS)
+ 
+ imfexamples_SOURCES = main.cpp drawImage.cpp rgbaInterfaceExamples.cpp \
+ 		      rgbaInterfaceTiledExamples.cpp \
+@@ -23,7 +23,7 @@ imfexamples_SOURCES = main.cpp drawImage.cpp rgbaInterfaceExamples.cpp \
+ 		      lowLevelIoExamples.h previewImageExamples.h \
+ 		      namespaceAlias.h
+ 
+-examplesdir = $(datadir)/doc/OpenEXR-@OPENEXR_VERSION@/examples
++examplesdir = $(docdir)/examples
+ examples_DATA = $(imfexamples_SOURCES)
+ 
+ imfexamplesdir = $(examplesdir)
+diff --git a/IlmImfFuzzTest/Makefile.am b/IlmImfFuzzTest/Makefile.am
+index 56818b7..8bee122 100644
+--- a/IlmImfFuzzTest/Makefile.am
++++ b/IlmImfFuzzTest/Makefile.am
+@@ -14,11 +14,11 @@ IlmImfFuzzTest_SOURCES = fuzzFile.cpp fuzzFile.h main.cpp tmpDir.h \
+ INCLUDES = -I$(top_builddir)  \
+ 	   -I$(top_srcdir)/IlmImf \
+ 	   -I$(top_srcdir)/config \
+-	   @ILMBASE_CXXFLAGS@
++	   $(ILMBASE_CFLAGS) $(ZLIB_CFLAGS)
+ 
+ LDADD = -L$(top_builddir)/IlmImf \
+-	@ILMBASE_LDFLAGS@ @ILMBASE_LIBS@ \
+-	-lIlmImf -lz
++	$(ILMBASE_LIBS) \
++	-lIlmImf $(ZLIB_LIBS)
+ 
+ if BUILD_IMFFUZZTEST
+ TESTS = IlmImfFuzzTest
+diff --git a/IlmImfTest/Makefile.am b/IlmImfTest/Makefile.am
+index cc046d9..409c85e 100644
+--- a/IlmImfTest/Makefile.am
++++ b/IlmImfTest/Makefile.am
+@@ -64,11 +64,11 @@ endif
+ INCLUDES = -I$(top_builddir)  \
+ 	   -I$(top_srcdir)/IlmImf \
+ 	   -I$(top_srcdir)/config \
+-	   @ILMBASE_CXXFLAGS@
++	   $(ILMBASE_CFLAGS) $(ZLIB_CFLAGS)
+ 
+ LDADD = -L$(top_builddir)/IlmImf \
+-	@ILMBASE_LDFLAGS@ @ILMBASE_LIBS@ \
+-	-lIlmImf -lz
++	$(ILMBASE_LIBS) \
++	-lIlmImf $(ZLIB_LIBS)
+ 
+ TESTS = IlmImfTest
+ 
+diff --git a/IlmImfUtil/Makefile.am b/IlmImfUtil/Makefile.am
+index 38cdb9b..8005ee1 100644
+--- a/IlmImfUtil/Makefile.am
++++ b/IlmImfUtil/Makefile.am
+@@ -20,7 +20,7 @@ libIlmImfUtil_la_SOURCES = \
+ 	ImfImageChannelRenaming.h
+ 	
+ 
+-libIlmImfUtil_la_LDFLAGS = @ILMBASE_LDFLAGS@ -version-info @LIBTOOL_VERSION@ \
++libIlmImfUtil_la_LDFLAGS = -version-info @LIBTOOL_VERSION@ \
+ 			-no-undefined 
+ 
+ 
+@@ -29,14 +29,15 @@ libIlmImfUtil_la_LDFLAGS += -release @LIB_SUFFIX@
+ endif
+ 
+ 
+-libIlmImfUtil_la_LIBADD =  -L$(top_builddir)/IlmImf @ILMBASE_LIBS@ -lIlmImf
++libIlmImfUtil_la_LIBADD =  -L$(top_builddir)/IlmImf $(ILMBASE_LIBS) -lIlmImf
+ 
+ libIlmImfUtilincludedir = $(includedir)/OpenEXR
+ 
+ EXTRA_DIST = CMakeLists.txt
+ 
+-INCLUDES = @ILMBASE_CXXFLAGS@ \
+-	   -I$(top_builddir)  \
+-	   -I$(top_srcdir)/IlmImf  \
+-	   -I$(top_srcdir)/config
++INCLUDES = \
++	   -I$(top_builddir) \
++	   -I$(top_srcdir)/IlmImf \
++	   -I$(top_srcdir)/config \
++	   $(ILMBASE_CFLAGS)
+ 
+diff --git a/IlmImfUtilTest/Makefile.am b/IlmImfUtilTest/Makefile.am
+index 09d6d9e..aaa0688 100644
+--- a/IlmImfUtilTest/Makefile.am
++++ b/IlmImfUtilTest/Makefile.am
+@@ -11,12 +11,12 @@ INCLUDES = -I$(top_builddir)  \
+ 	   -I$(top_srcdir)/IlmImf \
+ 	   -I$(top_srcdir)/IlmImfUtil \
+ 	   -I$(top_srcdir)/config \
+-	   @ILMBASE_CXXFLAGS@
++	   $(ILMBASE_CFLAGS) $(ZLIB_CFLAGS)
+ 
+ LDADD = -L$(top_builddir)/IlmImf \
+ 	-L$(top_builddir)/IlmImfUtil \
+-	@ILMBASE_LDFLAGS@ @ILMBASE_LIBS@ \
+-	-lIlmImfUtil -lIlmImf -lz
++	$(ILMBASE_LIBS) \
++	-lIlmImfUtil -lIlmImf $(ZLIB_LIBS)
+ 
+ TESTS = IlmImfUtilTest
+ 
+diff --git a/configure.ac b/configure.ac
+index ee698b4..ea01261 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -1,6 +1,7 @@
@@ -11,7 +210,7 @@
  
  AC_SUBST(OPENEXR_VERSION_MAJOR, 2)
  AC_SUBST(OPENEXR_VERSION_MINOR, 2)
-@@ -11,9 +12,8 @@
+@@ -11,9 +12,8 @@ AC_SUBST(OPENEXR_VERSION_API, ${OPENEXR_VERSION_MAJOR}_${OPENEXR_VERSION_MINOR})
  
  AC_CANONICAL_HOST
  AC_CONFIG_SRCDIR(IlmImfTest/main.cpp)
@@ -22,8 +221,8 @@
 +AM_INIT_AUTOMAKE
  
  
- LIBTOOL_CURRENT=22
-@@ -27,46 +27,21 @@
+ LIBTOOL_CURRENT=23
+@@ -27,46 +27,21 @@ AC_PROG_CXX
  AC_PROG_INSTALL
  AC_PROG_CC
  AC_PROG_LN_S
@@ -69,15 +268,15 @@
 -AC_DEFINE_UNQUOTED(OPENEXR_VERSION_MAJOR, ${OPENEXR_VERSION_MAJOR})
 -AC_DEFINE_UNQUOTED(OPENEXR_VERSION_MINOR, ${OPENEXR_VERSION_MINOR})
 -AC_DEFINE_UNQUOTED(OPENEXR_VERSION_PATCH, ${OPENEXR_VERSION_PATCH})
-+AC_DEFINE_UNQUOTED([OPENEXR_VERSION_STRING], ["${VERSION}"], [OpenEXR version string])
-+AC_DEFINE_UNQUOTED([OPENEXR_PACKAGE_STRING], ["${PACKAGE_STRING}"], [OpenEXR version string])
++AC_DEFINE_UNQUOTED([OPENEXR_VERSION_STRING], [${VERSION}], [OpenEXR version string])
++AC_DEFINE_UNQUOTED([OPENEXR_PACKAGE_STRING], [${PACKAGE_STRING}], [OpenEXR version string])
 +AC_DEFINE_UNQUOTED([OPENEXR_VERSION_MAJOR], [${OPENEXR_VERSION_MAJOR}], [OpenEXR version string])
 +AC_DEFINE_UNQUOTED([OPENEXR_VERSION_MINOR], [${OPENEXR_VERSION_MINOR}], [OpenEXR version string])
 +AC_DEFINE_UNQUOTED([OPENEXR_VERSION_PATCH], [${OPENEXR_VERSION_PATCH}], [OpenEXR version string])
  
  
  dnl --enable-threading
-@@ -75,19 +50,16 @@
+@@ -75,19 +50,16 @@ AC_ARG_ENABLE(threading,
                               [enable multi-threading [[default=yes]]]),
                [multithread="${enableval}"], [multithread=yes])
  
@@ -107,7 +306,7 @@
  
  dnl --enable-large-stack
  case "$host" in
-@@ -110,21 +82,25 @@
+@@ -110,21 +82,25 @@ case "$host" in
  esac
  
  if test "x${large_stack}" != xno ; then
@@ -146,7 +345,7 @@
  
  
  dnl Checks for header files.
-@@ -137,74 +113,27 @@
+@@ -137,74 +113,27 @@ AC_C_INLINE
  AC_TYPE_SIZE_T
  
  dnl Checks for zlib
@@ -239,7 +438,7 @@
  
  dnl Check if sysconf(_SC_NPROCESSORS_ONLN) can be used for CPU count
  AC_MSG_CHECKING([for sysconf(_SC_NPROCESSORS_ONLN)])
-@@ -221,16 +150,16 @@
+@@ -221,16 +150,16 @@ AC_COMPILE_IFELSE(
  )
  AC_MSG_RESULT([$sysconf_nproc])
  if test "x${sysconf_nproc}" == xyes ; then
@@ -255,11 +454,11 @@
    ;;
  *darwin*) 
 -  AC_DEFINE(OPENEXR_IMF_HAVE_DARWIN) 
-+  AC_DEFINE([OPENEXR_IMF_HAVE_DARWIN], [1], [Define if on Darwin]) 
++  AC_DEFINE([OPENEXR_IMF_HAVE_DARWIN], [1], [Define if on Darwin])
  
    dnl OS X universal binary support, requires --disable-dependency-tracking
    AC_ARG_ENABLE(osx-universal-binaries,
-@@ -245,19 +174,13 @@
+@@ -245,19 +174,13 @@ Please re-run configure with these options:
    --disable-dependency-tracking --enable-osx-universal-binary
    		  ])
      fi
@@ -280,7 +479,7 @@
  dnl build imfexamples example program?
  build_imfexamples="no"
  AC_ARG_ENABLE(imfexamples,
-@@ -286,7 +209,7 @@
+@@ -286,7 +209,7 @@ AC_ARG_ENABLE(imfhugetest,
  AM_CONDITIONAL(BUILD_IMFHUGETEST, test "x$build_imfhugetest" = xyes)
  
  if test "x${build_imfhugetest}" != xno ; then
@@ -289,7 +488,7 @@
  fi
  
  
-@@ -307,19 +230,19 @@
+@@ -307,19 +230,19 @@ lib_suffix_valid="no"
  
  lib_namespace="Imf"
  if test "x${library_namespace_versioning}" == xyes ; then
@@ -314,7 +513,7 @@
  
      lib_namespace="${library_namespace_versioning}"
      LIB_SUFFIX="${library_namespace_versioning}"
-@@ -349,14 +272,14 @@
+@@ -349,14 +272,14 @@ AC_ARG_ENABLE(customusernamespace,
  
  if test "x${custom_usr_namespace}" == xyes ; then
      AC_MSG_WARN([Enabling 'custom user namespace' requires an additional argument, reverting to 'Imf'])
@@ -333,17 +532,21 @@
      
      usr_namespace=${custom_usr_namespace}
  fi
+diff --git a/doc/Makefile.am b/doc/Makefile.am
+index b818575..d202713 100644
 --- a/doc/Makefile.am
 +++ b/doc/Makefile.am
-@@ -6,5 +6,4 @@
+@@ -6,5 +6,4 @@ EXTRA_DIST =  \
  	InterpretingDeepPixels.pdf \
  	TheoryDeepPixels.pdf
  
 -docdir=$(datadir)/doc/OpenEXR-@OPENEXR_VERSION@
  doc_DATA = $(EXTRA_DIST)
+diff --git a/exrenvmap/Makefile.am b/exrenvmap/Makefile.am
+index 7fcc6c2..7c2d432 100644
 --- a/exrenvmap/Makefile.am
 +++ b/exrenvmap/Makefile.am
-@@ -4,11 +4,11 @@
+@@ -4,11 +4,11 @@ bin_PROGRAMS = exrenvmap
  
  INCLUDES = -I$(top_builddir) \
             -I$(top_srcdir)/IlmImf -I$(top_srcdir)/config \
@@ -358,9 +561,11 @@
  
  exrenvmap_SOURCES = main.cpp EnvmapImage.cpp EnvmapImage.h \
  		    readInputImage.cpp readInputImage.h \
+diff --git a/exrheader/Makefile.am b/exrheader/Makefile.am
+index 641b07a..6f1982d 100644
 --- a/exrheader/Makefile.am
 +++ b/exrheader/Makefile.am
-@@ -4,11 +4,11 @@
+@@ -4,11 +4,11 @@ bin_PROGRAMS = exrheader
  
  INCLUDES = -I$(top_builddir) \
             -I$(top_srcdir)/IlmImf -I$(top_srcdir)/config \
@@ -375,9 +580,11 @@
  
  exrheader_SOURCES = main.cpp
  
+diff --git a/exrmakepreview/Makefile.am b/exrmakepreview/Makefile.am
+index 2b79da2..99af043 100644
 --- a/exrmakepreview/Makefile.am
 +++ b/exrmakepreview/Makefile.am
-@@ -4,11 +4,11 @@
+@@ -4,11 +4,11 @@ bin_PROGRAMS = exrmakepreview
  
  INCLUDES = -I$(top_builddir) \
             -I$(top_srcdir)/IlmImf -I$(top_srcdir)/config \
@@ -392,9 +599,11 @@
  
  exrmakepreview_SOURCES = main.cpp makePreview.cpp makePreview.h
  
+diff --git a/exrmaketiled/Makefile.am b/exrmaketiled/Makefile.am
+index 84ea84b..3c0e62c 100644
 --- a/exrmaketiled/Makefile.am
 +++ b/exrmaketiled/Makefile.am
-@@ -4,11 +4,11 @@
+@@ -4,11 +4,11 @@ bin_PROGRAMS = exrmaketiled
  
  INCLUDES = -I$(top_builddir) \
             -I$(top_srcdir)/IlmImf -I$(top_srcdir)/config \
@@ -409,9 +618,11 @@
  
  exrmaketiled_SOURCES = main.cpp \
  		       Image.h Image.cpp \
+diff --git a/exrmultipart/Makefile.am b/exrmultipart/Makefile.am
+index 416dfc1..4d316c4 100644
 --- a/exrmultipart/Makefile.am
 +++ b/exrmultipart/Makefile.am
-@@ -4,11 +4,11 @@
+@@ -4,11 +4,11 @@ bin_PROGRAMS = exrmultipart
  
  INCLUDES = -I$(top_builddir) \
  -I$(top_srcdir)/IlmImf -I$(top_srcdir)/config \
@@ -427,9 +638,11 @@
  
  exrmultipart_SOURCES = exrmultipart.cpp
  
+diff --git a/exrmultiview/Makefile.am b/exrmultiview/Makefile.am
+index dee94c3..a43ba1b 100644
 --- a/exrmultiview/Makefile.am
 +++ b/exrmultiview/Makefile.am
-@@ -4,11 +4,11 @@
+@@ -4,11 +4,11 @@ bin_PROGRAMS = exrmultiview
  
  INCLUDES = -I$(top_builddir) \
             -I$(top_srcdir)/IlmImf -I$(top_srcdir)/config \
@@ -444,9 +657,11 @@
  
  exrmultiview_SOURCES = main.cpp  \
  		       Image.h Image.cpp \
+diff --git a/exrstdattr/Makefile.am b/exrstdattr/Makefile.am
+index 128bdb9..1282940 100644
 --- a/exrstdattr/Makefile.am
 +++ b/exrstdattr/Makefile.am
-@@ -4,11 +4,11 @@
+@@ -4,11 +4,11 @@ bin_PROGRAMS = exrstdattr
  
  INCLUDES = -I$(top_builddir) \
             -I$(top_srcdir)/IlmImf -I$(top_srcdir)/config \
@@ -461,160 +676,20 @@
  
  exrstdattr_SOURCES = main.cpp CMakeLists.txt
  
---- a/IlmImf/Makefile.am
-+++ b/IlmImf/Makefile.am
-@@ -93,7 +93,7 @@
- 	               ImfSystemSpecific.cpp ImfZip.h ImfZip.cpp
+diff --git a/m4/path.pkgconfig.m4 b/m4/path.pkgconfig.m4
+index a6a36ae..53c2d20 100644
+--- a/m4/path.pkgconfig.m4
++++ b/m4/path.pkgconfig.m4
+@@ -50,8 +50,7 @@ TEST_LIBS=""
+ AC_ARG_WITH(arg_test_prefix,[  --with-arg_test_prefix=PFX  Prefix where tested libraries are supposed to be installed (optional)], test_prefix="$withval", test_prefix="NONE")
+ echo "test_prefix = $test_prefix"
+ 
+-AC_ARG_VAR(PKG_CONFIG, Path to pkg-config command)
+-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
++PKG_PROG_PKG_CONFIG
+ AC_ARG_WITH(pkg-config,[  --with-pkg-config=PATH Specify which pkg-config to use (optional)], PKG_CONFIG="$withval",)
  
  
--libIlmImf_la_LDFLAGS = @ILMBASE_LDFLAGS@ -version-info @LIBTOOL_VERSION@ \
-+libIlmImf_la_LDFLAGS = -version-info @LIBTOOL_VERSION@ \
- 			-no-undefined 
- 
- 
-@@ -102,7 +102,7 @@
- endif
- 
- 
--libIlmImf_la_LIBADD =  -lz @ILMBASE_LIBS@
-+libIlmImf_la_LIBADD = $(ZLIB_LIBS) $(ILMBASE_LIBS)
- 
- libIlmImfincludedir = $(includedir)/OpenEXR
- 
-@@ -188,20 +188,21 @@
- EXTRA_DIST = $(noinst_HEADERS) b44ExpLogTable.cpp b44ExpLogTable.h dwaLookups.cpp dwaLookups.h CMakeLists.txt
- 
- 
--INCLUDES = @ILMBASE_CXXFLAGS@ \
--	   -I$(top_builddir)  \
--	   -I$(top_srcdir)/config
-+INCLUDES = \
-+	   -I$(top_builddir) \
-+	   -I$(top_srcdir)/config \
-+	   $(ILMBASE_CFLAGS) $(ZLIB_CFLAGS)
- 
- CLEANFILES = b44ExpLogTable b44ExpLogTable.h dwaLookups dwaLookups.h
- 
- b44ExpLogTable_SOURCES = b44ExpLogTable.cpp
--b44ExpLogTable_LDADD = @ILMBASE_LDFLAGS@ @ILMBASE_LIBS@
-+b44ExpLogTable_LDADD = $(ILMBASE_LIBS)
- 
- b44ExpLogTable.h: b44ExpLogTable
- 	./b44ExpLogTable > b44ExpLogTable.h
- 
- dwaLookups_SOURCES = dwaLookups.cpp
--dwaLookups_LDADD = @ILMBASE_LDFLAGS@ @ILMBASE_LIBS@
-+dwaLookups_LDADD = $(ILMBASE_LIBS)
- 
- dwaLookups.h: dwaLookups
- 	./dwaLookups > dwaLookups.h
---- a/IlmImfExamples/Makefile.am
-+++ b/IlmImfExamples/Makefile.am
-@@ -6,11 +6,11 @@
- 
- INCLUDES = -I$(top_builddir) \
-            -I$(top_srcdir)/IlmImf -I$(top_srcdir)/config \
--	   @ILMBASE_CXXFLAGS@
-+           $(ILMBASE_CFLAGS) $(ZLIB_CFLAGS)
- 
- LDADD = -L$(top_builddir)/IlmImf \
--	@ILMBASE_LDFLAGS@ @ILMBASE_LIBS@ \
--	-lIlmImf -lz
-+	$(ILMBASE_LIBS) \
-+	-lIlmImf $(ZLIB_CFLAGS)
- 
- imfexamples_SOURCES = main.cpp drawImage.cpp rgbaInterfaceExamples.cpp \
- 		      rgbaInterfaceTiledExamples.cpp \
-@@ -23,7 +23,7 @@
- 		      lowLevelIoExamples.h previewImageExamples.h \
- 		      namespaceAlias.h
- 
--examplesdir = $(datadir)/doc/OpenEXR-@OPENEXR_VERSION@/examples
-+examplesdir = $(docdir)/examples
- examples_DATA = $(imfexamples_SOURCES)
- 
- imfexamplesdir = $(examplesdir)
---- a/IlmImfFuzzTest/Makefile.am
-+++ b/IlmImfFuzzTest/Makefile.am
-@@ -14,11 +14,11 @@
- INCLUDES = -I$(top_builddir)  \
- 	   -I$(top_srcdir)/IlmImf \
- 	   -I$(top_srcdir)/config \
--	   @ILMBASE_CXXFLAGS@
-+	   $(ILMBASE_CFLAGS) $(ZLIB_CFLAGS)
- 
- LDADD = -L$(top_builddir)/IlmImf \
--	@ILMBASE_LDFLAGS@ @ILMBASE_LIBS@ \
--	-lIlmImf -lz
-+	$(ILMBASE_LIBS) \
-+	-lIlmImf $(ZLIB_LIBS)
- 
- if BUILD_IMFFUZZTEST
- TESTS = IlmImfFuzzTest
---- a/IlmImfTest/Makefile.am
-+++ b/IlmImfTest/Makefile.am
-@@ -62,11 +62,11 @@
- INCLUDES = -I$(top_builddir)  \
- 	   -I$(top_srcdir)/IlmImf \
- 	   -I$(top_srcdir)/config \
--	   @ILMBASE_CXXFLAGS@
-+	   $(ILMBASE_CFLAGS) $(ZLIB_CFLAGS)
- 
- LDADD = -L$(top_builddir)/IlmImf \
--	@ILMBASE_LDFLAGS@ @ILMBASE_LIBS@ \
--	-lIlmImf -lz
-+	$(ILMBASE_LIBS) \
-+	-lIlmImf $(ZLIB_LIBS)
- 
- TESTS = IlmImfTest
- 
---- a/IlmImfUtil/Makefile.am
-+++ b/IlmImfUtil/Makefile.am
-@@ -20,7 +20,7 @@
- 	ImfImageChannelRenaming.h
- 	
- 
--libIlmImfUtil_la_LDFLAGS = @ILMBASE_LDFLAGS@ -version-info @LIBTOOL_VERSION@ \
-+libIlmImfUtil_la_LDFLAGS = -version-info @LIBTOOL_VERSION@ \
- 			-no-undefined 
- 
- 
-@@ -29,14 +29,15 @@
- endif
- 
- 
--libIlmImfUtil_la_LIBADD =  -L$(top_builddir)/IlmImf @ILMBASE_LIBS@ -lIlmImf
-+libIlmImfUtil_la_LIBADD =  -L$(top_builddir)/IlmImf $(ILMBASE_LIBS) -lIlmImf
- 
- libIlmImfUtilincludedir = $(includedir)/OpenEXR
- 
- EXTRA_DIST = CMakeLists.txt
- 
--INCLUDES = @ILMBASE_CXXFLAGS@ \
--	   -I$(top_builddir)  \
--	   -I$(top_srcdir)/IlmImf  \
--	   -I$(top_srcdir)/config
-+INCLUDES = \
-+	   -I$(top_builddir) \
-+	   -I$(top_srcdir)/IlmImf \
-+	   -I$(top_srcdir)/config \
-+	   $(ILMBASE_CFLAGS)
- 
---- a/IlmImfUtilTest/Makefile.am
-+++ b/IlmImfUtilTest/Makefile.am
-@@ -11,12 +11,12 @@
- 	   -I$(top_srcdir)/IlmImf \
- 	   -I$(top_srcdir)/IlmImfUtil \
- 	   -I$(top_srcdir)/config \
--	   @ILMBASE_CXXFLAGS@
-+	   $(ILMBASE_CFLAGS) $(ZLIB_CFLAGS)
- 
- LDADD = -L$(top_builddir)/IlmImf \
- 	-L$(top_builddir)/IlmImfUtil \
--	@ILMBASE_LDFLAGS@ @ILMBASE_LIBS@ \
--	-lIlmImfUtil -lIlmImf -lz
-+	$(ILMBASE_LIBS) \
-+	-lIlmImfUtil -lIlmImf $(ZLIB_LIBS)
- 
- TESTS = IlmImfUtilTest
- 
+-- 
+2.16.0
+
