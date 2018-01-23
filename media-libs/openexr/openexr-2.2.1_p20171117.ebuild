@@ -29,8 +29,7 @@ S="${WORKDIR}/OpenEXR-${PV}/OpenEXR"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-2.2.0-fix-cpuid-on-abi_x86_32.patch"
-	"${FILESDIR}/${PN}-2.2.0-use-gnuinstalldirs-and-fix-pkgconfig-file.patch"
-	"${FILESDIR}/${PN}-2.2.1-soname.patch"
+	"${FILESDIR}/${PN}-2.2.1-cmake-fixes.patch"
 )
 
 mycmakeargs=(
