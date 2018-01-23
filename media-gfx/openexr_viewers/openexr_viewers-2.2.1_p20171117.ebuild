@@ -30,8 +30,7 @@ DEPEND="${RDEPEND}
 S="${WORKDIR}/OpenEXR-${PV}/OpenEXR_Viewers"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-2.2.0-use-gnuinstalldirs.patch"
-	"${FILESDIR}/${PN}-2.2.1-soname.patch"
+	"${FILESDIR}/${PN}-2.2.1-cmake-fixes.patch"
 )
 
 src_configure() {
