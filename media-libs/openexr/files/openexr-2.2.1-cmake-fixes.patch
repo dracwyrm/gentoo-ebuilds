@@ -1,0 +1,248 @@
+diff -urN OpenEXR0/CMakeLists.txt OpenEXR/CMakeLists.txt
+--- OpenEXR0/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/CMakeLists.txt	2018-01-23 10:25:01.110946284 +0000
+@@ -25,8 +25,8 @@
+ set(CPACK_SOURCE_IGNORE_FILES
+   "/.git*;/.cvs*;${CPACK_SOURCE_IGNORE_FILES}")
+ INCLUDE ( CPack )
+-
+-
++INCLUDE ( GNUInstallDirs )
++find_package( PkgConfig QUIET )
+ 
+ # Allow the developer to select if Dynamic or Static libraries are built
+ OPTION (BUILD_SHARED_LIBS    "Build Shared Libraries" ON)
+@@ -57,8 +57,8 @@
+   SET ( PTHREAD_LIB pthread )
+ ENDIF()
+ 
+-INCLUDE_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/include/OpenEXR )
+-LINK_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/lib )
++INCLUDE_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR )
++LINK_DIRECTORIES ( ${ILMBASE_PACKAGE_PREFIX}/${CMAKE_INSTALL_LIBDIR} )
+ MESSAGE ( "ILMBASE_PACKAGE_PREFIX = " ${ILMBASE_PACKAGE_PREFIX})
+ 
+ SET (LIB_TYPE STATIC)
+@@ -172,8 +172,8 @@
+ 
+ SET_TARGET_PROPERTIES ( IlmImf
+   PROPERTIES
+-  VERSION 22.0.0
+-  SOVERSION 22
++  VERSION 23.0.0
++  SOVERSION 23
+   OUTPUT_NAME "IlmImf${OPENEXR_LIBSUFFIX}"
+   )
+   
+@@ -184,8 +184,8 @@
+ 
+ SET_TARGET_PROPERTIES ( IlmImfUtil
+   PROPERTIES
+-  VERSION 22.0.0
+-  SOVERSION 22
++  VERSION 23.0.0
++  SOVERSION 23
+   OUTPUT_NAME "IlmImfUtil${OPENEXR_LIBSUFFIX}"
+   )
+   
+@@ -222,7 +222,7 @@
+ INSTALL ( FILES
+   ${CMAKE_CURRENT_BINARY_DIR}/config/OpenEXRConfig.h
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
+   )
+ 
+ # Documentation
+@@ -234,7 +234,7 @@
+   doc/InterpretingDeepPixels.pdf
+   doc/TheoryDeepPixels.pdf
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}
++  ${CMAKE_INSTALL_DOCDIR}
+   )
+ 
+ # Examples
+@@ -256,5 +256,10 @@
+   IlmImfExamples/previewImageExamples.h
+   IlmImfExamples/namespaceAlias.h
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/share/doc/OpenEXR-${OPENEXR_VERSION}/examples
++  ${CMAKE_INSTALL_DOCDIR}/examples
+   )
++
++if ( PKG_CONFIG_FOUND )
++	configure_file(OpenEXR.pc.cmake "${PROJECT_BINARY_DIR}/OpenEXR.pc" @ONLY)
++	install( FILES "${PROJECT_BINARY_DIR}/OpenEXR.pc" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig COMPONENT dev )
++endif()
+diff -urN OpenEXR0/configure.ac OpenEXR/configure.ac
+--- OpenEXR0/configure.ac	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/configure.ac	2018-01-23 10:24:49.157829948 +0000
+@@ -1,10 +1,10 @@
+ dnl Process this file with autoconf to produce a configure script.
+ 
+-AC_INIT(OpenEXR, 2.2.0)
++AC_INIT(OpenEXR, 2.2.1)
+ 
+ AC_SUBST(OPENEXR_VERSION_MAJOR, 2)
+ AC_SUBST(OPENEXR_VERSION_MINOR, 2)
+-AC_SUBST(OPENEXR_VERSION_PATCH, 0)
++AC_SUBST(OPENEXR_VERSION_PATCH, 1)
+ 
+ AC_SUBST(OPENEXR_VERSION, ${OPENEXR_VERSION_MAJOR}.${OPENEXR_VERSION_MINOR}.${OPENEXR_VERSION_PATCH})
+ AC_SUBST(OPENEXR_VERSION_API, ${OPENEXR_VERSION_MAJOR}_${OPENEXR_VERSION_MINOR})
+@@ -16,7 +16,7 @@
+ AM_MAINTAINER_MODE
+ 
+ 
+-LIBTOOL_CURRENT=22
++LIBTOOL_CURRENT=23
+ LIBTOOL_REVISION=0
+ LIBTOOL_AGE=0
+ LIBTOOL_VERSION=$LIBTOOL_CURRENT:$LIBTOOL_REVISION:$LIBTOOL_AGE
+diff -urN OpenEXR0/exr2aces/CMakeLists.txt OpenEXR/exr2aces/CMakeLists.txt
+--- OpenEXR0/exr2aces/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/exr2aces/CMakeLists.txt	2018-01-23 10:25:01.110946284 +0000
+@@ -16,5 +16,5 @@
+ INSTALL ( TARGETS
+   exr2aces
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_BINDIR}
+ )
+diff -urN OpenEXR0/exrbuild/CMakeLists.txt OpenEXR/exrbuild/CMakeLists.txt
+--- OpenEXR0/exrbuild/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/exrbuild/CMakeLists.txt	2018-01-23 10:25:01.110946284 +0000
+@@ -16,5 +16,5 @@
+ INSTALL ( TARGETS
+   exrbuild
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_BINDIR}
+ )
+diff -urN OpenEXR0/exrenvmap/CMakeLists.txt OpenEXR/exrenvmap/CMakeLists.txt
+--- OpenEXR0/exrenvmap/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/exrenvmap/CMakeLists.txt	2018-01-23 10:25:01.110946284 +0000
+@@ -22,5 +22,5 @@
+ INSTALL ( TARGETS
+   exrenvmap
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_BINDIR}
+ )
+diff -urN OpenEXR0/exrheader/CMakeLists.txt OpenEXR/exrheader/CMakeLists.txt
+--- OpenEXR0/exrheader/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/exrheader/CMakeLists.txt	2018-01-23 10:25:01.111946294 +0000
+@@ -16,5 +16,5 @@
+ INSTALL ( TARGETS
+   exrheader
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_BINDIR}
+ )
+diff -urN OpenEXR0/exrmakepreview/CMakeLists.txt OpenEXR/exrmakepreview/CMakeLists.txt
+--- OpenEXR0/exrmakepreview/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/exrmakepreview/CMakeLists.txt	2018-01-23 10:25:01.111946294 +0000
+@@ -17,5 +17,5 @@
+ INSTALL ( TARGETS
+   exrmakepreview
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_BINDIR}
+ )
+diff -urN OpenEXR0/exrmaketiled/CMakeLists.txt OpenEXR/exrmaketiled/CMakeLists.txt
+--- OpenEXR0/exrmaketiled/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/exrmaketiled/CMakeLists.txt	2018-01-23 10:25:01.111946294 +0000
+@@ -18,5 +18,5 @@
+ INSTALL ( TARGETS
+   exrmaketiled
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_BINDIR}
+ )
+diff -urN OpenEXR0/exrmultipart/CMakeLists.txt OpenEXR/exrmultipart/CMakeLists.txt
+--- OpenEXR0/exrmultipart/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/exrmultipart/CMakeLists.txt	2018-01-23 10:25:01.111946294 +0000
+@@ -16,5 +16,5 @@
+ INSTALL ( TARGETS
+   exrmultipart
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_BINDIR}
+ )
+diff -urN OpenEXR0/exrmultiview/CMakeLists.txt OpenEXR/exrmultiview/CMakeLists.txt
+--- OpenEXR0/exrmultiview/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/exrmultiview/CMakeLists.txt	2018-01-23 10:25:01.111946294 +0000
+@@ -19,5 +19,5 @@
+ INSTALL ( TARGETS
+   exrmultiview
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_BINDIR}
+ )
+diff -urN OpenEXR0/exrstdattr/CMakeLists.txt OpenEXR/exrstdattr/CMakeLists.txt
+--- OpenEXR0/exrstdattr/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/exrstdattr/CMakeLists.txt	2018-01-23 10:25:01.111946294 +0000
+@@ -16,5 +16,5 @@
+ INSTALL ( TARGETS
+   exrstdattr
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/bin
++  ${CMAKE_INSTALL_BINDIR}
+ )
+diff -urN OpenEXR0/IlmImf/CMakeLists.txt OpenEXR/IlmImf/CMakeLists.txt
+--- OpenEXR0/IlmImf/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/IlmImf/CMakeLists.txt	2018-01-23 10:25:01.110946284 +0000
+@@ -167,7 +167,7 @@
+ INSTALL ( TARGETS
+   IlmImf
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/lib
++  ${CMAKE_INSTALL_LIBDIR}
+ )
+ 
+ # Headers
+@@ -261,6 +261,6 @@
+   ImfDeepImageStateAttribute.h
+   ImfFloatVectorAttribute.h
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
+ )
+ 
+diff -urN OpenEXR0/IlmImfUtil/CMakeLists.txt OpenEXR/IlmImfUtil/CMakeLists.txt
+--- OpenEXR0/IlmImfUtil/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ OpenEXR/IlmImfUtil/CMakeLists.txt	2018-01-23 10:25:01.110946284 +0000
+@@ -41,7 +41,7 @@
+ INSTALL ( TARGETS
+   IlmImfUtil
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/lib
++  ${CMAKE_INSTALL_LIBDIR}
+ )
+ 
+ # Headers
+@@ -62,6 +62,6 @@
+   ImfImageDataWindow.h
+   ImfImageChannelRenaming.h
+   DESTINATION
+-  ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
+   )
+ 
+diff -urN OpenEXR0/OpenEXR.pc.cmake OpenEXR/OpenEXR.pc.cmake
+--- OpenEXR0/OpenEXR.pc.cmake	1970-01-01 01:00:00.000000000 +0100
++++ OpenEXR/OpenEXR.pc.cmake	2018-01-23 10:25:01.110946284 +0000
+@@ -0,0 +1,12 @@
++libdir=@CMAKE_INSTALL_FULL_LIBDIR@
++includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
++OpenEXR_includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@/OpenEXR
++
++Name: OpenEXR
++Description: OpenEXR image library
++Version: @OPENEXR_VERSION@
++
++Libs: -L${libdir} -lIlmImf@OPENEXR_LIBSUFFIX@ -lIlmImfUtil@OPENEXR_LIBSUFFIX@
++Cflags: -I${OpenEXR_includedir}
++Requires: IlmBase
++Libs.private: -lz
