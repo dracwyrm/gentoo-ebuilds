@@ -46,7 +46,6 @@ RDEPEND="
 	dev-libs/jsoncpp:=
 	dev-libs/libxml2:2
 	>=media-libs/freetype-2.5.4
-	media-libs/libharu
 	media-libs/libpng:0=
 	media-libs/libtheora
 	media-libs/mesa
@@ -124,7 +123,7 @@ pkg_setup() {
 src_prepare() {
 	local x
 	# missing: VPIC freerange libproj4 mrmpi sqlite utf8 verdict xmdf2 xmdf3
-	for x in constantly expat freetype hdf5 hyperlink incremental jpeg jsoncpp libharu libxml2 lz4 netcdf oggtheora png tiff Twisted txaio zlib ZopeInterface; do
+	for x in constantly expat freetype hdf5 hyperlink incremental jpeg jsoncpp libxml2 lz4 netcdf oggtheora png tiff Twisted txaio zlib ZopeInterface; do
 		ebegin "Dropping bundled ${x}"
 		rm -r ThirdParty/${x}/vtk${x} || die
 		eend $?
