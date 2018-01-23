@@ -1,0 +1,231 @@
+diff -urN IlmBase0/CMakeLists.txt IlmBase/CMakeLists.txt
+--- IlmBase0/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ IlmBase/CMakeLists.txt	2018-01-23 10:25:01.109946275 +0000
+@@ -5,7 +5,7 @@
+ 
+ SET(ILMBASE_VERSION_MAJOR "2")
+ SET(ILMBASE_VERSION_MINOR "2")
+-SET(ILMBASE_VERSION_PATCH "0")
++SET(ILMBASE_VERSION_PATCH "1")
+ 
+ SET(ILMBASE_VERSION ${ILMBASE_VERSION_MAJOR}.${ILMBASE_VERSION_MINOR}.${ILMBASE_VERSION_PATCH})
+ SET(ILMBASE_VERSION_API ${ILMBASE_VERSION_MAJOR}_${ILMBASE_VERSION_MINOR})
+@@ -22,8 +22,13 @@
+   )
+ set(CPACK_SOURCE_IGNORE_FILES
+   "/.git*;/.cvs*;${CPACK_SOURCE_IGNORE_FILES}")
++set(CMAKE_THREAD_PREFER_PTHREAD ON)
++
+ INCLUDE ( CPack )
++INCLUDE ( GNUInstallDirs )
+ 
++find_package( PkgConfig QUIET )
++find_package( Threads )
+ 
+ # Allow the developer to select if Dynamic or Static libraries are built
+ OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" ON)
+@@ -160,31 +165,31 @@
+ 
+ SET_TARGET_PROPERTIES ( Half
+   PROPERTIES
+-  VERSION 12.0.0
+-  SOVERSION 12
++  VERSION 23.0.0
++  SOVERSION 23
+   )
+ SET_TARGET_PROPERTIES ( Iex
+   PROPERTIES
+-  VERSION 12.0.0
+-  SOVERSION 12
++  VERSION 23.0.0
++  SOVERSION 23
+   OUTPUT_NAME "Iex${ILMBASE_LIBSUFFIX}"
+   )
+ SET_TARGET_PROPERTIES ( Imath
+   PROPERTIES
+-  VERSION 12.0.0
+-  SOVERSION 12
++  VERSION 23.0.0
++  SOVERSION 23
+   OUTPUT_NAME "Imath${ILMBASE_LIBSUFFIX}"
+   )
+ SET_TARGET_PROPERTIES ( IlmThread
+   PROPERTIES
+-  VERSION 12.0.0
+-  SOVERSION 12
++  VERSION 23.0.0
++  SOVERSION 23
+   OUTPUT_NAME "IlmThread${ILMBASE_LIBSUFFIX}"
+   )
+ SET_TARGET_PROPERTIES ( IexMath
+   PROPERTIES
+-  VERSION 12.0.0
+-  SOVERSION 12
++  VERSION 23.0.0
++  SOVERSION 23
+   OUTPUT_NAME "IexMath${ILMBASE_LIBSUFFIX}"
+   )
+ 
+@@ -207,25 +212,11 @@
+ INSTALL ( FILES 
+   ${CMAKE_CURRENT_BINARY_DIR}/config/IlmBaseConfig.h
+   DESTINATION
+-  include/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
+ 
+ )
+ 
+-FILE ( WRITE ${CMAKE_BINARY_DIR}/IlmBase.pc "prefix=${CMAKE_INSTALL_PREFIX}\n" )
+-FILE ( APPEND ${CMAKE_BINARY_DIR}/IlmBase.pc "exec_prefix=\${prefix}
+-libdir=\${exec_prefix}/lib
+-includedir=\${prefix}/include
+-OpenEXR_includedir=\${prefix}/include/OpenEXR
+-
+-Name: IlmBase
+-Description: Base math and exception libraries
+-Version: ${ILMBASE_VERSION}
+-Libs: -L\${libdir} -lImath${ILMBASE_LIBSUFFIX} -lIexMath${ILMBASE_LIBSUFFIX} -lHalf -lIex${ILMBASE_LIBSUFFIX} -lIlmThread${ILMBASE_LIBSUFFIX} -pthread
+-Cflags: -pthread -I\${OpenEXR_includedir}
+-")
+-
+-INSTALL ( FILES
+-  ${CMAKE_BINARY_DIR}/IlmBase.pc
+-  DESTINATION
+-  lib/pkgconfig
+-)
++if ( PKG_CONFIG_FOUND )
++	configure_file(IlmBase.pc.cmake "${PROJECT_BINARY_DIR}/IlmBase.pc" @ONLY)
++	install( FILES "${PROJECT_BINARY_DIR}/IlmBase.pc" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig COMPONENT dev )
++endif()
+diff -urN IlmBase0/configure.ac IlmBase/configure.ac
+--- IlmBase0/configure.ac	2017-11-17 23:39:35.000000000 +0000
++++ IlmBase/configure.ac	2018-01-23 10:24:49.157829948 +0000
+@@ -1,9 +1,9 @@
+ dnl Process this file with autoconf to produce a configure script.
+-AC_INIT(IlmBase, 2.2.0)
++AC_INIT(IlmBase, 2.2.1)
+ 
+ AC_SUBST(ILMBASE_VERSION_MAJOR, 2)
+ AC_SUBST(ILMBASE_VERSION_MINOR, 2)
+-AC_SUBST(ILMBASE_VERSION_PATCH, 0)
++AC_SUBST(ILMBASE_VERSION_PATCH, 1)
+ 
+ AC_SUBST(ILMBASE_VERSION, ${ILMBASE_VERSION_MAJOR}.${ILMBASE_VERSION_MINOR}.${ILMBASE_VERSION_PATCH})
+ AC_SUBST(ILMBASE_VERSION_API, ${ILMBASE_VERSION_MAJOR}_${ILMBASE_VERSION_MINOR})
+@@ -15,7 +15,7 @@
+ AM_MAINTAINER_MODE
+ 
+ 
+-LIBTOOL_CURRENT=12
++LIBTOOL_CURRENT=23
+ LIBTOOL_REVISION=0
+ LIBTOOL_AGE=0
+ LIBTOOL_VERSION=$LIBTOOL_CURRENT:$LIBTOOL_REVISION:$LIBTOOL_AGE
+diff -urN IlmBase0/Half/CMakeLists.txt IlmBase/Half/CMakeLists.txt
+--- IlmBase0/Half/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ IlmBase/Half/CMakeLists.txt	2018-01-23 10:25:01.109946275 +0000
+@@ -45,7 +45,7 @@
+ INSTALL ( TARGETS
+   Half
+   DESTINATION
+-  lib
++  ${CMAKE_INSTALL_LIBDIR}
+ )
+ 
+ INSTALL ( FILES 
+@@ -54,5 +54,5 @@
+   halfExport.h
+   halfLimits.h
+   DESTINATION
+-  include/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
+ )
+diff -urN IlmBase0/Iex/CMakeLists.txt IlmBase/Iex/CMakeLists.txt
+--- IlmBase0/Iex/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ IlmBase/Iex/CMakeLists.txt	2018-01-23 10:25:01.109946275 +0000
+@@ -13,7 +13,7 @@
+ INSTALL ( TARGETS
+   Iex
+   DESTINATION
+-  lib
++  ${CMAKE_INSTALL_LIBDIR}
+ )
+ 
+ INSTALL ( FILES 
+@@ -27,5 +27,5 @@
+   IexExport.h
+   IexForward.h
+   DESTINATION
+-  include/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
+ )
+diff -urN IlmBase0/IexMath/CMakeLists.txt IlmBase/IexMath/CMakeLists.txt
+--- IlmBase0/IexMath/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ IlmBase/IexMath/CMakeLists.txt	2018-01-23 10:25:01.109946275 +0000
+@@ -12,7 +12,7 @@
+ INSTALL ( TARGETS
+   IexMath
+   DESTINATION
+-  lib
++  ${CMAKE_INSTALL_LIBDIR}
+ )
+ 
+ INSTALL ( FILES 
+@@ -20,5 +20,5 @@
+   IexMathFpu.h  
+   IexMathIeeeExc.h
+   DESTINATION
+-  include/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
+ )
+diff -urN IlmBase0/IlmBase.pc.cmake IlmBase/IlmBase.pc.cmake
+--- IlmBase0/IlmBase.pc.cmake	1970-01-01 01:00:00.000000000 +0100
++++ IlmBase/IlmBase.pc.cmake	2018-01-23 10:25:01.109946275 +0000
+@@ -0,0 +1,9 @@
++libdir=@CMAKE_INSTALL_FULL_LIBDIR@
++includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
++OpenEXR_includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@/OpenEXR
++
++Name: IlmBase
++Description: Base math and exception libraries
++Version: @ILMBASE_VERSION@
++Libs: -L${libdir} -lHalf -lIex@ILMBASE_LIBSUFFIX@ -lIexMath@ILMBASE_LIBSUFFIX@ -lIlmThread@ILMBASE_LIBSUFFIX@ -lImath@ILMBASE_LIBSUFFIX@ @CMAKE_THREAD_LIBS_INIT@
++Cflags: @CMAKE_THREAD_LIBS_INIT@ -I${OpenEXR_includedir}
+diff -urN IlmBase0/IlmThread/CMakeLists.txt IlmBase/IlmThread/CMakeLists.txt
+--- IlmBase0/IlmThread/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ IlmBase/IlmThread/CMakeLists.txt	2018-01-23 10:25:01.109946275 +0000
+@@ -31,7 +31,7 @@
+ INSTALL ( TARGETS
+   IlmThread
+   DESTINATION
+-  lib
++  ${CMAKE_INSTALL_LIBDIR}
+ )
+ 
+ INSTALL ( FILES 
+@@ -43,5 +43,5 @@
+   IlmThreadExport.h
+   IlmThreadForward.h
+   DESTINATION
+-  include/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
+ )
+diff -urN IlmBase0/Imath/CMakeLists.txt IlmBase/Imath/CMakeLists.txt
+--- IlmBase0/Imath/CMakeLists.txt	2017-11-17 23:39:35.000000000 +0000
++++ IlmBase/Imath/CMakeLists.txt	2018-01-23 10:25:01.109946275 +0000
+@@ -19,7 +19,7 @@
+ INSTALL ( TARGETS
+   Imath
+   DESTINATION
+-  lib
++  ${CMAKE_INSTALL_LIBDIR}
+ )
+ 
+ INSTALL ( FILES 
+@@ -57,5 +57,5 @@
+   ImathVecAlgo.h
+   ImathVec.h
+   DESTINATION
+-  include/OpenEXR
++  ${CMAKE_INSTALL_INCLUDEDIR}/OpenEXR
+ )

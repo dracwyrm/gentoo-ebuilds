@@ -22,6 +22,5 @@ S="${WORKDIR}/OpenEXR-${PV}/IlmBase"
 MULTILIB_WRAPPED_HEADERS=( /usr/include/OpenEXR/IlmBaseConfig.h )
 
 PATCHES=(
-	"${FILESDIR}/${PN}-2.2.0-use-gnuinstall-dirs-and-fix-pkgconfig-file.patch"
-	"${FILESDIR}/${PN}-2.2.1-soname.patch"
+	"${FILESDIR}/${PN}-2.2.1-cmake-fixes.patch"
 )
