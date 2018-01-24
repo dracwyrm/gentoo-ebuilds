@@ -1,7 +1,7 @@
-From 9e8ba2f5453552909e52fde5ec30856004a616d0 Mon Sep 17 00:00:00 2001
+From 280827e3e505850cfc484ad21311a748b48e6b99 Mon Sep 17 00:00:00 2001
 From: "David C. Lonie" <david.lonie@kitware.com>
 Date: Wed, 10 May 2017 11:07:28 -0400
-Subject: [PATCH] Add support for free-form triangle Shading objects.
+Subject: [PATCH 4/4] Add support for free-form triangle Shading objects.
 
 ---
  include/hpdf.h           |  24 ++++-
@@ -148,7 +148,7 @@ index 8b3e0a8..a2e2157 100644
  }
  #endif /* __cplusplus */
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 9d2a604..71c7d10 100644
+index 6f93d18..d428b78 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -56,6 +56,7 @@ set(
@@ -525,3 +525,6 @@ index 0000000..53204c0
 +
 +  return ret;
 +}
+-- 
+2.16.0
+

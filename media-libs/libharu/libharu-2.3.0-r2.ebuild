@@ -1,11 +1,11 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
+EAPI=6
 
 AUTOTOOLS_AUTORECONF=1
 
-inherit autotools-utils multilib-minimal
+inherit cmake-multilib
 
 MYP=RELEASE_${PV//./_}
 
@@ -16,24 +16,24 @@ SRC_URI="https://github.com/${PN}/${PN}/archive/${MYP}.tar.gz -> ${P}.tar.gz"
 LICENSE="ZLIB"
 SLOT="0/${PV}"
 KEYWORDS="~amd64 ~ppc ~x86 ~amd64-linux ~x86-linux"
-IUSE="png static-libs zlib"
+IUSE=""
 
 DEPEND="
-	png? ( >=media-libs/libpng-1.2.51[${MULTILIB_USEDEP}] )
-	zlib? ( >=sys-libs/zlib-1.2.8-r1[${MULTILIB_USEDEP}] )"
+	>=media-libs/libpng-1.2.51[${MULTILIB_USEDEP}]
+	>=sys-libs/zlib-1.2.8-r1[${MULTILIB_USEDEP}]"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/${PN}-${MYP}"
 
 PATCHES=(
-	"${FILESDIR}"/${P}-dont-force-strip.patch
-	"${FILESDIR}"/${P}-add-support-for-free-form-triangle-shading-objects.patch
+	"${FILESDIR}"/${P}-1-Included-necessary-char-widths-in-generated-PDF.patch
+	"${FILESDIR}"/${P}-2-Avoid-issue-with-libtiff-duplicate-symbols.patch
+	"${FILESDIR}"/${P}-3-cmake-fixes.patch
+	"${FILESDIR}"/${P}-4-Add-support-for-free-form-triangle-Shading-objects.patch
 )
 
-multilib_src_configure() {
-	local myeconfargs=(
-		$(use_with png png "${EPREFIX}"/usr)
-		$(use_with zlib)
-	)
-	autotools-utils_src_configure
-}
+mycmakeargs=(
+	-DLIBHPDF_EXAMPLES=NO # Doesn't work
+	-DLIBHPDF_STATIC=NO
+	-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
+)
