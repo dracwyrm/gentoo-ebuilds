@@ -1,17 +1,17 @@
-From a3171132fdabc49e3452f94e68b052cc52b7c334 Mon Sep 17 00:00:00 2001
+From 751d8a334d0f3fbce9c74352004e9d3899ec8b38 Mon Sep 17 00:00:00 2001
 From: Jonathan Scruggs <j.scruggs@gmail.com>
 Date: Wed, 24 Jan 2018 11:08:16 +0000
 Subject: [PATCH 3/4] cmake fixes
 
 ---
- CMakeLists.txt           | 30 ++++++++++++++++++------------
+ CMakeLists.txt           | 31 +++++++++++++++++--------------
  cmake/modules/haru.cmake |  2 +-
  src/CMakeLists.txt       | 19 ++++++++++++-------
  src/hpdf_image_png.c     |  2 +-
- 4 files changed, 32 insertions(+), 21 deletions(-)
+ 4 files changed, 31 insertions(+), 23 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 354ca75..7106bbe 100644
+index 354ca75..4227f03 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -25,7 +25,7 @@ endif(MSVC)
@@ -80,7 +80,7 @@ index 354ca75..7106bbe 100644
    )
  endif(DEVPAK)
  # =======================================================================
-@@ -203,19 +209,19 @@ set(
+@@ -203,19 +209,16 @@ set(
      include/hpdf_pdfa.h
      include/hpdf_3dmeasure.h
      include/hpdf_exdata.h
@@ -94,11 +94,10 @@ index 354ca75..7106bbe 100644
  
  # install various files
 -install(FILES README CHANGES INSTALL DESTINATION .)
-+install(FILES README CHANGES INSTALL DESTINATION ${CMAKE_INSTALL_DOCDIR})
- if(NOT DEVPAK)
+-if(NOT DEVPAK)
 -  install(DIRECTORY if DESTINATION .)
-+  install(DIRECTORY if DESTINATION ${CMAKE_INSTALL_BINDIR})
- endif(NOT DEVPAK)
+-endif(NOT DEVPAK)
++install(FILES README CHANGES INSTALL DESTINATION ${CMAKE_INSTALL_DOCDIR})
  if(DEVPAK)
 -  install(FILES ${CMAKE_BINARY_DIR}/libharu.DevPackage DESTINATION .)
 +  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libharu.DevPackage DESTINATION ${CMAKE_INSTALL_BINDIR})

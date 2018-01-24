@@ -1,4 +1,4 @@
-From 280827e3e505850cfc484ad21311a748b48e6b99 Mon Sep 17 00:00:00 2001
+From 54c145867ad04c20cc71878fab662f6eb720621e Mon Sep 17 00:00:00 2001
 From: "David C. Lonie" <david.lonie@kitware.com>
 Date: Wed, 10 May 2017 11:07:28 -0400
 Subject: [PATCH 4/4] Add support for free-form triangle Shading objects.
