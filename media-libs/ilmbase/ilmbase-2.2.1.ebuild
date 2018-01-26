@@ -15,11 +15,11 @@ IUSE="static-libs"
 
 DEPEND="virtual/pkgconfig[${MULTILIB_USEDEP}]"
 
-DOCS=( AUTHORS ChangeLog NEWS README )
 MULTILIB_WRAPPED_HEADERS=( /usr/include/OpenEXR/IlmBaseConfig.h )
 
 RESTRICT="test"
 
+# Official patch in upstream master
 PATCHES=( "${FILESDIR}/${PN}-2.2.0-Remove-register-keyword.patch" )
 
 multilib_src_configure() {

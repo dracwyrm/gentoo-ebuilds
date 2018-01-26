@@ -16,7 +16,7 @@ IUSE="cpu_flags_x86_avx examples static-libs"
 
 RDEPEND="
 	>=media-libs/ilmbase-${PV}:=[${MULTILIB_USEDEP}]
-	sys-libs/zlib[${MULTILIB_USEDEP}]"
+	sys-libs/zlib:=[${MULTILIB_USEDEP}]"
 
 DEPEND="${RDEPEND}
 	>=sys-devel/autoconf-archive-2016.09.16

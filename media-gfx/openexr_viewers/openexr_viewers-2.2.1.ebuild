@@ -28,6 +28,7 @@ DEPEND="${RDEPEND}
 
 RESTRICT="test"
 
+# Custom patch for Gentoo compliance
 PATCHES=( "${FILESDIR}/${PN}-2.2.0-Remove-nVidia-automagic.patch" )
 
 src_prepare() {
