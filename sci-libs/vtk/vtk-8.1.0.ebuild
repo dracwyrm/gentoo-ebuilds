@@ -277,6 +277,11 @@ src_configure() {
 	fi
 
 	cmake-utils_src_configure
+
+	if use doc; then
+		mkdir -p ${WORKDIR}/${PF}_build/Utilities/Doxygen/doc || die "mkdir failed"
+		cp -r ${WORKDIR}/html ${WORKDIR}/${PF}_build/Utilities/Doxygen/doc || die "copy failed"
+	fi
 }
 
 src_test() {
@@ -312,11 +317,11 @@ src_install() {
 	fi
 
 	#install big docs
-	if use doc; then
-		rm -f "${WORKDIR}"/html/*.md5 || die "Failed to remove superfluous hashes"
-		einfo "Installing API docs. This may take some time."
-		dodoc -r "${WORKDIR}"/html
-	fi
+#	if use doc; then
+#		rm -f "${WORKDIR}"/html/*.md5 || die "Failed to remove superfluous hashes"
+#		einfo "Installing API docs. This may take some time."
+#		dodoc -r "${WORKDIR}"/html
+#	fi
 
 	# environment
 	cat >> "${T}"/40${PN} <<- EOF || die
