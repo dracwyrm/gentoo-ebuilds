@@ -133,6 +133,9 @@ src_prepare() {
 		ThirdParty/AutobahnPython/vtkAutobahn \
 		|| die
 
+	use doc && sed -e "s|\${VTK_BINARY_DIR}/Utilities/Doxygen/doc|${WORKDIR}|" \
+			-i Utilities/Doxygen/CMakeLists.txt || die
+
 	cmake-utils_src_prepare
 }
 
@@ -277,21 +280,6 @@ src_configure() {
 	fi
 
 	cmake-utils_src_configure
-
-	if use doc; then
-		mkdir -p ${WORKDIR}/${PF}_build/Utilities/Doxygen/doc || die "mkdir failed"
-		cp -r ${WORKDIR}/html ${WORKDIR}/${PF}_build/Utilities/Doxygen/doc || die "copy failed"
-	fi
-}
-
-src_test() {
-	local tcllib
-	ln -sf "${BUILD_DIR}"/lib  "${BUILD_DIR}"/lib/Release || die
-	for tcllib in "${BUILD_DIR}"/lib/lib*TCL*so; do
-		ln -sf ${tcllib##*/}.1 "${tcllib/.so/-${SPV}.so}" || die
-	done
-	export LD_LIBRARY_PATH="${BUILD_DIR}"/lib:"${JAVA_HOME}"/jre/lib/${ARCH}/:"${JAVA_HOME}"/jre/lib/${ARCH}/xawt/
-	virtx cmake-utils_src_test
 }
 
 src_install() {
@@ -315,13 +303,6 @@ src_install() {
 		dodoc -r examples
 		docompress -x /usr/share/doc/${PF}/examples
 	fi
-
-	#install big docs
-#	if use doc; then
-#		rm -f "${WORKDIR}"/html/*.md5 || die "Failed to remove superfluous hashes"
-#		einfo "Installing API docs. This may take some time."
-#		dodoc -r "${WORKDIR}"/html
-#	fi
 
 	# environment
 	cat >> "${T}"/40${PN} <<- EOF || die
