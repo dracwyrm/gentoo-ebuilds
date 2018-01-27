@@ -10,7 +10,4 @@
 	<name>Proxy Maintainers</name>
 </maintainer>
 <longdescription>Provides python bindings for <pkg>media-libs/ilmbase</pkg></longdescription>
-<use>
-	<flag name="numpy">Add bindings for <pkg>dev-python/numpy</pkg> use.</flag>
-</use>
 </pkgmetadata>
