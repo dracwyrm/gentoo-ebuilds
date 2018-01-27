@@ -1,0 +1,12 @@
+diff -urN a/PyIlmBase.pc.in b/PyIlmBase.pc.in
+--- a/PyIlmBase.pc.in	2017-11-17 23:31:37.000000000 +0000
++++ b/PyIlmBase.pc.in	2018-01-23 19:22:16.321008390 +0000
+@@ -7,5 +7,6 @@
+ Name: PyIlmBase
+ Description: Python bindings for the IlmBase libraries
+ Version: @PYILMBASE_VERSION@
+-Libs: -L${libdir} @ILMBASE_LDFLAGS@ -lIlmImf -lz @ILMBASE_LIBS@
+-Cflags: @ILMBASE_CXXFLAGS@ -I${PyIlmBase_includedir}
++Libs: -L${libdir} -lPyImath -lPyIex
++Cflags: -I${PyIlmBase_includedir}
++Requires: IlmBase
