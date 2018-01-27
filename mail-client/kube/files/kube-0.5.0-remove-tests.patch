@@ -1,0 +1,48 @@
+diff -urN a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2017-12-30 11:50:33.000000000 +0000
++++ b/CMakeLists.txt	2018-01-27 17:50:46.804796023 +0000
+@@ -29,7 +29,7 @@
+                   VERSION_HEADER kube_version.h
+                   )
+ 
+-enable_testing()
++#enable_testing()
+ 
+ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+ add_subdirectory(framework)
+@@ -37,4 +37,4 @@
+ add_subdirectory(icons)
+ add_subdirectory(applications)
+ add_subdirectory(accounts)
+-add_subdirectory(tests)
++#add_subdirectory(tests)
+diff -urN a/framework/CMakeLists.txt b/framework/CMakeLists.txt
+--- a/framework/CMakeLists.txt	2017-12-30 11:50:33.000000000 +0000
++++ b/framework/CMakeLists.txt	2018-01-27 17:54:44.703942609 +0000
+@@ -8,6 +8,6 @@
+ install(FILES qmldir DESTINATION ${FRAMEWORK_INSTALL_DIR})
+ 
+ add_subdirectory(src)
+-add_subdirectory(qml/tests)
++#add_subdirectory(qml/tests)
+ 
+ feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
+diff -urN a/framework/src/CMakeLists.txt b/framework/src/CMakeLists.txt
+--- a/framework/src/CMakeLists.txt	2017-12-30 11:50:33.000000000 +0000
++++ b/framework/src/CMakeLists.txt	2018-01-27 17:57:58.197122907 +0000
+@@ -69,11 +69,11 @@
+ )
+ install(TARGETS frameworkplugin DESTINATION ${FRAMEWORK_INSTALL_DIR})
+ 
+-set(BUILD_TESTING ON)
++set(BUILD_TESTING OFF)
+ 
+-add_subdirectory(tests)
+-add_subdirectory(domain/mime/tests)
++#add_subdirectory(tests)
++#add_subdirectory(domain/mime/tests)
+ add_subdirectory(domain/mime/mimetreeparser)
+-add_subdirectory(domain/settings/tests)
++#add_subdirectory(domain/settings/tests)
+ 
+ feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
