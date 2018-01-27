@@ -19,7 +19,7 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 RDEPEND="
 	${PYTHON_DEPS}
-	>=dev-libs/boost-1.62.0-r1[python(+),${PYTHON_USEDEP}]
+	>=dev-libs/boost-1.62.0-r1:=[python(+),${PYTHON_USEDEP}]
 	>=dev-python/numpy-1.10.4
 	~media-libs/ilmbase-${PV}:="
 
