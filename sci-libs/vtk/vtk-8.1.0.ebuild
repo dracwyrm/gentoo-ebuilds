@@ -133,8 +133,12 @@ src_prepare() {
 		ThirdParty/AutobahnPython/vtkAutobahn \
 		|| die
 
-	use doc && sed -e "s|\${VTK_BINARY_DIR}/Utilities/Doxygen/doc|${WORKDIR}|" \
+	if use doc; then
+		einfo "Removing .md5 files from documents."
+		rm -f "${WORKDIR}"/html/*.md5 || die "Failed to remove superfluous hashes"
+		sed -e "s|\${VTK_BINARY_DIR}/Utilities/Doxygen/doc|${WORKDIR}|" \
 			-i Utilities/Doxygen/CMakeLists.txt || die
+	fi
 
 	cmake-utils_src_prepare
 }
@@ -288,6 +292,9 @@ src_install() {
 	cmake-utils_src_install
 
 	use java && java-pkg_regjar "${ED%/}"/usr/$(get_libdir)/${PN}.jar
+
+	# Stop web page images from being compressed
+	use doc && docompress -x /usr/share/doc/${PF}/doxygen
 
 	if use tcl; then
 		# install Tcl docs
