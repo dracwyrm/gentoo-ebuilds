@@ -115,8 +115,6 @@ S="${WORKDIR}"/VTK-${PV}
 
 RESTRICT="test"
 
-#PATCHES=( ${FILESDIR}/${P}-test.patch )
-
 pkg_setup() {
 	use java && java-pkg-opt-2_pkg_setup
 	use python && python-single-r1_pkg_setup
