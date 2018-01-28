@@ -32,6 +32,8 @@ RDEPEND="dev-libs/glib:2
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
+PATCHES=( ${FILESDIR}/${P}-remove-pedantic-cflag.patch )
+
 pkg_pretend() {
 	# This program needs /dev/ic2-* devices to communicate with the monitor.
 	CONFIG_CHECK="~I2C_CHARDEV"
