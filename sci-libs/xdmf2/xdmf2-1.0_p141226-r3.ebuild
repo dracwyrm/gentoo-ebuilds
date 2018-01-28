@@ -29,27 +29,12 @@ DEPEND="${RDEPEND}
 "
 
 PATCHES=(
-	"${FILESDIR}"/${P}-module.patch
+	"${FILESDIR}"/${P}-fix-install-paths.patch
 	"${FILESDIR}"/${P}-cannot-find-hdf5-bug-591302.patch
 )
 
 pkg_setup() {
 	use python && python-single-r1_pkg_setup && python_export
-}
-
-src_prepare() {
-	if use python; then
-		local _site=$(python_get_sitedir)
-		sed \
-			-e "/DESTINATION/s:python:${_site##${EPREFIX}/usr/$(get_libdir)/}:g" \
-			-i CMakeLists.txt || die
-	fi
-
-	sed \
-		-e "/DESTINATION/s:lib:$(get_libdir):g" \
-		-e "/INSTALL/s:lib:$(get_libdir):g" \
-		-i CMakeLists.txt core/CMakeLists.txt || die
-	cmake-utils_src_prepare
 }
 
 src_configure() {
@@ -65,9 +50,7 @@ src_configure() {
 
 src_install() {
 	cmake-utils_src_install
-	dosym XdmfConfig.cmake /usr/share/cmake/Modules/${PN}Config.cmake
-	dodir /usr/$(get_libdir)/cmake/${PN}
-	dosym /usr/share/cmake/Modules/XdmfConfig.cmake /usr/$(get_libdir)/cmake/${PN}/${PN}Config.cmake
+	dosym XdmfConfig.cmake /usr/$(get_libdir)/cmake/${PN}/${PN}Config.cmake
 
 	# need to byte-compile 'XdmfCore.py' and 'Xdmf.py'
 	# as the CMake build system does not compile them itself

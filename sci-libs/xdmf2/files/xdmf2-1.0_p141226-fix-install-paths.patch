@@ -1,0 +1,215 @@
+diff -urN a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2014-07-21 16:44:59.000000000 +0100
++++ b/CMakeLists.txt	2018-01-28 08:22:17.911213688 +0000
+@@ -21,6 +21,7 @@
+   ${CMAKE_SOURCE_DIR}/CMake/TestingSuite
+   ${CMAKE_SOURCE_DIR}/CMake/VersionSuite)
+ 
++include(GNUInstallDirs)
+ include(XdmfFunctions)
+ 
+ # Converting Install Prefix to an absolute path
+@@ -29,7 +30,7 @@
+ # RPath
+ set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+-set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)
++set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_FULL_LIBDIR})
+ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+ 
+ # Should we build with documentation
+@@ -85,6 +86,7 @@
+ if(XDMF_WRAP_PYTHON)
+   find_package(PythonInterp REQUIRED)
+   find_package(PythonLibs REQUIRED)
++  set(PYTHON_MAJOR_MINOR "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
+   if (XDMF_BUILD_DSM)
+     find_package (MPI4PY REQUIRED)
+     if (MPI4PY_FOUND)
+@@ -149,7 +151,7 @@
+ 
+     string(TOUPPER ${python_name} python_name_upper)
+     set(${python_name_upper}_PYTHON
+-      ${CMAKE_INSTALL_PREFIX}/lib/python/${python_name}.py)
++      ${CMAKE_INSTALL_FULL_LIBDIR}/python${PYTHON_MAJOR_MINOR}/site-packages/${python_name}.py)
+     get_directory_property(${python_name}Parent PARENT_DIRECTORY)
+     if(NOT "${${python_name}Parent}" STREQUAL "")
+       set(${python_name_upper}_PYTHON ${${python_name_upper}_PYTHON}
+@@ -157,9 +159,9 @@
+     endif(NOT "${${python_name}Parent}" STREQUAL "")
+ 
+     install(FILES ${CMAKE_BINARY_DIR}/${python_name}.py
+-      DESTINATION lib/python)
++      DESTINATION ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_MAJOR_MINOR}/site-packages)
+     install(TARGETS ${SWIG_MODULE_${python_name}Python_REAL_NAME}
+-      DESTINATION lib/python)
++      DESTINATION ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_MAJOR_MINOR}/site-packages)
+   endmacro(XDMF_SWIG_PYTHON)
+ endif(XDMF_WRAP_PYTHON)
+ 
+@@ -202,11 +204,11 @@
+           ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+ 	  endif(NOT MSVC10)
+       set(java_files *.java)
+-      set(java_dest "bin")
++      set(java_dest "${CMAKE_INSTALL_BINDIR}")
+       set(separator "\;")
+     else(WIN32)
+       set(java_files ${XDMF_JAVA_DIR}/*.java)
+-      set(java_dest "lib/java")
++      set(java_dest "${CMAKE_INSTALL_LIBDIR}/java")
+       set(separator ":")
+     endif(WIN32)
+ 
+@@ -235,7 +237,7 @@
+     set(java_cp_jars "${java_cp_jars}${separator}${${java_name}_JAVA_JAR}")
+     string(TOUPPER ${java_name} java_name_upper)
+     set(${java_name_upper}_JAVA_JAR
+-      ${CMAKE_INSTALL_PREFIX}/lib/java/${java_name}.jar)
++      ${CMAKE_INSTALL_FULL_LIBDIR}/java/${java_name}.jar)
+     get_directory_property(${java_name}Parent PARENT_DIRECTORY)
+     if(NOT "${${java_name}Parent}" STREQUAL "")
+       set(${java_name_upper}_JAVA_JAR ${${java_name_upper}_JAVA_JAR}
+@@ -244,7 +246,7 @@
+     endif(NOT "${${java_name}Parent}" STREQUAL "")
+ 
+     install(FILES ${CMAKE_BINARY_DIR}/${java_name}.jar
+-      DESTINATION lib/java)
++      DESTINATION ${CMAKE_INSTALL_LIBDIR}/java)
+     install(TARGETS ${SWIG_MODULE_${java_name}Java_REAL_NAME}
+       DESTINATION ${java_dest})
+   endmacro(XDMF_SWIG_JAVA)
+@@ -306,7 +308,7 @@
+ 
+   if(XDMF_WRAP_PYTHON)
+     XDMF_SWIG_PYTHON(Xdmf XdmfCore XdmfDSM)
+-    set(XDMF_PYTHON_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib/python/)
++    set(XDMF_PYTHON_INSTALL_DIR ${CMAKE_INSTALL_FULL_LIBDIR}/python${PYTHON_MAJOR_MINOR}/site-packages/)
+   endif(XDMF_WRAP_PYTHON)
+ 
+   if(BUILD_TESTING)
+@@ -319,15 +321,15 @@
+   endif(XDMF_BUILD_UTILS)
+ 
+   if(WIN32)
+-    set(XDMF_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/Xdmf.lib)
++    set(XDMF_LIBRARY ${CMAKE_INSTALL_FULL_LIBDIR}/Xdmf.lib)
+   endif(WIN32)
+   
+   if(UNIX)
+-    set(XDMF_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/libXdmf.so)
++    set(XDMF_LIBRARY ${CMAKE_INSTALL_FULL_LIBDIR}/libXdmf.so)
+   endif(UNIX)
+ 
+   if(APPLE)
+-    set(XDMF_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/libXdmf.dylib)
++    set(XDMF_LIBRARY ${CMAKE_INSTALL_FULL_LIBDIR}/libXdmf.dylib)
+   endif(APPLE)
+   
+   file(GLOB XdmfHeaders 
+@@ -337,13 +339,13 @@
+     "CMake/VersionSuite/*.hpp"
+     "${CMAKE_BINARY_DIR}/*.hpp"
+   )
+-  install(FILES ${XdmfHeaders} DESTINATION include)
++  install(FILES ${XdmfHeaders} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+   install(TARGETS Xdmf
+-    RUNTIME DESTINATION bin
+-    LIBRARY DESTINATION lib
+-    ARCHIVE DESTINATION lib)
++    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ endif(NOT XDMF_BUILD_CORE_ONLY)
+ 
+ xdmf_create_config_file(${PROJECT_NAME})
+ install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+-  DESTINATION ${CMAKE_INSTALL_PREFIX})
++  DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR}/cmake/xdmf2)
+diff -urN a/core/CMakeLists.txt b/core/CMakeLists.txt
+--- a/core/CMakeLists.txt	2014-07-21 16:44:59.000000000 +0100
++++ b/core/CMakeLists.txt	2018-01-28 08:36:45.299811828 +0000
+@@ -19,7 +19,7 @@
+ include_directories(${CMAKE_BINARY_DIR})
+ set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+-set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)
++set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_FULL_LIBDIR})
+ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+ 
+ option(XDMF_BUILD_DSM OFF)
+@@ -164,16 +164,16 @@
+ 
+ set(XDMF_LIBRARY_DIRS ${XDMF_LIBRARY_DIRS} PARENT_SCOPE)
+ if(WIN32)
+-    set(XDMFCORE_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/XdmfCore.lib PARENT_SCOPE)
++    set(XDMFCORE_LIBRARY ${CMAKE_INSTALL_FULL_LIBDIR}/XdmfCore.lib PARENT_SCOPE)
+ endif(WIN32)
+ 
+ if(UNIX)
+-    set(XDMFCORE_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/libXdmfCore.so
++    set(XDMFCORE_LIBRARY ${CMAKE_INSTALL_FULL_LIBDIR}/libXdmfCore.so
+         PARENT_SCOPE)
+ endif(UNIX)
+ 
+ if(APPLE)
+-    set(XDMFCORE_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/libXdmfCore.dylib
++    set(XDMFCORE_LIBRARY ${CMAKE_INSTALL_FULL_LIBDIR}/libXdmfCore.dylib
+         PARENT_SCOPE)
+ endif(APPLE)
+ 
+@@ -182,12 +182,12 @@
+   "*.hpp" "*.tpp" "*.i"
+   "../CMake/VersionSuite/*.hpp")
+ file(GLOB LokiHeaders loki/*.h)
+-install(FILES ${XdmfCoreHeaders} DESTINATION include)
+-install(FILES ${LokiHeaders} DESTINATION include/loki)
++install(FILES ${XdmfCoreHeaders} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
++install(FILES ${LokiHeaders} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/loki)
+ install(TARGETS XdmfCore
+-  RUNTIME DESTINATION bin
+-  LIBRARY DESTINATION lib
+-  ARCHIVE DESTINATION lib)
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+ set(XdmfCore_INCLUDE_DIRS
+   ${Boost_INCLUDE_DIRS}
+@@ -197,10 +197,10 @@
+   ${PYTHON_INCLUDE_DIRS}
+   CACHE INTERNAL "")
+ 
+-set(XDMF_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include PARENT_SCOPE)
+-set(XDMF_LIBRARIES ${XDMF_LIBRARIES} ${CMAKE_INSTALL_PREFIX}/lib)
++set(XDMF_INCLUDE_DIRS ${CMAKE_INSTALL_FULL_INCLUDEDIR} PARENT_SCOPE)
++set(XDMF_LIBRARIES ${XDMF_LIBRARIES} ${CMAKE_INSTALL_FULL_LIBDIR})
+ set(XDMF_DIR ${CMAKE_INSTALL_PREFIX} PARENT_SCOPE)
+-set(XDMF_BINARIES ${XDMF_BINARIES} ${CMAKE_INSTALL_PREFIX}/bin)
++set(XDMF_BINARIES ${XDMF_BINARIES} ${CMAKE_INSTALL_FULL_BINDIR})
+ 
+ if(XDMF_BUILD_DSM)
+   add_subdirectory(dsm)
+diff -urN a/utils/CMakeLists.txt b/utils/CMakeLists.txt
+--- a/utils/CMakeLists.txt	2014-07-21 16:44:59.000000000 +0100
++++ b/utils/CMakeLists.txt	2018-01-28 08:28:46.167395217 +0000
+@@ -145,12 +145,12 @@
+   set(XdmfUtilsHeaders ${XdmfUtilsHeaders} Xdmf.f)
+ endif(XDMF_BUILD_FORTRAN)
+ 
+-install(FILES ${XdmfUtilsHeaders} DESTINATION include)
++install(FILES ${XdmfUtilsHeaders} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+ install(TARGETS XdmfUtils 
+-    RUNTIME DESTINATION bin
+-    LIBRARY DESTINATION lib
+-    ARCHIVE DESTINATION lib)
++    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ install(TARGETS ${XdmfUtilsExecutables} 
+-    RUNTIME DESTINATION bin
+-    LIBRARY DESTINATION lib
+-    ARCHIVE DESTINATION lib)
++    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
