@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -9,29 +9,30 @@ DESCRIPTION="Program for querying and changing monitor settings"
 HOMEPAGE="http://www.ddcutil.com/"
 SRC_URI="https://github.com/rockowitz/ddcutil/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
-# Binary drivers need special instructions compared to the open source counterparts.
-# If a user switches drivers, they will need to set different use flags for
-# Xorg or Wayland or Mesa, so this will trigger the rebuild against
-# the different drivers.
-# Remove ATI/AMD driver since it's masked for removal.
-# Will most likely need to set this for AMDGPU when in portage.
-IUSE="usb-monitor user-permissions video_cards_nvidia"
-
-LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+LICENSE="GPL-2"
+KEYWORDS="~amd64 ~x86"
+IUSE="drm usb-monitor user-permissions video_cards_nvidia X"
+REQUIRED_USE="drm? ( X )"
 
-RDEPEND="x11-libs/libXrandr
-	 x11-libs/libX11
-	 dev-libs/glib:2
-	 sys-apps/i2c-tools
-	 virtual/udev
-	 usb-monitor? (
+RDEPEND="dev-libs/glib:2
+	sys-apps/i2c-tools
+	virtual/udev
+	drm? ( x11-libs/libdrm )
+	usb-monitor? (
 		dev-libs/hidapi
 		virtual/libusb:1
-		sys-apps/usbutils )"
-DEPEND="virtual/pkgconfig
-	${RDEPEND}"
+		sys-apps/usbutils
+	)
+	X? (
+		x11-libs/libXrandr
+		x11-libs/libX11
+	)"
+
+DEPEND="${RDEPEND}
+	virtual/pkgconfig"
+
+PATCHES=( ${FILESDIR}/${P}-remove-pedantic-cflag.patch )
 
 pkg_pretend() {
 	# This program needs /dev/ic2-* devices to communicate with the monitor.
@@ -56,11 +57,14 @@ src_configure() {
 	# Bug 607818.
 	replace-flags -O3 -O2
 
-	# Python API is still very experimental.
 	local myeconfargs=(
+		$(use_enable drm)
 		$(use_enable usb-monitor usb)
-		--disable-swig
+		$(use_enable X x11)
 		--enable-lib
+		--disable-cffi
+		--disable-cython
+		--disable-swig
 	)
 
 	econf "${myeconfargs[@]}"
