@@ -34,7 +34,7 @@ index b05c7e4..452fa1e 100644
      ${CMAKE_CURRENT_BINARY_DIR}/share/ocio/setup_ocio.sh @ONLY)
  
 -INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/share/ocio/setup_ocio.sh DESTINATION share/ocio/)
-+INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/share/ocio/setup_ocio.sh DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ocio/)
++INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/share/ocio/setup_ocio.sh DESTINATION ${CMAKE_INSTALL_DATADIR}/ocio/)
  
  ###############################################################################
  ### CPACK ###

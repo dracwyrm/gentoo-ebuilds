@@ -1,52 +1,51 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 
 # Compatibility with Python 3 is declared by upstream, but it is broken in fact, check on bump
-PYTHON_COMPAT=( python2_7 )
+PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} )
 
 inherit cmake-utils python-single-r1 vcs-snapshot
 
 DESCRIPTION="A color management framework for visual effects and animation"
 HOMEPAGE="http://opencolorio.org/"
+
 SRC_URI="https://github.com/imageworks/OpenColorIO/archive/v${PV}.tar.gz \
-		-> ${P}.tar.gz
-	https://dev.gentoo.org/~pinkbyte/distfiles/patches/${P}-yaml-0.5-compat-v2.patch.bz2"
+		-> ${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86"
-IUSE="doc opengl pdf python cpu_flags_x86_sse2 test"
+KEYWORDS="~amd64 ~x86"
+IUSE="cpu_flags_x86_sse2 doc opengl python static-libs test"
+REQUIRED_USE="
+	doc? ( python )
+	python? ( ${PYTHON_REQUIRED_USE} )"
 
-RDEPEND="opengl? (
+RDEPEND="
+	opengl? (
 		media-libs/lcms:2
-		>=media-libs/openimageio-1.1.0
-		media-libs/glew:0=
+		media-libs/openimageio
+		media-libs/glew:=
 		media-libs/freeglut
 		virtual/opengl
-		)
+	)
 	python? ( ${PYTHON_DEPS} )
 	>=dev-cpp/yaml-cpp-0.5
-	dev-libs/tinyxml
-	"
-DEPEND="${RDEPEND}
-	doc? (
-		pdf? ( dev-python/sphinx[latex,${PYTHON_USEDEP}] )
-		!pdf? ( dev-python/sphinx[${PYTHON_USEDEP}] )
-	)
-	"
+	dev-libs/tinyxml"
 
-# Documentation building requires Python bindings building
-REQUIRED_USE="doc? ( python ) python? ( ${PYTHON_REQUIRED_USE} )"
+DEPEND="${RDEPEND}
+	virtual/pkgconfig
+	doc? ( dev-python/sphinx[${PYTHON_USEDEP}] )"
 
 # Restricting tests, bugs #439790 and #447908
 RESTRICT="test"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-1.0.8-documentation-gen.patch"
-	"${FILESDIR}/${P}-remove-external-doc-utilities.patch"
-	"${WORKDIR}/${P}-yaml-0.5-compat-v2.patch"
+	"${FILESDIR}/${P}-fix-compile-error-with-Lut1DOp.cpp.patch"
+	"${FILESDIR}/${P}-use-GNUInstallDirs-and-fix-cmake-install-location.patch"
+	"${FILESDIR}/${P}-remove-building-of-bundled-programs.patch"
+	"${FILESDIR}/${P}-revert-yaml-visibility.patch"
 )
 
 pkg_setup() {
@@ -70,7 +69,7 @@ src_configure() {
 		-DOCIO_BUILD_JNIGLUE=OFF
 		-DOCIO_BUILD_NUKE=OFF
 		-DOCIO_BUILD_SHARED=ON
-		-DOCIO_BUILD_STATIC=OFF
+		-DOCIO_BUILD_STATIC=$(usex static-libs)
 		-DOCIO_STATIC_JNIGLUE=OFF
 		-DOCIO_BUILD_TRUELIGHT=OFF
 		-DUSE_EXTERNAL_LCMS=ON
@@ -78,10 +77,11 @@ src_configure() {
 		-DUSE_EXTERNAL_YAML=ON
 		-DOCIO_BUILD_DOCS="$(usex doc)"
 		-DOCIO_BUILD_APPS="$(usex opengl)"
-		-DOCIO_BUILD_PDF_DOCS="$(usex pdf)"
 		-DOCIO_BUILD_PYGLUE="$(usex python)"
 		-DOCIO_USE_SSE="$(usex cpu_flags_x86_sse2)"
 		-DOCIO_BUILD_TESTS="$(usex test)"
+		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
+		-DCMAKE_DISABLE_FIND_PACKAGE_LATEX=TRUE # They don't build
 	)
 	cmake-utils_src_configure
 }
