@@ -1,0 +1,3 @@
+#!/bin/bash
+
+%%ELECTRON%% --app=/usr/libexec/gitkraken/app.asar $@
