@@ -29,12 +29,6 @@ DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )
 "
 
-src_prepare() {
-	cmake-utils_src_prepare
-
-	sed -e '/ADD_SUBDIRECTORY (src\/tests)/d' -i CMakeLists.txt || die
-}
-
 src_configure() {
 	local mycmakeargs=(
 		$(cmake-utils_use_find_package doc Doxygen)
