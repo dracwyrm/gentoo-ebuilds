@@ -1,7 +1,11 @@
 diff -urN a/openvdb/CMakeLists.txt b/openvdb/CMakeLists.txt
 --- a/openvdb/CMakeLists.txt	2018-08-07 21:21:02.000000000 +0100
-+++ b/openvdb/CMakeLists.txt	2018-08-07 21:29:18.542457999 +0100
-@@ -86,8 +86,8 @@
++++ b/openvdb/CMakeLists.txt	2018-08-07 21:47:02.355277361 +0100
+@@ -83,11 +83,12 @@
+   ADD_DEFINITIONS ( -DBOOST_ALL_NO_LIB )
+ ENDIF ()
+ 
++FIND_PACKAGE ( PkgConfig REQUIRED )
  FIND_PACKAGE ( Blosc REQUIRED )
  FIND_PACKAGE ( TBB REQUIRED )
  FIND_PACKAGE ( ZLIB REQUIRED )
@@ -12,7 +16,7 @@ diff -urN a/openvdb/CMakeLists.txt b/openvdb/CMakeLists.txt
  FIND_PACKAGE ( OpenGL REQUIRED )
  IF (OPENVDB_BUILD_DOCS)
    FIND_PACKAGE ( Doxygen REQUIRED )
-@@ -111,8 +111,8 @@
+@@ -111,8 +112,8 @@
    INCLUDE_DIRECTORIES ( SYSTEM ${ZLIB_INCLUDE_DIR} )
  ENDIF ()
  
@@ -23,7 +27,7 @@ diff -urN a/openvdb/CMakeLists.txt b/openvdb/CMakeLists.txt
  INCLUDE_DIRECTORIES ( SYSTEM ${GLFW_INCLUDE_DIRECTORY} )
  
  IF (WIN32)
-@@ -184,7 +184,7 @@
+@@ -184,7 +185,7 @@
    ${Boost_IOSTREAMS_LIBRARY}
    ${Boost_SYSTEM_LIBRARY}
    ${Tbb_TBB_LIBRARY}
@@ -32,7 +36,7 @@ diff -urN a/openvdb/CMakeLists.txt b/openvdb/CMakeLists.txt
    ${ZLIB_LIBRARY}
    ${BLOSC_blosc_LIBRARY}
    )
-@@ -192,7 +192,7 @@
+@@ -192,7 +193,7 @@
    ${Boost_IOSTREAMS_LIBRARY}
    ${Boost_SYSTEM_LIBRARY}
    ${Tbb_TBB_LIBRARY}
@@ -41,7 +45,7 @@ diff -urN a/openvdb/CMakeLists.txt b/openvdb/CMakeLists.txt
    ${ZLIB_LIBRARY}
    ${BLOSC_blosc_LIBRARY}
    )
-@@ -246,9 +246,8 @@
+@@ -246,9 +247,8 @@
    openvdb_shared
    ${CMAKE_THREAD_LIBS_INIT}
    ${BLOSC_blosc_LIBRARY}
