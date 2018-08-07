@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit cmake-utils versionator
+inherit cmake-utils flag-o-matic
 
 DESCRIPTION="Stream based read/write library for COLLADA files"
 HOMEPAGE="http://www.opencollada.org/"
@@ -14,7 +14,8 @@ SLOT="0"
 KEYWORDS="amd64 ~ppc64 x86"
 IUSE="static-libs"
 
-RDEPEND="dev-libs/libpcre
+# bug 651756
+RDEPEND="<dev-libs/libpcre-8.42
 	dev-libs/zziplib
 	media-libs/lib3ds
 	sys-libs/zlib
@@ -40,6 +41,9 @@ src_prepare() {
 }
 
 src_configure() {
+	# bug 619670
+	append-cxxflags -std=c++14
+
 	local mycmakeargs=(
 		-DUSE_SHARED=ON
 		-DUSE_STATIC=$(usex static-libs)
