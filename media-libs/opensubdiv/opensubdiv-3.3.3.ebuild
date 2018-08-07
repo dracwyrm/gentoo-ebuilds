@@ -31,9 +31,9 @@ DEPEND="${RDEPEND}
 S="${WORKDIR}/OpenSubdiv-${MY_PV}"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-3.3.3-fix-quotes.patch"
-	"${FILESDIR}/${PN}-3.3.3-use-gnuinstalldirs.patch"
-	"${FILESDIR}/${PN}-3.3.3-add-CUDA9-compatibility.patch"
+	"${FILESDIR}/${PN}-3.3.0-fix-quotes.patch"
+	"${FILESDIR}/${PN}-3.3.0-use-gnuinstalldirs.patch"
+	"${FILESDIR}/${PN}-3.3.0-add-CUDA9-compatibility.patch"
 )
 
 pkg_pretend() {
@@ -46,7 +46,6 @@ pkg_setup() {
 
 src_configure() {
 	local mycmakeargs=(
-		-DNO_MAYA=1
 		-DNO_CLEW=1
 		-DNO_DOC=$(usex !doc)
 		-DNO_TBB=$(usex !tbb)
