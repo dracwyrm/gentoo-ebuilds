@@ -9,8 +9,7 @@ inherit cmake-utils flag-o-matic python-single-r1
 
 DESCRIPTION="Libs for the efficient manipulation of volumetric data"
 HOMEPAGE="http://www.openvdb.org"
-SRC_URI="https://github.com/dreamworksanimation/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz
-	https://github.com/dracwyrm/gentoo-patches/raw/master/${PN}/${P}-patchset-01.tar.xz"
+SRC_URI="https://github.com/dreamworksanimation/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MPL-2.0"
 SLOT="0"
@@ -43,10 +42,9 @@ DEPEND="${RDEPEND}
 RESTRICT="test"
 
 PATCHES=(
-	"${WORKDIR}/0001-Change-hardcoded-paths-to-GNUInstallDirs-variables.patch"
-	"${WORKDIR}/0002-Use-PkgConfig-to-find-IlmBase-and-OpenEXR.patch"
-	"${WORKDIR}/0003-Boost-1.65-NumPy-support.patch"
-	"${FILESDIR}/${P}-findboost-fix.patch"
+	"${FILESDIR}/${PN}-4.0.2-findboost-fix.patch"
+	"${FILESDIR}/${P}-use-gnuinstalldirs.patch"
+	"${FILESDIR}/${P}-use-pkgconfig-for-ilmbase-and-openexr.patch"
 )
 
 pkg_setup() {
@@ -61,13 +59,12 @@ src_configure() {
 
 	local mycmakeargs=(
 		-DBLOSC_LOCATION="${myprefix}"
-		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
 		-DGLEW_LOCATION="${myprefix}"
 		-DGLFW3_LOCATION="${myprefix}"
+		-DOPENVDB_ABI_VERSION_NUMBER=$(usex abi3-compat 3 4)
 		-DOPENVDB_BUILD_DOCS=$(usex doc)
 		-DOPENVDB_BUILD_PYTHON_MODULE=$(usex python)
 		-DOPENVDB_BUILD_UNITTESTS=OFF
-		-DOPENVDB_ENABLE_3_ABI_COMPATIBLE=$(usex abi3-compat)
 		-DOPENVDB_ENABLE_RPATH=OFF
 		-DTBB_LOCATION="${myprefix}"
 		-DUSE_GLFW3=ON
