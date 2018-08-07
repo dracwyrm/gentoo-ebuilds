@@ -2,34 +2,35 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
+
 PYTHON_COMPAT=( python{3_5,3_6} )
 
 inherit check-reqs cmake-utils xdg-utils flag-o-matic gnome2-utils \
-	pax-utils python-single-r1 toolchain-funcs versionator
+	pax-utils python-single-r1 toolchain-funcs eapi7-ver
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
-HOMEPAGE="https://www.blender.org"
+HOMEPAGE="http://www.blender.org"
 
-SRC_URI="https://download.blender.org/source/${P}.tar.gz"
+SRC_URI="http://download.blender.org/source/${P}.tar.gz"
 
 # Blender can have letters in the version string,
 # so strip of the letter if it exists.
-MY_PV="$(get_version_component_range 1-2)"
+MY_PV="$(ver_cut 1-2)"
 
 SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
-KEYWORDS="amd64 ~x86"
+KEYWORDS="~amd64 ~x86"
 IUSE="+bullet +dds +elbeem +game-engine +openexr collada colorio \
 	cuda cycles debug doc ffmpeg fftw headless jack jemalloc jpeg2k libav \
 	llvm man ndof nls openal opencl openimageio openmp opensubdiv openvdb \
 	osl player sdl sndfile test tiff valgrind"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
-	player? ( game-engine !headless )
 	cuda? ( cycles )
 	cycles? ( openexr tiff openimageio )
 	opencl? ( cycles )
-	osl? ( cycles llvm )"
+	osl? ( cycles llvm )
+	player? ( game-engine !headless )"
 
 RDEPEND="${PYTHON_DEPS}
 	>=dev-libs/boost-1.62:=[nls?,threads(+)]
@@ -74,7 +75,7 @@ RDEPEND="${PYTHON_DEPS}
 	)
 	opensubdiv? ( >=media-libs/opensubdiv-3.3.0:=[cuda=,opencl=] )
 	openvdb? (
-		media-gfx/openvdb[${PYTHON_USEDEP},abi3-compat(+),openvdb-compression(+)]
+		media-gfx/openvdb[${PYTHON_USEDEP},-abi3-compat(+),openvdb-compression(+)]
 		dev-cpp/tbb
 		>=dev-libs/c-blosc-1.5.2
 	)
@@ -85,18 +86,15 @@ RDEPEND="${PYTHON_DEPS}
 	valgrind? ( dev-util/valgrind )"
 
 DEPEND="${RDEPEND}
-	virtual/pkgconfig
 	>=dev-cpp/eigen-3.2.8:3
-	nls? ( sys-devel/gettext )
+	virtual/pkgconfig
 	doc? (
 		app-doc/doxygen[-nodot(-),dot(+),latex]
 		dev-python/sphinx[latex]
-	)"
+	)
+	nls? ( sys-devel/gettext )"
 
-PATCHES=(
-	"${FILESDIR}/${PN}-fix-install-rules.patch"
-	"${FILESDIR}/${P}-fix-build-with-OSL-1.9.x.patch"
-)
+PATCHES=( "${FILESDIR}/${PN}-fix-install-rules.patch" )
 
 blender_check_requirements() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
@@ -137,7 +135,6 @@ src_configure() {
 	# shadows, see bug #276338 for reference
 	append-flags -funsigned-char
 	append-lfs-flags
-	append-cppflags -DOPENVDB_3_ABI_COMPATIBLE
 
 	local mycmakeargs=(
 		-DPYTHON_VERSION="${EPYTHON/python/}"
