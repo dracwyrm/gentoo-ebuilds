@@ -3,7 +3,7 @@
 
 EAPI=6
 
-PYTHON_COMPAT=( python{2_7,3_5,3_6} )
+PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} )
 
 inherit cmake-utils flag-o-matic python-single-r1
 
@@ -42,9 +42,10 @@ DEPEND="${RDEPEND}
 RESTRICT="test"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-4.0.2-findboost-fix.patch"
 	"${FILESDIR}/${P}-use-gnuinstalldirs.patch"
 	"${FILESDIR}/${P}-use-pkgconfig-for-ilmbase-and-openexr.patch"
+	"${FILESDIR}/${P}-boost-1.65-numpy-support.patch"
+	"${FILESDIR}/${P}-findboost-fix.patch"
 )
 
 pkg_setup() {
@@ -62,10 +63,10 @@ src_configure() {
 		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
 		-DGLEW_LOCATION="${myprefix}"
 		-DGLFW3_LOCATION="${myprefix}"
-		-DOPENVDB_ABI_VERSION_NUMBER=$(usex abi3-compat 3 5)
 		-DOPENVDB_BUILD_DOCS=$(usex doc)
 		-DOPENVDB_BUILD_PYTHON_MODULE=$(usex python)
 		-DOPENVDB_BUILD_UNITTESTS=$(usex unittests)
+		-DOPENVDB_ENABLE_3_ABI_COMPATIBLE=$(usex abi3-compat)
 		-DOPENVDB_ENABLE_RPATH=OFF
 		-DTBB_LOCATION="${myprefix}"
 		-DUSE_GLFW3=ON
