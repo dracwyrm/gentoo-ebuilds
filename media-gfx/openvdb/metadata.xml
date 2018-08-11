@@ -23,6 +23,10 @@
 			Enables compatibility with the old 3.x ABI.
 			enabled by dfault.
 		</flag>
+		<flag restrict="&gt;=media-gfx/openvdb-4.0.2-r2" name="unittests">
+			Enables compatibility with the old 3.x ABI.
+			enabled by dfault.
+		</flag>
 	</use>
 	<upstream>
 		<remote-id type="github">dreamworksanimation/openvdb</remote-id>

@@ -9,7 +9,8 @@ inherit cmake-utils flag-o-matic python-single-r1
 
 DESCRIPTION="Libs for the efficient manipulation of volumetric data"
 HOMEPAGE="http://www.openvdb.org"
-SRC_URI="https://github.com/dreamworksanimation/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/dreamworksanimation/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz
+	https://dev.gentoo.org/~dracwyrm/patches/${P}-patchset-02.tar.xz"
 
 LICENSE="MPL-2.0"
 SLOT="0"
@@ -32,19 +33,18 @@ RDEPEND="
 	python? (
 		${PYTHON_DEPS}
 		dev-python/numpy[${PYTHON_USEDEP}]
-	)"
+	)
+	unittests? ( dev-util/cppunit )"
 
 DEPEND="${RDEPEND}
 	dev-cpp/tbb
 	virtual/pkgconfig
 	doc? ( app-doc/doxygen[latex] )"
 
-RESTRICT="test"
-
 PATCHES=(
-	"${FILESDIR}/${P}-use-gnuinstalldirs.patch"
-	"${FILESDIR}/${P}-use-pkgconfig-for-ilmbase-and-openexr.patch"
-	"${FILESDIR}/${P}-boost-1.65-numpy-support.patch"
+	"${WORKDIR}/0001-use-gnuinstalldirs.patch"
+	"${WORKDIR}/0001-use-pkgconfig-for-ilmbase-and-openexr.patch"
+	"${WORKDIR}/0001-boost-1.65-numpy-support.patch"
 	"${FILESDIR}/${P}-findboost-fix.patch"
 )
 
@@ -61,7 +61,6 @@ src_configure() {
 	local mycmakeargs=(
 		-DBLOSC_LOCATION="${myprefix}"
 		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
-		-DGLEW_LOCATION="${myprefix}"
 		-DGLFW3_LOCATION="${myprefix}"
 		-DOPENVDB_BUILD_DOCS=$(usex doc)
 		-DOPENVDB_BUILD_PYTHON_MODULE=$(usex python)

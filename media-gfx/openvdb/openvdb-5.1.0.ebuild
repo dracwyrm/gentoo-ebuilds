@@ -32,14 +32,13 @@ RDEPEND="
 	python? (
 		${PYTHON_DEPS}
 		dev-python/numpy[${PYTHON_USEDEP}]
-	)"
+	)
+	unittests? ( dev-util/cppunit )"
 
 DEPEND="${RDEPEND}
 	dev-cpp/tbb
 	virtual/pkgconfig
 	doc? ( app-doc/doxygen[latex] )"
-
-RESTRICT="test"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-4.0.2-findboost-fix.patch"
@@ -54,13 +53,9 @@ pkg_setup() {
 src_configure() {
 	local myprefix="${EPREFIX}/usr/"
 
-	# To stay in sync with Boost
-	append-cxxflags -std=c++14
-
 	local mycmakeargs=(
 		-DBLOSC_LOCATION="${myprefix}"
 		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
-		-DGLEW_LOCATION="${myprefix}"
 		-DGLFW3_LOCATION="${myprefix}"
 		-DOPENVDB_ABI_VERSION_NUMBER=$(usex abi3-compat 3 5)
 		-DOPENVDB_BUILD_DOCS=$(usex doc)
