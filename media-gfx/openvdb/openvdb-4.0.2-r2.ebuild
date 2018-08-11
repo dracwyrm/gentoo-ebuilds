@@ -15,7 +15,7 @@ SRC_URI="https://github.com/dreamworksanimation/${PN}/archive/v${PV}.tar.gz -> $
 LICENSE="MPL-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="+abi3-compat doc python unittests"
+IUSE="+abi3-compat doc python test"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 RDEPEND="
@@ -33,13 +33,13 @@ RDEPEND="
 	python? (
 		${PYTHON_DEPS}
 		dev-python/numpy[${PYTHON_USEDEP}]
-	)
-	unittests? ( dev-util/cppunit )"
+	)"
 
 DEPEND="${RDEPEND}
 	dev-cpp/tbb
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen[latex] )"
+	doc? ( app-doc/doxygen[latex] )
+	test? ( dev-util/cppunit )"
 
 PATCHES=(
 	"${WORKDIR}/${P}-patchset-02/0001-use-gnuinstalldirs.patch"
@@ -64,7 +64,7 @@ src_configure() {
 		-DGLFW3_LOCATION="${myprefix}"
 		-DOPENVDB_BUILD_DOCS=$(usex doc)
 		-DOPENVDB_BUILD_PYTHON_MODULE=$(usex python)
-		-DOPENVDB_BUILD_UNITTESTS=$(usex unittests)
+		-DOPENVDB_BUILD_UNITTESTS=$(usex test)
 		-DOPENVDB_ENABLE_3_ABI_COMPATIBLE=$(usex abi3-compat)
 		-DOPENVDB_ENABLE_RPATH=OFF
 		-DTBB_LOCATION="${myprefix}"
@@ -72,7 +72,7 @@ src_configure() {
 	)
 
 	use python && mycmakeargs+=( -DPYOPENVDB_INSTALL_DIRECTORY="$(python_get_sitedir)" )
-	use unittests && mycmakeargs+=( -DCPPUNIT_LOCATION="${myprefix}" )
+	use test && mycmakeargs+=( -DCPPUNIT_LOCATION="${myprefix}" )
 
 	cmake-utils_src_configure
 }
