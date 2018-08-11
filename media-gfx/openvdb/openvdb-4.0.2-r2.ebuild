@@ -42,9 +42,9 @@ DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[latex] )"
 
 PATCHES=(
-	"${WORKDIR}/0001-use-gnuinstalldirs.patch"
-	"${WORKDIR}/0001-use-pkgconfig-for-ilmbase-and-openexr.patch"
-	"${WORKDIR}/0001-boost-1.65-numpy-support.patch"
+	"${WORKDIR}/${P}-patchset-02/0001-use-gnuinstalldirs.patch"
+	"${WORKDIR}/${P}-patchset-02/0002-use-pkgconfig-for-ilmbase-and-openexr.patch"
+	"${WORKDIR}/${P}-patchset-02/0003-boost-1.65-numpy-support.patch"
 	"${FILESDIR}/${P}-findboost-fix.patch"
 )
 
