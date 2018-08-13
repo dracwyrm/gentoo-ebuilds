@@ -74,7 +74,7 @@ RDEPEND="${PYTHON_DEPS}
 	)
 	opensubdiv? ( >=media-libs/opensubdiv-3.3.0:=[cuda=,opencl=] )
 	openvdb? (
-		media-gfx/openvdb[${PYTHON_USEDEP},abi3-compat(+),openvdb-compression(+)]
+		<media-gfx/openvdb-5.0.0:=[${PYTHON_USEDEP},abi3-compat(+),openvdb-compression(+)]
 		dev-cpp/tbb
 		>=dev-libs/c-blosc-1.5.2
 	)
