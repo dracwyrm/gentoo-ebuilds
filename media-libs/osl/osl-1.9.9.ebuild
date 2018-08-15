@@ -14,15 +14,19 @@ SRC_URI="https://github.com/imageworks/OpenShadingLanguage/archive/Release-${MY_
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 ~x86"
+KEYWORDS="~amd64 ~x86"
 
-X86_CPU_FEATURES=( sse2:sse2 sse3:sse3 sse4_1:sse4.1 sse4_2:sse4.2 )
+X86_CPU_FEATURES=(
+	sse2:sse2 sse3:sse3 ssse3:ssse3 sse4_1:sse4.1 sse4_2:sse4.2
+	avx:avx avx2:avx2 avx512f:avx512f f16c:f16c
+)
 CPU_FEATURES=( ${X86_CPU_FEATURES[@]/#/cpu_flags_x86_} )
+
 IUSE="doc partio test ${CPU_FEATURES[@]%:*}"
 
-RDEPEND=">=media-libs/openexr-2.2.0
-	>=media-libs/openimageio-1.7.0
-	dev-libs/pugixml
+RDEPEND="dev-libs/pugixml
+	>=media-libs/openexr-2.2.0
+	>=media-libs/openimageio-1.8.0
 	sys-libs/zlib:=
 	partio? ( media-libs/partio )"
 
@@ -36,34 +40,29 @@ DEPEND="${RDEPEND}
 # Restricting tests as Make file handles them differently
 RESTRICT="test"
 
-PATCHES=( "${FILESDIR}/${P}-cmake-fixes.patch" )
-
 S="${WORKDIR}/OpenShadingLanguage-Release-${MY_PV}"
 
 src_configure() {
 	local cpufeature
-	local mysimd=""
+	local mysimd=()
 	for cpufeature in "${CPU_FEATURES[@]}"; do
-		use ${cpufeature%:*} && mysimd+="${cpufeature#*:},"
+		use "${cpufeature%:*}" && mysimd+=("${cpufeature#*:}")
 	done
 
 	# If no CPU SIMDs were used, completely disable them
-	[[ -z $mysimd ]] && mysimd="0"
+	[[ -z ${mysimd} ]] && mysimd=("0")
 
 	# LLVM needs CPP11. Do not disable.
 	local mycmakeargs=(
-		-DUSE_EXTERNAL_PUGIXML=ON
-		-DUSE_PARTIO=$(usex partio)
-		-DOSL_BUILD_CPP11=ON
+		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
 		-DENABLERTTI=OFF
-		-DSTOP_ON_WARNING=OFF
-		-DSELF_CONTAINED_INSTALL_TREE=OFF
 		-DOSL_BUILD_TESTS=$(usex test)
 		-DINSTALL_DOCS=$(usex doc)
-		-DCMAKE_INSTALL_DOCDIR="share/doc/${PF}"
-		-DUSE_SIMD=${mysimd%,}
 		-DLLVM_STATIC=ON
-		-DVERBOSE=OFF
+		-DSTOP_ON_WARNING=OFF
+		-DUSE_EXTERNAL_PUGIXML=ON
+		-DUSE_PARTIO=$(usex partio)
+		-DUSE_SIMD="$(IFS=","; echo "${mysimd[*]}")"
 	)
 
 	cmake-utils_src_configure
