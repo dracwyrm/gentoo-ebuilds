@@ -94,7 +94,11 @@ DEPEND="${RDEPEND}
 	)
 	nls? ( sys-devel/gettext )"
 
-PATCHES=( "${FILESDIR}/${PN}-fix-install-rules.patch" )
+PATCHES=(
+	"${FILESDIR}/${PN}-fix-install-rules.patch"
+	"${FILESDIR}/${P}-gcc-8.patch"
+	"${FILESDIR}/${P}-ffmpeg-4-compat.patch"
+)
 
 blender_check_requirements() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
