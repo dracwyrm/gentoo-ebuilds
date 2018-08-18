@@ -18,6 +18,8 @@ RDEPEND="sys-libs/zlib:="
 DEPEND="${RDEPEND}
 	app-doc/doxygen"
 
+RESTRICT="test"
+
 PATCHES=(
 	"${FILESDIR}/${P}-cxx11.patch"
 )
