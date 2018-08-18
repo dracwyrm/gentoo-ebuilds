@@ -60,7 +60,6 @@ src_configure() {
 		-DINSTALL_DOCS=$(usex doc)
 		-DLLVM_STATIC=ON
 		-DSTOP_ON_WARNING=OFF
-		-DUSE_EXTERNAL_PUGIXML=ON
 		-DUSE_PARTIO=$(usex partio)
 		-DUSE_SIMD="$(IFS=","; echo "${mysimd[*]}")"
 	)
