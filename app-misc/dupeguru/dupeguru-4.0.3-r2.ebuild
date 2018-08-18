@@ -9,10 +9,12 @@ PYTHON_REQ_USE="sqlite"
 inherit eutils python-single-r1
 
 DESCRIPTION="Find duplicate files on your system"
-HOMEPAGE="https://hardcoded.net/dupeguru"
+HOMEPAGE="https://dupeguru.voltaicideas.net/"
 MY_P="${PN}-src-${PV}"
-SRC_URI="https://download.hardcoded.net/${MY_P}.tar.gz"
-S=${WORKDIR}
+MY_COMMIT="aebc24f80fe176cdb541efcdae62fa05685f00a5"
+SRC_URI="https://github.com/arsenetar/${PN}/archive/${PV}-InstallFix.tar.gz -> ${P}.tar.gz
+	https://github.com/arsenetar/hscommon/archive/${MY_COMMIT}.tar.gz -> hscommon-20171018.tar.gz"
+S="${WORKDIR}/${P}-InstallFix"
 
 LICENSE="GPL-3+"
 SLOT="0"
@@ -28,11 +30,12 @@ DEPEND="${RDEPEND}
 	dev-python/polib[${PYTHON_USEDEP}]
 	dev-python/sphinx[${PYTHON_USEDEP}]"
 
-PATCHES=(
-	# Recent pip update in Gentoo requires us to use --user at all times, even in venvs :(
-	"${FILESDIR}/fix-pip-call-in-makefile.patch"
-)
+src_prepare() {
+	default
 
+	rm -r hscommon || die "remove directory hscommon failed"
+	ln -sf ../hscommon-${MY_COMMIT} hscommon || die "link failed"
+}
 src_compile() {
 	emake PYTHON=${EPYTHON} all build/help
 }
