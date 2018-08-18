@@ -5,7 +5,7 @@ EAPI=6
 
 inherit cmake-utils vcs-snapshot
 
-DESCRIPTION="An extremely low latency KVMFR implementation for guests with VGA PCI Passthrough."
+DESCRIPTION="Extremely low latency KVMFR implementation for guests with VGA PCI Passthrough."
 HOMEPAGE="https://looking-glass.hostfission.com/"
 
 MY_GIT_COMMIT="f75e2fe8dbeff26a08c18f18061abda17b2b31a6"
@@ -18,11 +18,11 @@ IUSE="doc"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 RDEPEND="app-emulation/spice-protocol
-	dev-libs/gmp
+	dev-libs/gmp:0
 	dev-libs/libconfig
 	dev-libs/nettle
-	dev-util/pkgconfig
 	media-fonts/freefont
+	media-libs/fontconfig
 	media-libs/glu
 	media-libs/libsdl2
 	media-libs/mesa
@@ -30,12 +30,12 @@ RDEPEND="app-emulation/spice-protocol
 	x11-libs/libX11"
 
 DEPEND="${RDEPEND}
-	media-libs/fontconfig"
+	virtual/pkgconfig"
 
 S="${S}/client"
 
 src_install() {
-	dobin ${WORKDIR}/${P}_build/looking-glass-client
+	dobin "${WORKDIR}/${P}_build/looking-glass-client"
 }
 
 pkg_postinst() {
