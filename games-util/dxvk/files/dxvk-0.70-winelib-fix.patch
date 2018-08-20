@@ -1,0 +1,63 @@
+diff --git a/build-wine32.txt b/build-wine32.txt
+index 00cf6cc..75c4f30 100644
+--- a/build-wine32.txt
++++ b/build-wine32.txt
+@@ -3,13 +3,13 @@ c = 'winegcc'
+ cpp = 'wineg++'
+ ar = 'ar'
+ strip = 'strip'
+-exe_wrapper = 'wine'
+ 
+ [properties]
++needs_exe_wrapper = true
+ winelib = true
+ 
+ c_args=['-m32']
+-cpp_args=['-m32', '--no-gnu-unique']
++cpp_args=['-m32', '--no-gnu-unique', '-Wno-attributes']
+ cpp_link_args=['-m32', '-mwindows']
+ 
+ [host_machine]
+diff --git a/build-wine64.txt b/build-wine64.txt
+index 5157fe7..f4a69cd 100644
+--- a/build-wine64.txt
++++ b/build-wine64.txt
+@@ -5,6 +5,7 @@ ar = 'ar'
+ strip = 'strip'
+ 
+ [properties]
++needs_exe_wrapper = true
+ winelib = true
+ 
+ c_args=['-m64']
+diff --git a/src/d3d10/meson.build b/src/d3d10/meson.build
+index 4218bee..ab76655 100644
+--- a/src/d3d10/meson.build
++++ b/src/d3d10/meson.build
+@@ -6,7 +6,7 @@ d3d10_main_src = [
+ d3d10_core_dll = shared_library('d3d10core'+dll_ext, d3d10_main_src,
+   name_prefix         : '',
+   link_with           : [ util_lib ],
+-  dependencies        : [ lib_d3dcompiler_43, lib_dxgi, d3d11_dep, dxbc_dep, dxvk_dep ],
++  dependencies        : [ lib_d3dcompiler_43, lib_dxgi, lib_d3d11, dxbc_dep, dxvk_dep ],
+   include_directories : dxvk_include_path,
+   install             : true,
+   objects             : not dxvk_msvc ? 'd3d10core'+def_spec_ext : [],
+@@ -16,7 +16,7 @@ d3d10_core_dll = shared_library('d3d10core'+dll_ext, d3d10_main_src,
+ d3d10_dll = shared_library('d3d10'+dll_ext, d3d10_main_src,
+   name_prefix         : '',
+   link_with           : [ util_lib ],
+-  dependencies        : [ lib_d3dcompiler_43, lib_dxgi, d3d11_dep, dxbc_dep, dxvk_dep ],
++  dependencies        : [ lib_d3dcompiler_43, lib_dxgi, lib_d3d11, dxbc_dep, dxvk_dep ],
+   include_directories : dxvk_include_path,
+   install             : true,
+   objects             : not dxvk_msvc ? 'd3d10'+def_spec_ext : [],
+@@ -26,7 +26,7 @@ d3d10_dll = shared_library('d3d10'+dll_ext, d3d10_main_src,
+ d3d10_1_dll = shared_library('d3d10_1'+dll_ext, d3d10_main_src,
+   name_prefix         : '',
+   link_with           : [ util_lib ],
+-  dependencies        : [ lib_d3dcompiler_43, lib_dxgi, d3d11_dep, dxbc_dep, dxvk_dep ],
++  dependencies        : [ lib_d3dcompiler_43, lib_dxgi, lib_d3d11, dxbc_dep, dxvk_dep ],
+   include_directories : dxvk_include_path,
+   install             : true,
+   objects             : not dxvk_msvc ? 'd3d10_1'+def_spec_ext : [],
