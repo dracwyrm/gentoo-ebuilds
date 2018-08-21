@@ -37,10 +37,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	dev-util/glslang"
 
-PATCHES=(
-	"${FILESDIR}/${P}-fix-32bit-build.patch"
-	"${FILESDIR}/${P}-winelib-fix.patch"
-)
+PATCHES=( "${FILESDIR}/${PN}-0.70-winelib-fix.patch" )
 
 dxvk_check_requirements() {
 	if [[ ${MERGE_TYPE} != binary ]]; then
