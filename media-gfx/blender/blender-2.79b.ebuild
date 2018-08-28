@@ -139,6 +139,7 @@ src_configure() {
 	# shadows, see bug #276338 for reference
 	append-flags -funsigned-char
 	append-lfs-flags
+	append-cppflags -DOPENVDB_ABI_VERSION_NUMBER=4
 
 	local mycmakeargs=(
 		-DPYTHON_VERSION="${EPYTHON/python/}"
