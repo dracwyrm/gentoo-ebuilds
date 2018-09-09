@@ -1,8 +1,9 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
-PYTHON_COMPAT=( python{2_7,3_5,3_6} )
+
+PYTHON_COMPAT=( python2_7 )
 
 inherit autotools multilib-minimal python-single-r1 toolchain-funcs
 
@@ -25,8 +26,6 @@ DEPEND="${RDEPEND}
 	${PYTHON_DEP}
 	>=virtual/pkgconfig-0-r1[${MULTILIB_USEDEP}]"
 
-
-
 AT_M4DIR=m4
 
 pkg_setup() {
@@ -47,4 +46,9 @@ multilib_src_configure() {
 	)
 
 	econf "${myeconfargs[@]}"
+}
+
+# Fails to install successfully if MAKEOPTS is set to use more than one core
+multilib_src_install() {
+	EMAKE_SOURCE=${S} emake DESTDIR="${D}" -j1 install
 }
