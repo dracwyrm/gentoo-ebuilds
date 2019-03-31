@@ -20,9 +20,6 @@
 	</longdescription>
 
 	<use>
-		<flag name="boost">
-			Enable features depending on boost.
-		</flag>
 		<flag name="bullet">
 			Enable Bullet (Physics Engine).
 		</flag>
@@ -72,9 +69,6 @@
 			Allow OpenCL Graphics Acceleration. This may
 			require extra graphics card drivers.</flag>
 		<flag name="openimageio">Enable OpenImageIO Support</flag>
-		<flag name="opennl" restrict="&lt;=media-gfx/blender-2.73">
-			Enable use of Open Numerical Library
-		</flag>
 		<flag name="opensubdiv" restrict="&gt;=media-gfx/blender-2.77">
 			Add rendering support form OpenSubdiv from Dreamworks Animation
 			through <pkg>media-libs/opensubdiv</pkg>.
@@ -87,10 +81,6 @@
 		</flag>
 		<flag name="player">
 			Build the Blender Player. THis requires the Game engine.
-		</flag>
-		<flag name="redcode" restrict="&lt;=media-gfx/blender-2.73">
-			This flag add support for RED CODE camera digital format (5K HD
-			images *.r3d) - EXPERIMENTAL.
 		</flag>
 		<flag name="test" restrict="&gt;=media-gfx/blender-2.77">
 			Build the provided unit tests.
