@@ -1,0 +1,16 @@
+diff -Naur a/source/creator/CMakeLists.txt b/source/creator/CMakeLists.txt
+--- a/source/creator/CMakeLists.txt	2019-08-11 17:25:54.630095610 +1000
++++ b/source/creator/CMakeLists.txt	2019-08-11 17:26:23.690095833 +1000
+@@ -351,12 +351,6 @@
+ # Install Targets (Generic, All Platforms)
+ 
+ 
+-# important to make a clean  install each time, else old scripts get loaded.
+-install(
+-  CODE
+-  "file(REMOVE_RECURSE ${TARGETDIR_VER})"
+-)
+-
+ if(WITH_PYTHON)
+   # install(CODE "message(\"copying blender scripts...\")")
+ 
