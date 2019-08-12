@@ -20,6 +20,10 @@
 	</longdescription>
 
 	<use>
+		<flag name="alembic">
+			Add support for Alembic through
+			<pkg>media-gfx/alembic</pkg>.
+		</flag>
 		<flag name="bullet">
 			Enable Bullet (Physics Engine).
 		</flag>

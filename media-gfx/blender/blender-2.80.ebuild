@@ -20,7 +20,7 @@ MY_PV="$(ver_cut 1-2)"
 SLOT="0"
 LICENSE="|| ( GPL-2 BL )"
 KEYWORDS="~amd64 ~x86"
-IUSE="+bullet +dds +elbeem +openexr collada colorio \
+IUSE="+bullet +dds +elbeem +openexr alembic collada colorio \
 	cuda cycles debug doc ffmpeg fftw headless jack jemalloc jpeg2k libav \
 	llvm man ndof nls openal opencl openimageio openmp opensubdiv openvdb \
 	osl sdl sndfile test tiff valgrind"
@@ -45,6 +45,7 @@ RDEPEND="${PYTHON_DEPS}
 	virtual/jpeg:0=
 	virtual/libintl
 	virtual/opengl
+	alembic? ( media-gfx/alembic )
 	collada? ( >=media-libs/opencollada-1.6.18:= )
 	colorio? ( media-libs/opencolorio )
 	cuda? ( dev-util/nvidia-cuda-toolkit:= )
@@ -143,6 +144,7 @@ src_configure() {
 		-DPYTHON_VERSION="${EPYTHON/python/}"
 		-DPYTHON_LIBRARY="$(python_get_library_path)"
 		-DPYTHON_INCLUDE_DIR="$(python_get_includedir)"
+		-DWITH_DRACO=OFF
 		-DWITH_INSTALL_PORTABLE=OFF
 		-DWITH_PYTHON_INSTALL=OFF
 		-DWITH_PYTHON_INSTALL_NUMPY=OFF
@@ -150,6 +152,7 @@ src_configure() {
 		-DWITH_SYSTEM_GLEW=ON
 		-DWITH_SYSTEM_EIGEN3=ON
 		-DWITH_SYSTEM_LZO=ON
+		-DWITH_ALEMBIC=$(usex alembic)
 		-DWITH_BOOST=ON
 		-DWITH_BULLET=$(usex bullet)
 		-DWITH_CODEC_FFMPEG=$(usex ffmpeg)
