@@ -26,6 +26,7 @@ IUSE="+bullet +dds +elbeem +openexr alembic collada colorio \
 	osl sdl sndfile test tiff valgrind"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
+	alembic? ( openexr )
 	cuda? ( cycles )
 	cycles? ( openexr tiff openimageio )
 	opencl? ( cycles )
@@ -45,7 +46,7 @@ RDEPEND="${PYTHON_DEPS}
 	virtual/jpeg:0=
 	virtual/libintl
 	virtual/opengl
-	alembic? ( media-gfx/alembic )
+	alembic? ( =media-gfx/alembic-1.7.11[boost(+),hdf(+)] )
 	collada? ( >=media-libs/opencollada-1.6.18:= )
 	colorio? ( media-libs/opencolorio )
 	cuda? ( dev-util/nvidia-cuda-toolkit:= )
